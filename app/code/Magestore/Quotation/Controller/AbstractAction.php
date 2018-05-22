@@ -53,4 +53,20 @@ abstract class AbstractAction extends \Magento\Framework\App\Action\Action
         $resultPage = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_PAGE);
         return $resultPage;
     }
+
+    /**
+     * @return mixed
+     */
+    public function createForwardResult(){
+        $resultForward = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_FORWARD);
+        return $resultForward;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function createRedirectResult(){
+        $resultRedirect = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_REDIRECT);
+        return $resultRedirect;
+    }
 }

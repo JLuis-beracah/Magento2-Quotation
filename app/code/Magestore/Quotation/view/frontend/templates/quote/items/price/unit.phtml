@@ -1,0 +1,17 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magestore\Quotation\Block\Quote\Item\Renderer\DefaultRenderer $block */
+$_item = $block->getItem();
+$helper = $this->helper('Magestore\Quotation\Helper\Data');
+?>
+<span class="price-excluding-tax" data-label="<?= $block->escapeHtml(__('Excl. Tax')) ?>">
+    <span class="cart-price">
+        <?= /* @escapeNotVerified */ $helper->formatQuotePrice($block->getQuote(),$_item->getPrice()) ?>
+    </span>
+</span>

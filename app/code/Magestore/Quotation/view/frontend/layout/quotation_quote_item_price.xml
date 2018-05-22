@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <block class="Magestore\Quotation\Block\Quote\Item\Renderer\DefaultRenderer" name="item_unit_price" template="Magestore_Quotation::quote/items/price/unit.phtml"/>
+        <block class="Magestore\Quotation\Block\Quote\Item\Renderer\DefaultRenderer" name="item_row_total" template="Magestore_Quotation::quote/items/price/row.phtml"/>
+    </body>
+</page>

@@ -1,0 +1,48 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magestore\Quotation\Block\Quote\Items $block */
+?>
+<div class="table-wrapper quote-items">
+    <table class="data table table-quote-items" id="my-quotes-table" summary="<?= /* @escapeNotVerified */ __('Items Requested') ?>">
+        <caption class="table-caption"><?= /* @escapeNotVerified */ __('Items Requested') ?></caption>
+        <thead>
+            <?php if($block->isPagerDisplayed()): ?>
+                <tr>
+                    <td colspan="5" data-block="quote-items-pager-top" class="quote-pager-wrapper quote-pager-wrapper-top">
+                        <?= $block->getPagerHtml() ?>
+                    </td>
+                </tr>
+            <?php endif ?>
+            <tr>
+                <th class="col name"><?= /* @escapeNotVerified */ __('Product Name') ?></th>
+                <th class="col sku"><?= /* @escapeNotVerified */ __('SKU') ?></th>
+                <th class="col price"><?= /* @escapeNotVerified */ __('Price Proposal') ?></th>
+                <th class="col qty"><?= /* @escapeNotVerified */ __('Qty') ?></th>
+                <th class="col subtotal"><?= /* @escapeNotVerified */ __('Subtotal') ?></th>
+            </tr>
+        </thead>
+        <?php $items = $block->getItems(); ?>
+        <?php $giftMessage = ''?>
+        <?php foreach ($items as $item): ?>
+            <?php if ($item->getParentItem()) continue; ?>
+            <tbody>
+                <?= $block->getItemHtml($item) ?>
+            </tbody>
+        <?php endforeach; ?>
+        <tfoot>
+            <?php if($block->isPagerDisplayed()): ?>
+                <tr>
+                    <td colspan="5" data-block="quote-items-pager-bottom" class="quote-pager-wrapper quote-pager-wrapper-bottom">
+                        <?= $block->getPagerHtml() ?>
+                    </td>
+                </tr>
+            <?php endif ?>
+        </tfoot>
+    </table>
+</div>

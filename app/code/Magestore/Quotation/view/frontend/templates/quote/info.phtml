@@ -1,0 +1,35 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php /** @var $block \Magestore\Quotation\Block\Quote\Info */ ?>
+<?php $_quote = $block->getQuote() ?>
+<div class="block block-quote-details-view">
+    <div class="block-title">
+        <strong><?= /* @escapeNotVerified */ __('QUOTE REQUEST') ?></strong>
+    </div>
+    <div class="block-content">
+    <?php if (!$_quote->getIsVirtual()): ?>
+        <div class="box box-order-shipping-address">
+            <strong class="box-title"><span><?= /* @escapeNotVerified */ __('Shipping Address') ?></span></strong>
+            <div class="box-content">
+                <address><?= /* @escapeNotVerified */ $block->getFormattedAddress($_quote->getShippingAddress()) ?></address>
+            </div>
+        </div>
+
+        <div class="box box-order-shipping-method">
+            <strong class="box-title">
+                <span><?= /* @escapeNotVerified */ __('Shipping Method') ?></span>
+            </strong>
+            <div class="box-content">
+                <?= /* @escapeNotVerified */ __('Shipping & Handling price varies. Please select required quantity and checkout online to see applicable price.') ?>
+            </div>
+        </div>
+    <?php endif; ?>
+    </div>
+</div>

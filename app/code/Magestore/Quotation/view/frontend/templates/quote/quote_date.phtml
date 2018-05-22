@@ -1,0 +1,13 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+
+<div class="quote-date">
+    <?= /* @escapeNotVerified */ __('<span class="label">Requested Date:</span> %1', '<date>' . $block->formatDate($block->getQuote()->getCreatedAt(), \IntlDateFormatter::LONG) . '</date>') ?>
+</div>

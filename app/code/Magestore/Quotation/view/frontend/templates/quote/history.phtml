@@ -1,0 +1,58 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+$helper = $this->helper('Magestore\Quotation\Helper\Data');
+$_quotes = $block->getQuotes();
+?>
+<?= $block->getChildHtml('info') ?>
+<?php if ($_quotes && count($_quotes)): ?>
+    <div class="table-wrapper quotes-history">
+        <table class="data table table-quote-items history" id="my-quotes-table">
+            <caption class="table-caption"><?= /* @escapeNotVerified */ __('Quotes') ?></caption>
+            <thead>
+                <tr>
+                    <th scope="col" class="col id"><?= /* @escapeNotVerified */ __('Quote #') ?></th>
+                    <th scope="col" class="col date"><?= /* @escapeNotVerified */ __('Created') ?></th>
+                    <th scope="col" class="col date"><?= /* @escapeNotVerified */ __('Last Updated') ?></th>
+                    <?= /* @noEscape */ $block->getChildHtml('extra.column.header') ?>
+                    <th scope="col" class="col total"><?= /* @escapeNotVerified */ __('Quote Total') ?></th>
+                    <th scope="col" class="col status"><?= /* @escapeNotVerified */ __('Status') ?></th>
+                    <th scope="col" class="col actions"><?= /* @escapeNotVerified */ __('Action') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($_quotes as $_quote): ?>
+                    <tr>
+                        <td data-th="<?= $block->escapeHtml(__('Quote #')) ?>" class="col id"><?= /* @escapeNotVerified */ $_quote->getEntityId() ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Created')) ?>" class="col date"><?= /* @escapeNotVerified */ $block->formatDate($_quote->getCreatedAt()) ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Last Updated')) ?>" class="col date"><?= /* @escapeNotVerified */ $block->formatDate($_quote->getUpdatedAt()) ?></td>
+                        <?php $extra = $block->getChildBlock('extra.container'); ?>
+                        <?php if ($extra): ?>
+                            <?php $extra->setQuote($_quote); ?>
+                            <?= /* @noEscape */ $extra->getChildHtml() ?>
+                        <?php endif; ?>
+                        <td data-th="<?= $block->escapeHtml(__('Quote Total')) ?>" class="col total"><?= /* @escapeNotVerified */ $helper->formatQuotePrice($_quote,$_quote->getGrandTotal()) ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Status')) ?>" class="col status"><?= /* @escapeNotVerified */ /*$_quote->getStatusLabel()*/ "123" ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Actions')) ?>" class="col actions">
+                            <a href="<?= /* @escapeNotVerified */ $block->getViewUrl($_quote) ?>" class="action view">
+                                <span><?= /* @escapeNotVerified */ __('View') ?></span>
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php if ($block->getPagerHtml()): ?>
+        <div class="quote-products-toolbar toolbar bottom"><?= $block->getPagerHtml() ?></div>
+    <?php endif ?>
+<?php else: ?>
+    <div class="message info empty"><span><?= /* @escapeNotVerified */ __('You have submitted no quotes.') ?></span></div>
+<?php endif ?>

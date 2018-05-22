@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <update handle="quotation_quote_item_renderers"/>
+    <update handle="quotation_quote_item_price"/>
+    <body>
+        <referenceContainer name="page.main.title">
+            <block class="Magestore\Quotation\Block\Quote\Info" name="quote.status" template="Magestore_Quotation::quote/quote_status.phtml"/>
+            <block class="Magestore\Quotation\Block\Quote\Info" name="quote.date" template="Magestore_Quotation::quote/quote_date.phtml"/>
+            <container name="quote.actions.container" htmlTag="div" htmlClass="actions-toolbar quote-actions-toolbar">
+                <block class="Magestore\Quotation\Block\Quote\Info\Buttons" as="buttons" name="quotation.quote.info.buttons" cacheable="false"/>
+            </container>
+        </referenceContainer>
+        <referenceContainer name="content">
+            <block class="Magestore\Quotation\Block\Quote\Info" as="info" name="quotation.quote.info" after="quotation.quote.view"/>
+            <block class="Magestore\Quotation\Block\Quote\View" name="quotation.quote.view" cacheable="false">
+                <block class="Magestore\Quotation\Block\Quote\Items" name="quote_items" template="Magestore_Quotation::quote/items.phtml">
+                    <block class="Magento\Framework\View\Element\RendererList" name="quotation.quote.items.renderers" as="renderer.list"/>
+                    <block class="Magento\Theme\Block\Html\Pager" name="quotation_quote_item_pager"/>
+                </block>
+            </block>
+            <block class="Magestore\Quotation\Block\Quote\View" name="quote.comments" template="Magestore_Quotation::quote/quote_comments.phtml"/>
+        </referenceContainer>
+        
+    </body>
+</page>

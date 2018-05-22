@@ -1,0 +1,26 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php /** @var  $block \Magento\Quote\Block\Quote\View*/?>
+
+<?php //$_history = $block->getQuote()->getCustomerNote() ?>
+<?php //if (count($_history)): ?>
+    <div class="block block-quote-details-comments">
+        <div class="block-title"><strong><?= /* @escapeNotVerified */ __('Quote Comments') ?></strong></div>
+        <div class="block-content">
+            <dl class="order-comments">
+<!--                --><?php //foreach ($_history as $_historyItem): ?>
+                    <dt class="comment-date"><?= /* @escapeNotVerified */ $block->formatDate($block->getQuote()->getCreatedAt(), \IntlDateFormatter::MEDIUM, true) ?></dt>
+                    <dd class="comment-content"><?= $block->escapeHtml($block->getQuote()->getCustomerNote()) ?></dd>
+<!--                --><?php //endforeach; ?>
+            </dl>
+
+        </div>
+    </div>
+<?php //endif; ?>
