@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="checkout_cart_item_renderers"/>
+    <body>
+        <referenceContainer name="page.messages">
+            <block class="Magestore\Quotation\Block\ValidationMessages" name="checkout.cart.validationmessages"/>
+        </referenceContainer>
+        <referenceContainer name="content">
+            <block class="Magestore\Quotation\Block\Cart" name="quotation.cart" template="Magento_Checkout::cart.phtml" cacheable="false">
+                <container name="quotation.cart.items" as="with-items">
+                    <container name="quotation.cart.container" htmlTag="div" htmlClass="cart-container" before="-">
+                        <block class="Magestore\Quotation\Block\Cart\Grid" name="quotation.cart.form" as="cart-items" template="Magento_Checkout::cart/form.phtml">
+                            <block class="Magento\Framework\View\Element\RendererList" name="quotation.cart.item.renderers" as="renderer.list"/>
+                            <block class="Magento\Framework\View\Element\Text\ListText" name="quotation.cart.order.actions"/>
+                        </block>
+                    </container>
+                </container>
+                <container name="quotation.cart.noitems" as="no-items">
+                    <block class="Magestore\Quotation\Block\Cart" name="quotation.cart.empty" before="-" template="Magento_Checkout::cart/noItems.phtml">
+                    </block>
+                </container>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

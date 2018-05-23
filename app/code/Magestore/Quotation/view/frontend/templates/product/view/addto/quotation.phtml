@@ -1,0 +1,36 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $block \Magestore\Quotation\Block\Product\View\Addto\Quotation */
+?>
+<?php $_product = $block->getProduct(); ?>
+<?php $buttonTitle = __('Quote Me'); ?>
+<button type="button"
+        title="<?= /* @escapeNotVerified */ $buttonTitle ?>"
+        class="action primary toquotation"
+        id="product-addtoquotation-button">
+    <span><?= /* @escapeNotVerified */ $buttonTitle ?></span>
+</button>
+<script>
+    require([
+        'jquery'
+    ], function($){
+        var submitUrl = "<?php echo $block->getAddToQuotationUrl();?>";
+        var addToQuotationButton = $("#product-addtoquotation-button");
+        var addToCartForm = $("#product_addtocart_form");
+        if(addToCartForm.length > 0){
+            addToCartForm = $("#product-addtoquotation-button").closest("form");
+        }
+        if((addToCartForm.length > 0) && (addToQuotationButton.length > 0)){
+            addToQuotationButton.click(function(){
+                addToQuotationButton.addClass("submitted");
+                addToCartForm.attr('action', submitUrl).submit();
+            });
+        }
+    });
+</script>

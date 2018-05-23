@@ -11,7 +11,7 @@ $_item = $block->getItem();
 ?>
 <tr id="quote-item-row-<?= /* @escapeNotVerified */ $_item->getId() ?>">
     <td class="col name" data-th="<?= $block->escapeHtml(__('Product Name')) ?>">
-        <strong class="product name product-item-name"><?= $block->escapeHtml($_item->getName()) ?></strong>
+        <a href="<?php echo $_item->getProduct()->getUrlInStore();?>"><strong class="product name product-item-name"><?= $block->escapeHtml($_item->getName()) ?></strong></a>
         <?php if ($_options = $block->getItemOptions()): ?>
         <dl class="item-options">
         <?php foreach ($_options as $_option) : ?>
@@ -36,16 +36,12 @@ $_item = $block->getItem();
         <?= $block->escapeHtml($_item->getDescription()) ?>
     </td>
     <td class="col sku" data-th="<?= $block->escapeHtml(__('SKU')) ?>"><?= /* @escapeNotVerified */ $block->prepareSku($block->getSku()) ?></td>
+    <td class="col remark" data-th="<?= $block->escapeHtml(__('Remark')) ?>"><?= /* @escapeNotVerified */ "Remark" ?></td>
     <td class="col price" data-th="<?= $block->escapeHtml(__('Price Proposal')) ?>">
         <?= $block->getItemPriceHtml($_item) ?>
     </td>
     <td class="col qty" data-th="<?= $block->escapeHtml(__('Qty')) ?>">
-        <ul class="items-qty">
-            <li class="item">
-                <span class="title"><?= /* @escapeNotVerified */ __('Qty') ?></span>
-                <span class="content"><?= /* @escapeNotVerified */ $block->getItem()->getQty()*1 ?></span>
-            </li>
-        </ul>
+        <?= /* @escapeNotVerified */ $block->getItem()->getQty()*1 ?>
     </td>
     <td class="col subtotal" data-th="<?= $block->escapeHtml(__('Subtotal')) ?>">
         <?= $block->getItemRowTotalHtml() ?>

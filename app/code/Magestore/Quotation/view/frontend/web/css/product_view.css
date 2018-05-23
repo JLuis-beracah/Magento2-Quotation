@@ -1,0 +1,11 @@
+.box-tocart .action.toquotation {
+    margin-bottom: 15px;
+    margin-right: 1%;
+    width: 49%;
+    line-height: 2.2rem;
+    padding: 14px 17px;
+    font-size: 1.8rem;
+}
+.box-tocart .actions{
+    display: flex;
+}
