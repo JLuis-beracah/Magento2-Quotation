@@ -65,7 +65,11 @@ class DefaultRenderer extends \Magento\Sales\Block\Order\Item\Renderer\DefaultRe
     public function getItemOptions()
     {
         $result = [];
-        $options = $this->getItem()->getOptions();
+        $item = $this->getItem();
+        $options = $item->getProductOrderOptions();
+        if (!$options) {
+            $options = $item->getProduct()->getTypeInstance()->getOrderOptions($item->getProduct());
+        }
         if ($options) {
             if (isset($options['options'])) {
                 $result = array_merge($result, $options['options']);

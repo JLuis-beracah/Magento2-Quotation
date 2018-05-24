@@ -267,4 +267,22 @@ class Cart extends \Magento\Checkout\Model\Cart
         return $result;
     }
 
+    /**
+     * @return $this
+     */
+    public function reset(){
+        $this->setData('quotation_quote', null);
+        $this->quotationSession->clearStorage();
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function submit(){
+        $quote = $this->getQuote();
+        $this->quotationSession->setLastRealQuote($quote);
+        $this->quotationSession->setLastSuccessQuoteId($quote->getId());
+        return $this;
+    }
 }

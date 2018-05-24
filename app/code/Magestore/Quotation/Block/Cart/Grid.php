@@ -55,6 +55,7 @@ class Grid extends \Magestore\Quotation\Block\Cart
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magestore\Quotation\Model\Session $quotationSession,
+        \Magento\Catalog\Model\ResourceModel\Url $catalogUrlBuilder,
         \Magento\Quote\Model\ResourceModel\Quote\Item\CollectionFactory $itemCollectionFactory,
         \Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface $joinProcessor,
         array $data = []
@@ -62,7 +63,7 @@ class Grid extends \Magestore\Quotation\Block\Cart
 
         $this->itemCollectionFactory = $itemCollectionFactory;
         $this->joinAttributeProcessor = $joinProcessor;
-        parent::__construct($context, $customerSession, $checkoutSession, $quotationSession, $data);
+        parent::__construct($context, $customerSession, $checkoutSession, $quotationSession, $catalogUrlBuilder, $data);
     }
 
     /**

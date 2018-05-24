@@ -1,0 +1,15 @@
+.cart-container .form-cart.quotation-info-form,
+.cart-container .form-cart.quotation-cart-form{
+    width:100%;
+    padding: 0px;
+}
+
+.cart-container .form-cart.quotation-cart-form .actions.main .continue,
+.cart-container .form-cart.quotation-cart-form .actions.main .clear{
+    display: initial;
+    margin-right: 10px;
+}
+
+#shopping-cart-table.quotation-cart-table .product-image-container{
+    width:100px !important;
+}

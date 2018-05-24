@@ -19,6 +19,11 @@ class View extends \Magestore\Quotation\Controller\AbstractAction
     protected $registry;
 
     /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $customerSession;
+
+    /**
      * View constructor.
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magestore\Quotation\Helper\Data $helper
@@ -30,11 +35,13 @@ class View extends \Magestore\Quotation\Controller\AbstractAction
         \Magento\Framework\App\Action\Context $context,
         \Magestore\Quotation\Helper\Data $helper,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Magento\Customer\Model\Session $customerSession
     ){
         parent::__construct($context, $helper);
         $this->quoteFactory = $quoteFactory;
         $this->registry = $registry;
+        $this->customerSession = $customerSession;
     }
 
     /**
@@ -44,6 +51,12 @@ class View extends \Magestore\Quotation\Controller\AbstractAction
      */
     public function execute()
     {
+        if(!$this->customerSession->isLoggedIn()){
+            $resultRedirect = $this->createRedirectResult();
+            $resultRedirect->setPath('customer/account/login');
+            return $resultRedirect;
+        }
+
         $quoteId = (int)$this->getRequest()->getParam('quote_id');
         if (!$quoteId) {
             $resultForward = $this->createForwardResult();

@@ -105,7 +105,7 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
             if (!$this->quotationSession->getNoCartRedirect(true)) {
                 if (!$this->quotationCart->getQuote()->getHasError()) {
                     $message = __(
-                        'You added %1 to your quotation.',
+                        'You added %1 to your quote request.',
                         $product->getName()
                     );
                     $this->messageManager->addSuccessMessage($message);
@@ -136,7 +136,7 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
 
             return $this->goBack($url);
         } catch (\Exception $e) {
-            $this->messageManager->addException($e, __('We can\'t add this item to your quotation right now.'));
+            $this->messageManager->addException($e, __('We can\'t add this item to your quote request right now.'));
             $this->_objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);
             return $this->goBack();
         }

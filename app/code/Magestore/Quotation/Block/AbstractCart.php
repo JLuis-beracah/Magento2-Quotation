@@ -38,8 +38,8 @@ class AbstractCart extends \Magento\Checkout\Block\Cart\AbstractCart
         \Magestore\Quotation\Model\Session $quotationSession,
         array $data = []
     ) {
-        parent::__construct($context, $customerSession, $checkoutSession, $data);
         $this->quotationSession = $quotationSession;
+        parent::__construct($context, $customerSession, $checkoutSession, $data);
     }
 
     /**
@@ -55,4 +55,12 @@ class AbstractCart extends \Magento\Checkout\Block\Cart\AbstractCart
         return $this->_quotation_quote;
     }
 
+    /**
+     * @param null $type
+     * @return \Magento\Framework\View\Element\Template
+     */
+    public function getItemRenderer($type = null)
+    {
+         return parent::getItemRenderer(self::DEFAULT_TYPE);
+    }
 }

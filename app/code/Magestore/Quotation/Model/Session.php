@@ -59,6 +59,7 @@ class Session extends \Magento\Checkout\Model\Session
         $this->_quotation_quote = null;
         $this->setQuoteId(null);
         $this->setLastSuccessQuoteId(null);
+        $this->getLastRealQuote(null);
         return $this;
     }
 
@@ -116,7 +117,6 @@ class Session extends \Magento\Checkout\Model\Session
     public function getQuote()
     {
         $this->_eventManager->dispatch('custom_quote_process', ['checkout_session' => $this]);
-
         if ($this->_quotation_quote === null) {
             $quote = $this->quoteFactory->create();
             if ($this->getQuoteId()) {
@@ -145,17 +145,16 @@ class Session extends \Magento\Checkout\Model\Session
                     $this->setQuoteId(null);
                 }
             }
-
             if (!$this->getQuoteId()) {
                 if ($this->_customerSession->isLoggedIn() || $this->_customer) {
                     $customerId = $this->_customer
                         ? $this->_customer->getId()
                         : $this->_customerSession->getCustomerId();
-                    try {
-                        $quote = $this->quoteRepository->getActiveForCustomer($customerId);
-                        $this->setQuoteId($quote->getId());
-                    } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                    }
+//                    try {
+//                        $quote = $this->quoteRepository->getActiveForCustomer($customerId);
+//                        $this->setQuoteId($quote->getId());
+//                    } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+//                    }
                 } else {
                     $quote->setIsCheckoutCart(true);
                     $this->_eventManager->dispatch('checkout_quote_init', ['quote' => $quote]);
@@ -188,7 +187,6 @@ class Session extends \Magento\Checkout\Model\Session
             $xForwardIp = $this->request->getServer('HTTP_X_FORWARDED_FOR');
             $this->_quotation_quote->setXForwardedFor($xForwardIp);
         }
-
         return $this->_quotation_quote;
     }
 

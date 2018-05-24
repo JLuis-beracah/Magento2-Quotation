@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="quotation_item_price_renderers"/>
+    <body>
+        <referenceBlock name="quotation.cart.item.renderers">
+            <block class="Magestore\Quotation\Block\Cart\Item\Renderer" name="quotation.cart.item.renderers.default" as="default" template="Magestore_Quotation::cart/item/default.phtml">
+                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" name="quotation.cart.item.renderers.default.actions" as="actions">
+                    <!--<block class="Magestore\Quotation\Block\Cart\Item\Renderer\Actions\Edit" name="checkout.cart.item.renderers.default.actions.edit" template="Magestore_Quotation::cart/item/renderer/actions/edit.phtml"/>-->
+                    <block class="Magestore\Quotation\Block\Cart\Item\Renderer\Actions\Remove" name="checkout.cart.item.renderers.default.actions.remove" template="Magestore_Quotation::cart/item/renderer/actions/remove.phtml"/>
+                </block>
+            </block>
+            <block class="Magestore\Quotation\Block\Cart\Item\Renderer" name="quotation.cart.item.renderers.simple" as="simple" template="Magestore_Quotation::cart/item/default.phtml">
+                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" name="quotation.cart.item.renderers.simple.actions" as="actions">
+                    <!--<block class="Magestore\Quotation\Block\Cart\Item\Renderer\Actions\Edit" name="quotation.cart.item.renderers.simple.actions.edit" template="Magestore_Quotation::cart/item/renderer/actions/edit.phtml"/>-->
+                    <block class="Magestore\Quotation\Block\Cart\Item\Renderer\Actions\Remove" name="quotation.cart.item.renderers.simple.actions.remove" template="Magestore_Quotation::cart/item/renderer/actions/remove.phtml"/>
+                </block>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

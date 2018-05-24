@@ -6,7 +6,10 @@
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <update handle="checkout_cart_item_renderers"/>
+    <update handle="quotation_cart_item_renderers"/>
+    <head>
+        <css src="Magestore_Quotation::css/quotation_cart.css"/>
+    </head>
     <body>
         <referenceContainer name="page.messages">
             <block class="Magestore\Quotation\Block\ValidationMessages" name="checkout.cart.validationmessages"/>
@@ -15,14 +18,20 @@
             <block class="Magestore\Quotation\Block\Cart" name="quotation.cart" template="Magento_Checkout::cart.phtml" cacheable="false">
                 <container name="quotation.cart.items" as="with-items">
                     <container name="quotation.cart.container" htmlTag="div" htmlClass="cart-container" before="-">
-                        <block class="Magestore\Quotation\Block\Cart\Grid" name="quotation.cart.form" as="cart-items" template="Magento_Checkout::cart/form.phtml">
+                        <block class="Magestore\Quotation\Block\Cart\Grid" name="quotation.cart.form" as="cart-items" template="Magestore_Quotation::cart/form.phtml">
                             <block class="Magento\Framework\View\Element\RendererList" name="quotation.cart.item.renderers" as="renderer.list"/>
                             <block class="Magento\Framework\View\Element\Text\ListText" name="quotation.cart.order.actions"/>
+                        </block>
+                        <block class="Magestore\Quotation\Block\Cart\Info"
+                               name="quotation.cart.info"
+                               as="cart-info"
+                               template="Magestore_Quotation::cart/info.phtml">
+                            <block class="Magestore\Quotation\Block\Cart\Info\Address" name="quotation.cart.info.address" template="Magestore_Quotation::cart/info/address.phtml" cacheable="false"/>
                         </block>
                     </container>
                 </container>
                 <container name="quotation.cart.noitems" as="no-items">
-                    <block class="Magestore\Quotation\Block\Cart" name="quotation.cart.empty" before="-" template="Magento_Checkout::cart/noItems.phtml">
+                    <block class="Magestore\Quotation\Block\Cart" name="quotation.cart.empty" before="-" template="Magestore_Quotation::cart/noItems.phtml">
                     </block>
                 </container>
             </block>

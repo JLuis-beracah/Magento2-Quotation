@@ -6,11 +6,8 @@
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <css src="Magestore_Quotation::css/product_view.css"/>
-    </head>
     <body>
-        <referenceContainer name="product.info.addtocart">
+        <referenceContainer name="product.info.addtocart.additional">
             <block class="Magestore\Quotation\Block\Product\View\AddTo\Quotation"
                    name="view.addto.quotation"
                    template="Magestore_Quotation::product/view/addto/quotation.phtml"

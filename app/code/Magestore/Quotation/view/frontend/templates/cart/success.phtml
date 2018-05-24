@@ -1,0 +1,26 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php /** @var $block \Magestore\Quotation\Block\Cart\Success */ ?>
+<div class="checkout-success">
+    <?php if ($block->getQuoteId()):?>
+        <?php if ($block->getCanViewQuote()) :?>
+            <p><?= __('Your quote request is: %1.', sprintf('<a href="%s" class="order-number"><strong>%s</strong></a>', $block->escapeHtml($block->getViewQuoteUrl()), $block->escapeHtml($block->getQuoteId()))) ?></p>
+        <?php  else :?>
+            <p><?= __('Your quote request # is: <span>%1</span>.', $block->escapeHtml($block->getQuoteId())) ?></p>
+        <?php endif;?>
+            <p><?= /* @escapeNotVerified */ __('We\'ll email you a quotation with details info.') ?></p>
+    <?php endif;?>
+
+    <div class="actions-toolbar">
+        <div class="primary">
+            <a class="action primary continue" href="<?= /* @escapeNotVerified */ $block->getContinueUrl() ?>"><span><?= /* @escapeNotVerified */ __('Continue Shopping') ?></span></a>
+        </div>
+    </div>
+</div>

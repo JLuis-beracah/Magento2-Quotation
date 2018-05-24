@@ -1,0 +1,24 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**  @var $block \Magestore\Quotation\Block\Cart\Info */
+?>
+<form action="<?php echo $block->getSubmitUrl();?>"
+      method="post"
+      id="quotation-info-form"
+      class="quotation-info-form form form-cart">
+
+    <?php echo $block->getChildHtml("quotation.cart.info.address");?>
+    <div class="cart main actions">
+        <button type="submit"
+                title="<?php echo $block->getSubmitButtonTitle();?>"
+                class="action primary submit">
+            <span><?php echo $block->getSubmitButtonTitle();?></span>
+        </button>
+    </div>
+</form>

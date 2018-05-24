@@ -1,0 +1,13 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+// @codingStandardsIgnoreFile
+/**  @var $block \Magestore\Quotation\Block\Cart */
+?>
+<div class="cart-empty">
+    <p><?= /* @escapeNotVerified */ __('You have no items in your quotation.') ?></p>
+    <p><?php /* @escapeNotVerified */ echo __('Click <a href="%1">here</a> to continue shopping.',
+            $block->escapeUrl($block->getContinueShoppingUrl())) ?></p>
+</div>

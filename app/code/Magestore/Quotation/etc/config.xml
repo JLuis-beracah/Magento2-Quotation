@@ -7,10 +7,10 @@
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <!-- Set default settings -->
-        <!--
         <quotation>
+            <general>
+                <enable>1</enable>
+            </general>
         </quotation>
-        -->
     </default>
 </config>
