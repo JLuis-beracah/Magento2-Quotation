@@ -77,57 +77,82 @@ class Address extends \Magento\Customer\Block\Address\Edit
      */
     protected function _prepareLayout()
     {
-        parent::_prepareLayout();
-
-        // Init address object
-        if ($addressId = $this->getRequest()->getParam('id')) {
-            try {
-                $this->_address = $this->_addressRepository->getById($addressId);
-                if ($this->_address->getCustomerId() != $this->_customerSession->getCustomerId()) {
-                    $this->_address = null;
-                }
-            } catch (NoSuchEntityException $e) {
-                $this->_address = null;
-            }
-        }
-
         if ($this->_address === null || !$this->_address->getId()) {
-            $this->_address = $this->addressDataFactory->create();
-            $customer = $this->getCustomer();
-            $this->_address->setPrefix($customer->getPrefix());
-            $this->_address->setFirstname($customer->getFirstname());
-            $this->_address->setMiddlename($customer->getMiddlename());
-            $this->_address->setLastname($customer->getLastname());
-            $this->_address->setSuffix($customer->getSuffix());
-        }
-
-        $this->pageConfig->getTitle()->set($this->getTitle());
-
-        if ($postedData = $this->_customerSession->getAddressFormData(true)) {
-            $postedData['region'] = [
-                'region' => $postedData['region'] ?? null,
-            ];
-            if (!empty($postedData['region_id'])) {
-                $postedData['region']['region_id'] = $postedData['region_id'];
+            $this->_address = $this->getQuote()->getShippingAddress();
+            $customerId = $this->getCurrentCustomerId();
+            if($customerId){
+                $customer = $this->getCustomer();
+                if(!$this->_address->getPrefix()){
+                    $this->_address->setPrefix($customer->getPrefix());
+                }
+                if(!$this->_address->getFirstname()){
+                    $this->_address->setFirstname($customer->getFirstname());
+                }
+                if(!$this->_address->getMiddlename()){
+                    $this->_address->setMiddlename($customer->getMiddlename());
+                }
+                if(!$this->_address->getLastname()){
+                    $this->_address->setLastname($customer->getLastname());
+                }
+                if(!$this->_address->getSuffix()){
+                    $this->_address->setSuffix($customer->getSuffix());
+                }
+                if(!$this->_address->getEmail()){
+                    $this->_address->setEmail($customer->getEmail());
+                }
             }
-            $this->dataObjectHelper->populateWithArray(
-                $this->_address,
-                $postedData,
-                \Magento\Customer\Api\Data\AddressInterface::class
-            );
         }
-
         return $this;
     }
 
     /**
-     * Retrieve the Customer Data using the customer Id from the customer session.
-     *
-     * @return \Magento\Customer\Api\Data\CustomerInterface
+     * @return \Magento\Quote\Model\Quote|mixed
      */
-    public function getCustomer()
-    {
-        return $this->currentCustomer->getCustomer();
+    public function getQuote(){
+        return $this->quotationCart->getQuote();
     }
 
+    /**
+     * @return int|null
+     */
+    public function getCurrentCustomerId()
+    {
+        return $this->currentCustomer->getCustomerId();
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(){
+        $quote = $this->getQuote();
+        return $quote->getCustomerEmail();
+    }
+
+    /**
+     * @return string
+     */
+    public function getRemark(){
+        $quote = $this->getQuote();
+        return $quote->getCustomerNote();
+    }
+
+    /**
+     * Return the name of the region for the address being edited.
+     *
+     * @return string region name
+     */
+    public function getRegion()
+    {
+        return $this->getAddress()->getRegion();
+    }
+
+    /**
+     * Return the id of the region being edited.
+     *
+     * @return int region id
+     */
+    public function getRegionId()
+    {
+        return $this->getAddress()->getRegionId();
+    }
 }

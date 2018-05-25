@@ -11,7 +11,9 @@
 <form action="<?php echo $block->getSubmitUrl();?>"
       method="post"
       id="quotation-info-form"
-      class="quotation-info-form form form-cart">
+      class="quotation-info-form form form-cart form-address-edit"
+      enctype="multipart/form-data"
+      data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>">
 
     <?php echo $block->getChildHtml("quotation.cart.info.address");?>
     <div class="cart main actions">

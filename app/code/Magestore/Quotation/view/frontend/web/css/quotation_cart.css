@@ -13,3 +13,11 @@
 #shopping-cart-table.quotation-cart-table .product-image-container{
     width:100px !important;
 }
+
+#quotation-info-form.quotation-info-form{
+    padding-top: 20px;
+    border-top: 1px solid #cccccc;
+}
+#quotation-info-form.quotation-info-form .legend > span{
+    font-weight: bold;
+}
