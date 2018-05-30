@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright © 2018 Magestore. All rights reserved.
+  ~ See COPYING.txt for license details.
+  -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="checkout_cart_update_items_after">
+        <observer name="checkout_cart_update_items_after_observer" instance="Magestore\Quotation\Observer\CheckoutCartUpdateItemsAfter" />
+    </event>
+    <event name="customer_login">
+        <observer name="loadCustomerQuoteRequest" instance="Magestore\Quotation\Observer\LoadCustomerQuoteObserver" />
+    </event>
+    <event name="customer_logout">
+        <observer name="unsetAllQuoteRequestData" instance="Magestore\Quotation\Observer\UnsetAllObserver" />
+    </event>
+</config>

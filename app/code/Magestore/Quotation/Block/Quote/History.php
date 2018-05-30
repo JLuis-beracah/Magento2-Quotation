@@ -7,6 +7,7 @@ namespace Magestore\Quotation\Block\Quote;
 
 use \Magento\Framework\App\ObjectManager;
 use \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
 
 /**
  * Class History
@@ -97,6 +98,8 @@ class History extends \Magento\Framework\View\Element\Template
             if ($customerId) {
                 $quotes->addFieldToFilter('customer_id', $customerId);
             }
+            $quotes->addFieldToFilter('request_status', array("neq" => QuoteStatus::STATUS_NONE));
+            $quotes->addFieldToFilter('request_status', array("neq" => QuoteStatus::STATUS_PENDING));
             $this->quotes = $quotes;
         }
         return $this->quotes;
@@ -144,5 +147,19 @@ class History extends \Magento\Framework\View\Element\Template
     public function getBackUrl()
     {
         return $this->getUrl('customer/account/');
+    }
+
+    /**
+     * @param $quote
+     * @return string
+     */
+    public function getQuoteRequestStatus($quote){
+        $statues = QuoteStatus::getOptionArray();
+        $requestStatus = $quote->getData('request_status');
+        $requestStatusLabel = "";
+        if($requestStatus && isset($statues[$requestStatus])){
+            $requestStatusLabel = $statues[$requestStatus];
+        }
+        return $requestStatusLabel;
     }
 }

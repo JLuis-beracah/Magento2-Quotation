@@ -5,6 +5,9 @@
  */
 namespace Magestore\Quotation\Model;
 
+use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\QuoteIdMaskFactory;
+
 /**
  * Class Session
  * @package Magestore\Quotation\Model
@@ -12,9 +15,85 @@ namespace Magestore\Quotation\Model;
 class Session extends \Magento\Checkout\Model\Session
 {
     /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected $quotationManagement;
+
+    /**
+     * Session constructor.
+     * @param \Magento\Framework\App\Request\Http $request
+     * @param \Magento\Framework\Session\SidResolverInterface $sidResolver
+     * @param \Magento\Framework\Session\Config\ConfigInterface $sessionConfig
+     * @param \Magento\Framework\Session\SaveHandlerInterface $saveHandler
+     * @param \Magento\Framework\Session\ValidatorInterface $validator
+     * @param \Magento\Framework\Session\StorageInterface $storage
+     * @param \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager
+     * @param \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory
+     * @param \Magento\Framework\App\State $appState
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+     * @param QuoteIdMaskFactory $quoteIdMaskFactory
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
+     */
+    public function __construct(
+        \Magento\Framework\App\Request\Http $request,
+        \Magento\Framework\Session\SidResolverInterface $sidResolver,
+        \Magento\Framework\Session\Config\ConfigInterface $sessionConfig,
+        \Magento\Framework\Session\SaveHandlerInterface $saveHandler,
+        \Magento\Framework\Session\ValidatorInterface $validator,
+        \Magento\Framework\Session\StorageInterface $storage,
+        \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager,
+        \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory,
+        \Magento\Framework\App\State $appState,
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Customer\Model\Session $customerSession,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
+        \Magento\Framework\Event\ManagerInterface $eventManager,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
+        \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
+    ) {
+        parent::__construct(
+            $request,
+            $sidResolver,
+            $sessionConfig,
+            $saveHandler,
+            $validator,
+            $storage,
+            $cookieManager,
+            $cookieMetadataFactory,
+            $appState,
+            $orderFactory,
+            $customerSession,
+            $quoteRepository,
+            $remoteAddress,
+            $eventManager,
+            $storeManager,
+            $customerRepository,
+            $quoteIdMaskFactory,
+            $quoteFactory
+        );
+        $this->quotationManagement = $quotationManagement;
+    }
+
+    /**
      * @var \Magento\Quote\Model\Quote
      */
     protected $_quotation_quote = null;
+
+    /**
+     * @var bool
+     */
+    protected $_loadInactive = true;
 
     /**
      * @return string
@@ -77,7 +156,7 @@ class Session extends \Magento\Checkout\Model\Session
         $this->_eventManager->dispatch('load_customer_quote_before', ['checkout_session' => $this]);
 
         try {
-            $customerQuote = $this->quoteRepository->getForCustomer($this->_customerSession->getCustomerId());
+            $customerQuote = $this->quotationManagement->getActiveForCustomer($this->_customerSession->getCustomerId());
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
             $customerQuote = $this->quoteFactory->create();
         }
@@ -95,6 +174,7 @@ class Session extends \Magento\Checkout\Model\Session
             if ($this->_quotation_quote) {
                 $this->quoteRepository->delete($this->_quotation_quote);
             }
+            $this->quotationManagement->start($customerQuote);
             $this->_quotation_quote = $customerQuote;
         } else {
             $this->getQuote()->getBillingAddress();
@@ -150,11 +230,11 @@ class Session extends \Magento\Checkout\Model\Session
                     $customerId = $this->_customer
                         ? $this->_customer->getId()
                         : $this->_customerSession->getCustomerId();
-//                    try {
-//                        $quote = $this->quoteRepository->getActiveForCustomer($customerId);
-//                        $this->setQuoteId($quote->getId());
-//                    } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-//                    }
+                    try {
+                        $quote = $this->quotationManagement->getActiveForCustomer($customerId);
+                        $this->setQuoteId($quote->getId());
+                    } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                    }
                 } else {
                     $quote->setIsCheckoutCart(true);
                     $this->_eventManager->dispatch('checkout_quote_init', ['quote' => $quote]);
@@ -168,6 +248,7 @@ class Session extends \Magento\Checkout\Model\Session
             }
 
             $quote->setStore($this->_storeManager->getStore());
+            $this->quotationManagement->start($quote);
             $this->_quotation_quote = $quote;
         }
 

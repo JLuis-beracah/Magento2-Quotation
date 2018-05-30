@@ -39,7 +39,7 @@ $_quotes = $block->getQuotes();
                             <?= /* @noEscape */ $extra->getChildHtml() ?>
                         <?php endif; ?>
                         <td data-th="<?= $block->escapeHtml(__('Quote Total')) ?>" class="col total"><?= /* @escapeNotVerified */ $helper->formatQuotePrice($_quote,$_quote->getGrandTotal()) ?></td>
-                        <td data-th="<?= $block->escapeHtml(__('Status')) ?>" class="col status"><?= /* @escapeNotVerified */ /*$_quote->getStatusLabel()*/ "123" ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Status')) ?>" class="col status"><?= /* @escapeNotVerified */ /*$_quote->getStatusLabel()*/ $block->getQuoteRequestStatus($_quote) ?></td>
                         <td data-th="<?= $block->escapeHtml(__('Actions')) ?>" class="col actions">
                             <a href="<?= /* @escapeNotVerified */ $block->getViewUrl($_quote) ?>" class="action view">
                                 <span><?= /* @escapeNotVerified */ __('View') ?></span>

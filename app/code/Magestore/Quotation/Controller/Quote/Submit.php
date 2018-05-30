@@ -107,11 +107,8 @@ class Submit extends \Magestore\Quotation\Controller\AbstractAction
         $this->quotationCart->getQuote()->setShippingAddress($addressDataObject);
         $this->quotationCart->getQuote()->setBillingAddress($addressDataObject);
         $this->quotationCart->save();
-
-//        $this->quotationCart->submit();
-
+        $this->quotationCart->submit();
         $resultRedirect = $this->createRedirectResult();
-        return $resultRedirect->setUrl($this->_url->getUrl('*/*/'));
         return $resultRedirect->setUrl($this->_url->getUrl('*/*/success'));
     }
 }

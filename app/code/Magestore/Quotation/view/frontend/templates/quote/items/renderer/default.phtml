@@ -36,7 +36,7 @@ $_item = $block->getItem();
         <?= $block->escapeHtml($_item->getDescription()) ?>
     </td>
     <td class="col sku" data-th="<?= $block->escapeHtml(__('SKU')) ?>"><?= /* @escapeNotVerified */ $block->prepareSku($block->getSku()) ?></td>
-    <td class="col remark" data-th="<?= $block->escapeHtml(__('Remark')) ?>"><?= /* @escapeNotVerified */ "Remark" ?></td>
+    <td class="col remark" data-th="<?= $block->escapeHtml(__('Remark')) ?>"><?= /* @escapeNotVerified */ $block->getItem()->getAdditionalData() ?></td>
     <td class="col price" data-th="<?= $block->escapeHtml(__('Price Proposal')) ?>">
         <?= $block->getItemPriceHtml($_item) ?>
     </td>

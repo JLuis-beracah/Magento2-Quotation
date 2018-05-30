@@ -6,10 +6,10 @@
 namespace Magestore\Quotation\Api;
 
 /**
- * Interface CartManagementInterface
- * @package Magento\Quote\Api
+ * Interface QuotationManagementInterface
+ * @package Magento\Quotation\Api
  */
-interface CartManagementInterface
+interface QuotationManagementInterface
 {
 
 }

@@ -15,6 +15,16 @@ use Magento\Framework\Exception\NoSuchEntityException;
 class Cart extends \Magento\Checkout\Model\Cart
 {
     /**
+     * @var \Magestore\Quotation\Model\Session
+     */
+    protected $quotationSession;
+
+    /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected $quotationManagement;
+
+    /**
      * Cart constructor.
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -27,7 +37,8 @@ class Cart extends \Magento\Checkout\Model\Cart
      * @param \Magento\CatalogInventory\Api\StockStateInterface $stockState
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
-     * @param \Magestore\Quotation\Model\Session $quotationSession
+     * @param Session $quotationSession
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param array $data
      */
     public function __construct(
@@ -43,10 +54,12 @@ class Cart extends \Magento\Checkout\Model\Cart
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magestore\Quotation\Model\Session $quotationSession,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         array $data = []
     ) {
         parent::__construct($eventManager, $scopeConfig, $storeManager, $resourceCart, $checkoutSession, $customerSession, $messageManager, $stockRegistry, $stockState, $quoteRepository, $productRepository, $data);
         $this->quotationSession = $quotationSession;
+        $this->quotationManagement = $quotationManagement;
     }
 
     /**
@@ -283,6 +296,7 @@ class Cart extends \Magento\Checkout\Model\Cart
         $quote = $this->getQuote();
         $this->quotationSession->setLastRealQuote($quote);
         $this->quotationSession->setLastSuccessQuoteId($quote->getId());
+        $this->quotationManagement->submit($quote);
         return $this;
     }
 }

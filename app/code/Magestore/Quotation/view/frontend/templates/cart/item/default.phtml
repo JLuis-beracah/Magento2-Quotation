@@ -64,7 +64,10 @@ $_item = $block->getItem();
 
 
         <td class="col remark" data-th="<?= $block->escapeHtml(__('Remarks with product')) ?>">
-            <?= "remark" ?>
+            <textarea id="cart-<?= /* @escapeNotVerified */ $_item->getId() ?>-remark"
+                   name="cart[<?= /* @escapeNotVerified */ $_item->getId() ?>][remark]"
+                   title="<?= $block->escapeHtml(__('Remarks')) ?>"
+                   class="input-text remark"><?= /* @escapeNotVerified */ $_item->getAdditionalData() ?></textarea>
         </td>
         <td class="col price" data-th="<?= $block->escapeHtml(__('Price')) ?>">
                 <?= $block->getUnitPriceHtml($_item) ?>

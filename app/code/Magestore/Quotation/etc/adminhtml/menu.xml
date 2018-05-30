@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Copyright © 2018 Magestore. All rights reserved.
+  ~ See COPYING.txt for license details.
+  -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Magestore_Quotation::quotation"
+             title="Quotation"
+             module="Magestore_Quotation"
+             sortOrder="30"
+             resource="Magestore_Quotation::quotation"/>
+        <add id="Magestore_Quotation::quote_request"
+             title="Quote Request"
+             module="Magestore_Quotation"
+             sortOrder="0"
+             parent="Magestore_Quotation::quotation"
+             resource="Magestore_Quotation::quote_request"
+             action="quotation/quote/index"/>
+        <add id="Magestore_Quotation::settings"
+             title="Settings"
+             module="Magestore_Quotation"
+             sortOrder="70"
+             parent="Magestore_Quotation::quotation"
+             resource="Magestore_Quotation::settings"
+             action="adminhtml/system_config/edit/section/quotation"/>
+    </menu>
+</config>
