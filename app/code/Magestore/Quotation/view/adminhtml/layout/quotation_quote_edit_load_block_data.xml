@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="quotation_quote_edit_item_price"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit" name="quotation_quote_detail">
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Form" template="Magestore_Quotation::quote/edit/form.phtml" name="quotation_quote_detail_form" as="form">
+                    <block class="Magento\Sales\Block\Adminhtml\Order\Create\Messages" name="message"/>
+                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Info" name="quote_info" template="Magestore_Quotation::quote/edit/info.phtml">
+                    </block>
+                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Data" template="Magestore_Quotation::quote/edit/data.phtml" name="data">
+                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items" template="Magento_Sales::order/create/items.phtml" name="items">
+                            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items\Grid" template="Magestore_Quotation::quote/edit/items/grid.phtml" name="items_grid">
+                            </block>
+                        </block>
+                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Comment" template="Magestore_Quotation::quote/edit/comment.phtml" name="comment"/>
+
+                    </block>
+                </block>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

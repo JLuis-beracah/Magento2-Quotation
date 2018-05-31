@@ -1,0 +1,144 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/**
+ * @var \Magestore\Quotation\Block\Adminhtml\Quote\Edit\Info $block
+ */
+
+// @codingStandardsIgnoreFile
+
+$quote = $block->getQuote();
+
+$quoteAdminDate = $block->formatDate(
+    $block->getQuoteAdminDate($quote->getCreatedAt()),
+    \IntlDateFormatter::MEDIUM,
+    true
+);
+
+$quoteStoreDate = $block->formatDate(
+    $quote->getCreatedAt(),
+    \IntlDateFormatter::MEDIUM,
+    true,
+    $block->getTimezoneForStore($quote->getStore())
+);
+?>
+
+<section class="admin__page-section quote-view-account-information">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Quote & Account Information')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <div class="admin__page-section-item quote-information">
+            <div class="admin__page-section-item-title">
+                <span class="title">
+                    <?= $block->escapeHtml(__('Quote # %1', $quote->getId())) ?>
+                </span>
+            </div>
+            <div class="admin__page-section-item-content">
+                <table class="admin__table-secondary quote-information-table">
+                <tr>
+                    <th><?= $block->escapeHtml(__('Created')) ?></th>
+                    <td><?= $block->escapeHtml($quoteAdminDate) ?></td>
+                </tr>
+                <?php if ($quoteAdminDate != $quoteStoreDate):?>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Created (%1)', $block->getTimezoneForStore($quote->getStore()))) ?></th>
+                        <td><?= $block->escapeHtml($quoteStoreDate) ?></td>
+                    </tr>
+                <?php endif;?>
+                <tr>
+                    <th><?= $block->escapeHtml(__('Status')) ?></th>
+                    <td><span id="quote_status"><?= $block->quoteRequestStatusLabel($quote->getRequestStatus()) ?></span></td>
+                </tr>
+                <?= $block->getChildHtml() ?>
+                <?php if ($block->isSingleStoreMode() == false):?>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Requested From')) ?></th>
+                        <td><?= $block->escapeHtml($block->getQuoteStoreName(), ['br']) ?></td>
+                    </tr>
+                <?php endif; ?>
+                <?php if ($quote->getRemoteIp() && $block->shouldDisplayCustomerIp()): ?>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Requested from IP')) ?></th>
+                        <td><?= $block->escapeHtml($quote->getRemoteIp()); echo $quote->getXForwardedFor() ? ' (' . $block->escapeHtml($quote->getXForwardedFor()) . ')' : ''; ?></td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+            </div>
+        </div>
+
+        <div class="admin__page-section-item quote-account-information">
+            <?php /* Account Information */ ?>
+            <div class="admin__page-section-item-title">
+                <span class="title"><?= $block->escapeHtml(__('Account Information')) ?></span>
+                <div class="actions">
+                    <?php if ($customerUrl = $block->getCustomerViewUrl()) : ?>
+                        <a href="<?= /* @noEscape */ $block->getCustomerViewUrl() ?>" target="_blank">
+                            <?= $block->escapeHtml(__('Edit Customer')) ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="admin__page-section-item-content">
+                <table class="admin__table-secondary quote-account-information-table">
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Customer Name')) ?></th>
+                        <td>
+                            <?php if ($customerUrl = $block->getCustomerViewUrl()): ?>
+                                <a href="<?= $block->escapeUrl($customerUrl) ?>" target="_blank">
+                                    <span><?= $block->escapeHtml($block->getCustomerName($quote)) ?></span>
+                                </a>
+                            <?php else: ?>
+                                <?= $block->escapeHtml($block->getCustomerName($quote)) ?>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Email')) ?></th>
+                        <td><a href="mailto:<?php echo $block->escapeHtml($quote->getCustomerEmail()) ?>"><?php echo $block->escapeHtml($quote->getCustomerEmail()) ?></a></td>
+                    </tr>
+                    <?php if ($groupName = $block->getCustomerGroupName()) : ?>
+                        <tr>
+                            <th><?= $block->escapeHtml(__('Customer Group')) ?></th>
+                            <td><?= $block->escapeHtml($groupName) ?></td>
+                        </tr>
+                    <?php endif; ?>
+                    <?php foreach ($block->getCustomerAccountData() as $data):?>
+                        <tr>
+                            <th><?= $block->escapeHtml($data['label']) ?></th>
+                            <td><?= $block->escapeHtml($data['value'], ['br']) ?></td>
+                        </tr>
+                    <?php endforeach;?>
+                    <?= $block->getChildHtml('extra_customer_info') ?>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="admin__page-section quote-addresses">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Address Information')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <div class="admin__page-section-item quote-billing-address">
+            <?php /* Billing Address */ ?>
+            <div class="admin__page-section-item-title">
+                <span class="title"><?= $block->escapeHtml(__('Billing Address')) ?></span>
+            </div>
+            <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getBillingAddress()); ?></address>
+        </div>
+        <?php if (!$block->getQuote()->getIsVirtual()): ?>
+            <div class="admin__page-section-item quote-shipping-address">
+                <?php /* Shipping Address */ ?>
+                <div class="admin__page-section-item-title">
+                    <span class="title"><?= $block->escapeHtml(__('Shipping Address')) ?></span>
+                </div>
+                <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getShippingAddress()); ?></address>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>

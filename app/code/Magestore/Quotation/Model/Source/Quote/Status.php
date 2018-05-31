@@ -20,6 +20,7 @@ class Status implements \Magento\Framework\Option\ArrayInterface
     const STATUS_NEW = 2;
     const STATUS_PROCESSING = 3;
     const STATUS_PROCESSED = 4;
+    const STATUS_DECLINE = 5;
 
     /**
      * @return array
@@ -29,7 +30,8 @@ class Status implements \Magento\Framework\Option\ArrayInterface
         return [
             ['label' => __('New'), 'value' => self::STATUS_NEW],
             ['label' => __('Processing'), 'value' => self::STATUS_PROCESSING],
-            ['label' => __('Processed'), 'value' => self::STATUS_PROCESSED]
+            ['label' => __('Processed'), 'value' => self::STATUS_PROCESSED],
+            ['label' => __('Decline'), 'value' => self::STATUS_DECLINE]
         ];
     }
 
@@ -38,7 +40,12 @@ class Status implements \Magento\Framework\Option\ArrayInterface
      */
     public static function getOptionArray()
     {
-        return [self::STATUS_NEW => __('New'), self::STATUS_PROCESSING => __('Processing'), self::STATUS_PROCESSED => __('Processed')];
+        return [
+            self::STATUS_NEW => __('New'),
+            self::STATUS_PROCESSING => __('Processing'),
+            self::STATUS_PROCESSED => __('Processed'),
+            self::STATUS_DECLINE => __('Decline')
+        ];
     }
 
 }

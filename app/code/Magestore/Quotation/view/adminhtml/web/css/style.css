@@ -1,0 +1,11 @@
+#edit_form #quote-data,
+#edit_form #quote-info{
+    display: block !important;
+}
+
+#edit_form #quote-info .admin__page-section .admin__page-section-content{
+    display: flex;
+}
+#edit_form #quote-info .admin__page-section .admin__page-section-content .admin__page-section-item{
+    flex-grow: 1;
+}

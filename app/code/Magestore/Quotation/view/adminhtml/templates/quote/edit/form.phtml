@@ -1,0 +1,29 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magestore\Quotation\Block\Adminhtml\Quote\Edit\Form $block */
+?>
+<?php $_quote = $block->getQuote();?>
+<form id="edit_form"
+      data-quote-config='<?= $block->escapeHtml($block->getQuoteDataJson()) ?>'
+      data-load-base-url="<?= /* @escapeNotVerified */ $block->getLoadBlockUrl() ?>"
+      action="<?= /* @escapeNotVerified */ $block->getSaveUrl() ?>"
+      method="post"
+      enctype="multipart/form-data">
+    <?= $block->getBlockHtml('formkey') ?>
+    <input type="hidden" name="quote_id" value="<?= /* @escapeNotVerified */ $_quote->getId() ?>"/>
+    <div id="quote-message">
+        <?= $block->getChildHtml('message') ?>
+    </div>
+    <div id="quote-info" style="display:<?= /* @escapeNotVerified */ $block->getDataSelectorDisplay() ?>">
+        <?= $block->getChildHtml('quote_info') ?>
+    </div>
+    <div id="quote-data" style="display:<?= /* @escapeNotVerified */ $block->getDataSelectorDisplay() ?>">
+        <?= $block->getChildHtml('data') ?>
+    </div>
+</form>

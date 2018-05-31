@@ -71,6 +71,14 @@ abstract class AbstractAction extends \Magento\Backend\App\Action
     }
 
     /**
+     * @return \Magento\Framework\Controller\ResultInterface
+     */
+    public function createRawResult(){
+        $resultRaw = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_RAW);
+        return $resultRaw;
+    }
+
+    /**
      * @return bool
      */
     protected function _isAllowed()

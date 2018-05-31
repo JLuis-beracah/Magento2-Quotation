@@ -1,0 +1,17 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/** @var \Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items\Grid $block */
+
+$_item = $block->getItem();
+?>
+<div class="price-excl-tax">
+<?= /* @escapeNotVerified */ $block->formatPrice($_item->getCalculationPrice()) ?>
+</div>
