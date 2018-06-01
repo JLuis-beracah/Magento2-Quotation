@@ -8,10 +8,10 @@
 
 /** @var \Magestore\Quotation\Block\Quote\Item\Renderer\DefaultRenderer $block */
 $_item = $block->getItem();
-$helper = $this->helper('Magestore\Quotation\Helper\Data');
+$canShowPrice = $block->canShowPrice();
 ?>
-<span class="price-excluding-tax" data-label="<?= $block->escapeHtml(__('Excl. Tax')) ?>">
+<span <?php if($canShowPrice):?>class="price-excluding-tax"<?php endif;?> data-label="<?= $block->escapeHtml(__('Excl. Tax')) ?>">
     <span class="cart-price">
-        <?= /* @escapeNotVerified */ $helper->formatQuotePrice($block->getQuote(),$block->getItem()->getRowTotal()) ?>
+        <?= /* @escapeNotVerified */ $block->getPrice($block->getItem()->getRowTotal()) ?>
     </span>
 </span>

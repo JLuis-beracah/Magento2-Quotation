@@ -13,7 +13,10 @@
  */
 ?>
 
-<?php $_items = $block->getItems() ?>
+<?php
+$canEdit = $block->canEdit();
+$_items = $block->getItems();
+?>
 <?php if (empty($_items)): ?>
     <div id="quote-items_grid">
         <div class="admin__table-wrapper">
@@ -39,7 +42,7 @@
     </div>
 <?php else: ?>
     <div class="admin__table-wrapper" id="quote-items_grid">
-    <?php if (count($_items)>10): ?>
+    <?php if ($canEdit && (count($_items)>10)): ?>
         <div class="actions update actions-update">
             <?= $block->getButtonHtml(__('Update Items and Quantities'), 'quote.itemsUpdate()', 'action-secondary') ?>
         </div>
@@ -53,7 +56,9 @@
                     <th class="col-subtotal"><span><?= /* @escapeNotVerified */ __('Subtotal') ?></span></th>
                     <th class="col-discount"><span><?= /* @escapeNotVerified */ __('Discount') ?></span></th>
                     <th class="col-row-total"><span><?= /* @escapeNotVerified */ __('Row Subtotal') ?></span></th>
+                    <?php if($canEdit):?>
                     <th class="col-action"><span><?= /* @escapeNotVerified */ __('Action') ?></span></th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tfoot>
@@ -66,7 +71,9 @@
                     <?php
                         /* @escapeNotVerified */ echo $block->formatPrice($block->getSubtotalWithDiscount());
                     ?></strong></td>
+                    <?php if($canEdit):?>
                     <td colspan="2">&nbsp;</td>
+                    <?php endif; ?>
                 </tr>
             </tfoot>
                 <?php $i = 0 ?>
@@ -112,6 +119,7 @@
                                            class="admin__control-checkbox"
                                            id="item_use_custom_price_<?= /* @escapeNotVerified */ $_item->getId() ?>"
                                            <?php if ($_isCustomPrice): ?> checked="checked"<?php endif; ?>
+                                           <?php if (!$canEdit): ?>disabled<?php endif;?>
                                            onclick="quote.toggleCustomPrice(this, 'item_custom_price_<?= /* @escapeNotVerified */ $_item->getId() ?>', 'item_tier_block_<?= /* @escapeNotVerified */ $_item->getId() ?>');"/>
                                     <label
                                         class="normal admin__field-label"
@@ -124,6 +132,8 @@
                                    value="<?= /* @escapeNotVerified */ sprintf("%.2f", $block->getOriginalEditablePrice($_item)) ?>"
                                    <?php if (!$_isCustomPrice): ?>
                                    style="display:none"
+                                   <?php endif; ?>
+                                   <?php if (!$_isCustomPrice || !$canEdit): ?>
                                    disabled="disabled"
                                    <?php endif; ?>
                                    class="input-text item-price admin__control-text"/>
@@ -132,6 +142,7 @@
                             <input name="item[<?= /* @escapeNotVerified */ $_item->getId() ?>][qty]"
                                    class="input-text item-qty admin__control-text"
                                    value="<?= /* @escapeNotVerified */ $_item->getQty()*1 ?>"
+                                    <?php if (!$canEdit): ?>disabled<?php endif;?>
                                    maxlength="12" />
                         </td>
                         <td class="col-subtotal col-price">
@@ -143,12 +154,14 @@
                         <td class="col-price col-row-subtotal">
                             <?= $block->getItemRowTotalWithDiscountHtml($_item) ?>
                         </td>
+                        <?php if ($canEdit): ?>
                         <td class="col-actions last">
                             <select class="admin__control-select" name="item[<?= /* @escapeNotVerified */ $_item->getId() ?>][action]">
                                 <option value=""><?= /* @escapeNotVerified */ __('Please select') ?></option>
                                 <option value="remove"><?= /* @escapeNotVerified */ __('Remove') ?></option>
                             </select>
                         </td>
+                        <?php endif;?>
                     </tr>
 
                     <?php $hasMessageError = false; ?>
@@ -177,13 +190,14 @@
                 </tbody>
                 <?php endforeach; ?>
         </table>
+        <?php if($canEdit):?>
         <p><small><?= /* @escapeNotVerified */ $block->getInclExclTaxMessage() ?></small></p>
+        <?php endif;?>
     </div>
-
+    <?php if($canEdit):?>
     <div class="quote-discounts">
         <?= $block->getButtonHtml(__('Update Items and Quantities'), 'quote.itemsUpdate()', 'action-secondary') ?>
     </div>
-
     <script>
         require([
             'Magestore_Quotation/js/model/quote/form'
@@ -191,4 +205,5 @@
             quote.itemsOnchangeBind()
         });
     </script>
+    <?php endif;?>
 <?php endif; ?>

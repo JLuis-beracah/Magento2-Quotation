@@ -6,6 +6,8 @@
  */
 namespace Magestore\Quotation\Controller\Adminhtml\Quote;
 
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
+
 /**
  * Class Edit
  * @package Magestore\Quotation\Controller\Adminhtml\Quote
@@ -36,6 +38,10 @@ class Edit extends \Magestore\Quotation\Controller\Adminhtml\AbstractAction
         $data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
         if (!empty($data)) {
             $model->setData($data);
+        }
+        if($model->getRequestStatus() == QuoteStatus::STATUS_PROCESSED){
+            $this->quotationManagement->isExpired($model);
+            $model = $model->load($id);
         }
         $registryObject->register('current_quote_request', $model);
         $resultPage = $this->createPageResult();

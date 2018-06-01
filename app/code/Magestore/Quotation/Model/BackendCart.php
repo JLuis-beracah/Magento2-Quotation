@@ -60,4 +60,43 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
         return $this;
     }
 
+
+    /**
+     * Update quantity of order quote items
+     *
+     * @param array $items
+     * @return $this
+     * @throws \Exception|\Magento\Framework\Exception\LocalizedException
+     */
+    public function updateQuoteItems($items)
+    {
+        if (!is_array($items)) {
+            return $this;
+        }
+        parent::updateQuoteItems($items);
+        try {
+            foreach ($items as $itemId => $info) {
+                if (!empty($info['configured'])) {
+                    $item = $this->getQuote()->updateItem($itemId, $this->objectFactory->create($info));
+                } else {
+                    $item = $this->getQuote()->getItemById($itemId);
+                    if (!$item) {
+                        continue;
+                    }
+                }
+                if ($item && empty($info['custom_price'])) {
+                    $item->setOriginalCustomPrice(null);
+                    $item->setCustomPrice(null);
+                }
+            }
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            $this->recollectCart();
+            throw $e;
+        } catch (\Exception $e) {
+            $this->_logger->critical($e);
+        }
+        $this->recollectCart();
+
+        return $this;
+    }
 }

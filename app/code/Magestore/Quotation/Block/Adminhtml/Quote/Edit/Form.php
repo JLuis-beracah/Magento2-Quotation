@@ -50,6 +50,9 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      * @param \Magento\Sales\Model\AdminOrder\Create $orderCreate
      * @param PriceCurrencyInterface $priceCurrency
      * @param \Magento\Framework\Registry $registry
+     * @param \Magestore\Quotation\Model\BackendSession $quoteSession
+     * @param \Magestore\Quotation\Model\BackendCart $quoteCart
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
      * @param \Magento\Customer\Model\Metadata\FormFactory $customerFormFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
@@ -63,6 +66,9 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         \Magento\Sales\Model\AdminOrder\Create $orderCreate,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Framework\Registry $registry,
+        \Magestore\Quotation\Model\BackendSession $quoteSession,
+        \Magestore\Quotation\Model\BackendCart $quoteCart,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         \Magento\Framework\Json\EncoderInterface $jsonEncoder,
         \Magento\Customer\Model\Metadata\FormFactory $customerFormFactory,
         \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
@@ -75,7 +81,7 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         $this->customerRepository = $customerRepository;
         $this->_localeCurrency = $localeCurrency;
         $this->addressMapper = $addressMapper;
-        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $data);
+        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $quoteSession, $quoteCart, $quotationManagement, $data);
     }
 
     /**

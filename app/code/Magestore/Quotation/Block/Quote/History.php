@@ -41,20 +41,36 @@ class History extends \Magento\Framework\View\Element\Template
     private $quoteCollectionFactory;
 
     /**
+     * @var \Magestore\Quotation\Helper\Data
+     */
+    protected $helper;
+
+    /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected $quotationManagement;
+
+    /**
      * History constructor.
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
+     * @param CollectionFactory $quoteCollectionFactory
      * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magestore\Quotation\Helper\Data $helper
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Magento\Customer\Model\Session $customerSession,
+        \Magestore\Quotation\Helper\Data $helper,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         array $data = []
     ) {
         $this->_quoteCollectionFactory = $quoteCollectionFactory;
         $this->_customerSession = $customerSession;
+        $this->helper = $helper;
+        $this->quotationManagement = $quotationManagement;
         parent::__construct($context, $data);
     }
 
@@ -111,7 +127,7 @@ class History extends \Magento\Framework\View\Element\Template
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
-        if ($this->getOrders()) {
+        if ($this->getQuotes()) {
             $pager = $this->getLayout()->createBlock(
                 \Magento\Theme\Block\Html\Pager::class,
                 'quotation.quote.history.pager'
@@ -120,6 +136,7 @@ class History extends \Magento\Framework\View\Element\Template
             );
             $this->setChild('pager', $pager);
             $this->getQuotes()->load();
+            $this->validateQuotes();
         }
         return $this;
     }
@@ -161,5 +178,40 @@ class History extends \Magento\Framework\View\Element\Template
             $requestStatusLabel = $statues[$requestStatus];
         }
         return $requestStatusLabel;
+    }
+
+    /**
+     * @param $quote
+     * @return bool
+     */
+    public function canShowPrice($quote){
+        return($quote->getRequestStatus() == QuoteStatus::STATUS_PROCESSED)?true:false;
+    }
+
+    /**
+     * @param $quote
+     * @param $price
+     * @return \Magento\Framework\Phrase|mixed
+     */
+    public function getPrice($quote, $price){
+        $quoteRequestStatus = $quote->getRequestStatus();
+        $statusLabels = QuoteStatus::getOptionArray();
+        $label = __('Processing');
+        if($this->canShowPrice($quote)){
+            $label = $this->helper->formatQuotePrice($quote, $price);
+        }elseif($quoteRequestStatus && isset($statusLabels[$quoteRequestStatus])){
+            $label = $statusLabels[$quoteRequestStatus];
+        }
+        return $label;
+    }
+
+    /**
+     * @return $this
+     */
+    public function validateQuotes(){
+        foreach ($this->getQuotes() as $quote){
+            $this->quotationManagement->isExpired($quote);
+        }
+        return $this;
     }
 }

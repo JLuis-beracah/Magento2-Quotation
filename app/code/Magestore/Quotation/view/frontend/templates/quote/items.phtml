@@ -8,13 +8,13 @@
 
 /** @var \Magestore\Quotation\Block\Quote\Items $block */
 ?>
-<div class="table-wrapper quote-items">
-    <table class="data table table-quote-items" id="my-quotes-table" summary="<?= /* @escapeNotVerified */ __('Items Requested') ?>">
+<div class="table-wrapper quote-items order-items">
+    <table class="data table table-quote-items table-order-items" id="my-quotes-table" summary="<?= /* @escapeNotVerified */ __('Items Requested') ?>">
         <caption class="table-caption"><?= /* @escapeNotVerified */ __('Items Requested') ?></caption>
         <thead>
             <?php if($block->isPagerDisplayed()): ?>
                 <tr>
-                    <td colspan="5" data-block="quote-items-pager-top" class="quote-pager-wrapper quote-pager-wrapper-top">
+                    <td colspan="5" data-block="quote-items-pager-top" class="quote-pager-wrapper quote-pager-wrapper-top order-pager-wrapper order-pager-wrapper-top">
                         <?= $block->getPagerHtml() ?>
                     </td>
                 </tr>
@@ -39,7 +39,7 @@
         <tfoot>
             <?php if($block->isPagerDisplayed()): ?>
                 <tr>
-                    <td colspan="5" data-block="quote-items-pager-bottom" class="quote-pager-wrapper quote-pager-wrapper-bottom">
+                    <td colspan="5" data-block="quote-items-pager-bottom" class="quote-pager-wrapper quote-pager-wrapper-bottom order-pager-wrapper order-pager-wrapper-bottom">
                         <?= $block->getPagerHtml() ?>
                     </td>
                 </tr>

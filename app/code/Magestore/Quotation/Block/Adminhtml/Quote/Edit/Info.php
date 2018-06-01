@@ -60,6 +60,9 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      * @param \Magento\Sales\Model\AdminOrder\Create $orderCreate
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Framework\Registry $registry
+     * @param \Magestore\Quotation\Model\BackendSession $quoteSession
+     * @param \Magestore\Quotation\Model\BackendCart $quoteCart
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param \Magento\Sales\Helper\Admin $adminHelper
      * @param \Magento\Customer\Api\GroupRepositoryInterface $groupRepository
      * @param \Magento\Customer\Api\CustomerMetadataInterface $metadata
@@ -74,6 +77,9 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         \Magento\Sales\Model\AdminOrder\Create $orderCreate,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Framework\Registry $registry,
+        \Magestore\Quotation\Model\BackendSession $quoteSession,
+        \Magestore\Quotation\Model\BackendCart $quoteCart,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         \Magento\Sales\Helper\Admin $adminHelper,
         \Magento\Customer\Api\GroupRepositoryInterface $groupRepository,
         \Magento\Customer\Api\CustomerMetadataInterface $metadata,
@@ -88,7 +94,7 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         $this->_metadataElementFactory = $elementFactory;
         $this->addressRenderer = $addressRenderer;
         $this->toOrderAddress = $toOrderAddress;
-        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $data);
+        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $quoteSession, $quoteCart, $quotationManagement, $data);
     }
 
     /**
@@ -210,6 +216,16 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
                 ];
             }
         }
+
+        $address = $this->getQuote()->getShippingAddress();
+        if($address && $address->getCompany()){
+            $sortOrder = $this->_prepareAccountDataSortOrder($accountData, 300);
+            $accountData[$sortOrder] = [
+                'label' => __("Company"),
+                'value' => $this->escapeHtml($address->getCompany(), ['br']),
+            ];
+        }
+
         ksort($accountData, SORT_NUMERIC);
 
         return $accountData;
@@ -360,26 +376,6 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
     }
 
     /**
-     * Retrieve order totals block settings
-     *
-     * @return array
-     */
-    public function getOrderTotalData()
-    {
-        return [];
-    }
-
-    /**
-     * Retrieve order info block settings
-     *
-     * @return array
-     */
-    public function getOrderInfoData()
-    {
-        return [];
-    }
-
-    /**
      * @param $statusCode
      * @return string
      */
@@ -397,6 +393,10 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
             $customerName = $quote->getCustomerFirstname() . ' ' . $quote->getCustomerLastname();
         } else {
             $customerName = (string)__('Guest');
+            $address = $quote->getShippingAddress();
+            if($address){
+                $customerName = $address->getFirstname() . ' ' . $address->getLastname();
+            }
         }
         return $customerName;
     }

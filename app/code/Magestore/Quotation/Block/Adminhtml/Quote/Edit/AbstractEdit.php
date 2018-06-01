@@ -17,12 +17,30 @@ abstract class AbstractEdit extends \Magento\Sales\Block\Adminhtml\Order\Create\
     protected $registry;
 
     /**
+     * @var \Magestore\Quotation\Model\BackendSession
+     */
+    protected $quoteSession;
+
+    /**
+     * @var \Magestore\Quotation\Model\BackendCart
+     */
+    protected $quoteCart;
+
+    /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected $quotationManagement;
+
+    /**
      * AbstractEdit constructor.
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Backend\Model\Session\Quote $sessionQuote
      * @param \Magento\Sales\Model\AdminOrder\Create $orderCreate
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Framework\Registry $registry
+     * @param \Magestore\Quotation\Model\BackendSession $quoteSession
+     * @param \Magestore\Quotation\Model\BackendCart $quoteCart
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param array $data
      */
     public function __construct(
@@ -31,30 +49,32 @@ abstract class AbstractEdit extends \Magento\Sales\Block\Adminhtml\Order\Create\
         \Magento\Sales\Model\AdminOrder\Create $orderCreate,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Framework\Registry $registry,
+        \Magestore\Quotation\Model\BackendSession $quoteSession,
+        \Magestore\Quotation\Model\BackendCart $quoteCart,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         array $data = []
     ) {
         parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $data);
         $this->registry = $registry;
+        $this->quoteSession = $quoteSession;
+        $this->quoteCart = $quoteCart;
+        $this->quotationManagement = $quotationManagement;
     }
 
     /**
-     * Retrieve create order model object
-     *
-     * @return \Magento\Sales\Model\AdminOrder\Create
+     * @return \Magestore\Quotation\Model\BackendCart
      */
     public function getEditQuoteModel()
     {
-        return $this->_orderCreate;
+        return $this->quoteCart;
     }
 
     /**
-     * Retrieve quote session object
-     *
-     * @return \Magento\Backend\Model\Session\Quote
+     * @return \Magestore\Quotation\Model\BackendSession
      */
     protected function _getSession()
     {
-        return $this->_sessionQuote;
+        return $this->quoteSession;
     }
 
 
@@ -74,5 +94,13 @@ abstract class AbstractEdit extends \Magento\Sales\Block\Adminhtml\Order\Create\
             return $this->registry->registry('quote');
         }
         throw new \Magento\Framework\Exception\LocalizedException(__('We can\'t get the quote instance right now.'));
+    }
+
+    /**
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function canEdit(){
+        return $this->quotationManagement->canEdit($this->getQuote());
     }
 }

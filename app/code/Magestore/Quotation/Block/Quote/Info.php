@@ -10,6 +10,7 @@ use Magento\Quote\Model\Quote\Address\ToOrderAddress as ConvertQuoteAddressToOrd
 use Magento\Framework\View\Element\Template\Context as TemplateContext;
 use Magento\Framework\Registry;
 use Magento\Sales\Model\Order\Address\Renderer as OrderAddressRenderer;
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
 
 /**
  * Class Info
@@ -89,5 +90,19 @@ class Info extends \Magento\Framework\View\Element\Template
     {
         $address = $this->toOrderAddress->convert($address);
         return $this->addressRenderer->format($address, 'html');
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusLabel(){
+        $quote = $this->getQuote();
+        $statusLabel = "";
+        if($quote){
+            $statusCode = $quote->getRequestStatus();
+            $statusList = QuoteStatus::getOptionArray();
+            $statusLabel = ($statusCode && isset($statusList[$statusCode]))?$statusList[$statusCode]:"";
+        }
+        return $statusLabel;
     }
 }

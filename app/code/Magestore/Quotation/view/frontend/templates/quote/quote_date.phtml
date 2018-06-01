@@ -8,6 +8,6 @@
 
 ?>
 
-<div class="quote-date">
+<div class="quote-date order-date">
     <?= /* @escapeNotVerified */ __('<span class="label">Requested Date:</span> %1', '<date>' . $block->formatDate($block->getQuote()->getCreatedAt(), \IntlDateFormatter::LONG) . '</date>') ?>
 </div>

@@ -8,15 +8,10 @@
 
 ?>
 <?php /** @var  $block \Magestore\Quotation\Block\Quote\View*/?>
-<div class="quote-details-items">
+<ul class="items quote-links order-links"><li class="nav item current"><strong><?= /* @escapeNotVerified */ __('Items Requested') ?></strong></li></ul>
+<div class="quote-details-items order-details-items">
     <?php $_quote = $block->getQuote() ?>
-
-    <div class="quote-title">
-        <strong><?= /* @escapeNotVerified */ __('Items Requested') ?></strong>
-    </div>
-
     <?= $block->getChildHtml('quote_items') ?>
-
     <div class="actions-toolbar">
         <div class="secondary">
             <a class="action back" href="<?= /* @escapeNotVerified */ $block->getBackUrl() ?>">

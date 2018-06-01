@@ -90,7 +90,7 @@ define([
 
         setCurrencyId : function(id){
             this.currencyId = id;
-            this.loadArea(['data'], true);
+            this.loadArea(['data', 'info'], true);
         },
 
         setCurrencySymbol : function(symbol){
@@ -98,11 +98,11 @@ define([
         },
 
         addProduct : function(id){
-            this.loadArea(['items'], true, {add_product:id});
+            this.loadArea(['items', 'info'], true, {add_product:id});
         },
 
         removeQuoteItem : function(id){
-            this.loadArea(['items'], true,
+            this.loadArea(['items', 'info'], true,
                 {remove_item:id, from:'quote'});
         },
 
@@ -130,7 +130,7 @@ define([
                 }
             }
             self.quoteItemChanged = false;
-            self.loadArea("items", true, fieldsPrepare);
+            self.loadArea(["items", "info"], true, fieldsPrepare);
         },
 
         itemsOnchangeBind : function(){
@@ -146,6 +146,21 @@ define([
         itemChange : function(event){
             this.quoteItemChanged = true;
         },
+        expirationFieldsBind : function(inputId){
+            if($(inputId)){
+                var self = this;
+                var input = jQuery("#"+inputId);
+                input.change(function(){
+                    self.expirationFieldChange(input.val());
+                });
+            }
+        },
+        expirationFieldChange : function(expirationDate){
+            this.saveData({
+                expiration_date:expirationDate
+            });
+        },
+
         commentFieldsBind : function(container){
             if($(container)){
                 var fields = $(container).select('input', 'textarea');
@@ -391,13 +406,17 @@ define([
                 display: show ? 'none' : ''
             });
         },
-
-        send: function(message){
+        _realSend: function(message){
+            var self = this;
             confirm({
                 content: message,
                 actions: {
                     confirm: function() {
-
+                        var params = {quote_request_action: 'send'};
+                        self.loadArea(["items", "info"], true, params).done(function(){
+                            disableElements('save_as_draft');
+                            disableElements('decline');
+                        });
                     },
                     cancel: function() {
 
@@ -405,13 +424,38 @@ define([
                 }
             });
         },
+        send: function(message){
+            var self = this;
+            if (this.quoteItemChanged) {
+                var self = this;
+                confirm({
+                    content: jQuery.mage.__('You have item changes'),
+                    actions: {
+                        confirm: function() {
+                            self._realSend(message);
+                        },
+                        cancel: function() {
+                            self.itemsUpdate();
+                        }
+                    }
+                });
+            } else {
+                self._realSend(message);
+            }
+        },
 
         decline: function(message){
+            var self = this;
             confirm({
                 content: message,
                 actions: {
                     confirm: function() {
-
+                        var params = {quote_request_action: 'decline'};
+                        self.loadArea(["items", "info"], true, params).done(function(){
+                            disableElements('save_as_draft');
+                            disableElements('decline');
+                            disableElements('send');
+                        });
                     },
                     cancel: function() {
 

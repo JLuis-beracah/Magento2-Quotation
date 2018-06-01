@@ -6,4 +6,4 @@
 ?>
 <?php /** @var $block \Magestore\Quotation\Block\Quote\Info */ ?>
 
-<span class="order-status"><?= /* @escapeNotVerified */ /*$block->getQuote()->getStatusLabel()*/ "TO DO" ?></span>
+<span class="quote-status order-status"><?= /* @escapeNotVerified */ $block->getStatusLabel() ?></span>

@@ -29,6 +29,9 @@ class Data extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      * @param \Magento\Sales\Model\AdminOrder\Create $orderCreate
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Framework\Registry $registry
+     * @param \Magestore\Quotation\Model\BackendSession $quoteSession
+     * @param \Magestore\Quotation\Model\BackendCart $quoteCart
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param \Magento\Directory\Model\CurrencyFactory $currencyFactory
      * @param \Magento\Framework\Locale\CurrencyInterface $localeCurrency
      * @param array $data
@@ -39,13 +42,16 @@ class Data extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         \Magento\Sales\Model\AdminOrder\Create $orderCreate,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Framework\Registry $registry,
+        \Magestore\Quotation\Model\BackendSession $quoteSession,
+        \Magestore\Quotation\Model\BackendCart $quoteCart,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         \Magento\Directory\Model\CurrencyFactory $currencyFactory,
         \Magento\Framework\Locale\CurrencyInterface $localeCurrency,
         array $data = []
     ) {
         $this->_currencyFactory = $currencyFactory;
         $this->_localeCurrency = $localeCurrency;
-        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $data);
+        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $quoteSession, $quoteCart, $quotationManagement, $data);
     }
 
     /**

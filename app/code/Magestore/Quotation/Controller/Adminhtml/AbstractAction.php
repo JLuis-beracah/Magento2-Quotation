@@ -24,16 +24,48 @@ abstract class AbstractAction extends \Magento\Backend\App\Action
     protected $helper;
 
     /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected $quotationManagement;
+
+    /**
+     * @var \Magestore\Quotation\Model\BackendCart
+     */
+    protected $backendCart;
+
+    /**
+     * @var \Magestore\Quotation\Model\BackendSession
+     */
+    protected $backendSession;
+
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
      * AbstractAction constructor.
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magestore\Quotation\Helper\Data $helper
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
+     * @param \Magestore\Quotation\Model\BackendCart $backendCart
+     * @param \Magestore\Quotation\Model\BackendSession $backendSession
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magestore\Quotation\Helper\Data $helper
+        \Magestore\Quotation\Helper\Data $helper,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
+        \Magestore\Quotation\Model\BackendCart $backendCart,
+        \Magestore\Quotation\Model\BackendSession $backendSession,
+        \Magento\Framework\Registry $registry
     ){
         parent::__construct($context);
         $this->helper = $helper;
+        $this->quotationManagement = $quotationManagement;
+        $this->backendCart = $backendCart;
+        $this->backendSession = $backendSession;
+        $this->registry = $registry;
         $this->resultFactory = $context->getResultFactory();
     }
 
@@ -76,6 +108,40 @@ abstract class AbstractAction extends \Magento\Backend\App\Action
     public function createRawResult(){
         $resultRaw = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_RAW);
         return $resultRaw;
+    }
+
+    /**
+     * @return \Magento\Backend\Model\Session|mixed
+     */
+    protected function _getSession()
+    {
+        return $this->backendSession;
+    }
+
+    /**
+     * @return \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected function _getQuotationManagement()
+    {
+        return $this->quotationManagement;
+    }
+
+
+    /**
+     * Retrieve quote process model
+     *
+     * @return \Magestore\Quotation\Model\BackendCart
+     */
+    protected function _getQuoteProcessModel()
+    {
+        return $this->backendCart;
+    }
+
+    /**
+     * @return \Magento\Framework\Registry
+     */
+    protected function _getRegistry(){
+        return $this->registry;
     }
 
     /**

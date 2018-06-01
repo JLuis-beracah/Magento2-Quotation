@@ -13,8 +13,8 @@ $_quotes = $block->getQuotes();
 ?>
 <?= $block->getChildHtml('info') ?>
 <?php if ($_quotes && count($_quotes)): ?>
-    <div class="table-wrapper quotes-history">
-        <table class="data table table-quote-items history" id="my-quotes-table">
+    <div class="table-wrapper quotes-history orders-history">
+        <table class="data table table-quote-items history table-order-items" id="my-quotes-table">
             <caption class="table-caption"><?= /* @escapeNotVerified */ __('Quotes') ?></caption>
             <thead>
                 <tr>
@@ -38,7 +38,7 @@ $_quotes = $block->getQuotes();
                             <?php $extra->setQuote($_quote); ?>
                             <?= /* @noEscape */ $extra->getChildHtml() ?>
                         <?php endif; ?>
-                        <td data-th="<?= $block->escapeHtml(__('Quote Total')) ?>" class="col total"><?= /* @escapeNotVerified */ $helper->formatQuotePrice($_quote,$_quote->getGrandTotal()) ?></td>
+                        <td data-th="<?= $block->escapeHtml(__('Quote Total')) ?>" class="col total"><?= /* @escapeNotVerified */ $block->getPrice($_quote, $_quote->getGrandTotal()) ?></td>
                         <td data-th="<?= $block->escapeHtml(__('Status')) ?>" class="col status"><?= /* @escapeNotVerified */ /*$_quote->getStatusLabel()*/ $block->getQuoteRequestStatus($_quote) ?></td>
                         <td data-th="<?= $block->escapeHtml(__('Actions')) ?>" class="col actions">
                             <a href="<?= /* @escapeNotVerified */ $block->getViewUrl($_quote) ?>" class="action view">
@@ -51,7 +51,7 @@ $_quotes = $block->getQuotes();
         </table>
     </div>
     <?php if ($block->getPagerHtml()): ?>
-        <div class="quote-products-toolbar toolbar bottom"><?= $block->getPagerHtml() ?></div>
+        <div class="quote-products-toolbar toolbar bottom order-products-toolbar"><?= $block->getPagerHtml() ?></div>
     <?php endif ?>
 <?php else: ?>
     <div class="message info empty"><span><?= /* @escapeNotVerified */ __('You have submitted no quotes.') ?></span></div>

@@ -66,6 +66,37 @@ $quoteStoreDate = $block->formatDate(
                         <td><?= $block->escapeHtml($quote->getRemoteIp()); echo $quote->getXForwardedFor() ? ' (' . $block->escapeHtml($quote->getXForwardedFor()) . ')' : ''; ?></td>
                     </tr>
                 <?php endif; ?>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Expiration Date')) ?></th>
+                        <td>
+                            <?php
+                            $canEdit = $block->canEdit();
+                            $expirationDate = $quote->getExpirationDate();
+                            $expirationDateObject = new \DateTime($expirationDate);
+                            $expirationDateFormated = $expirationDateObject->format('Y-m-d');
+                            ?>
+                            <input name="quote-request-expiration-date"
+                                   type="text"
+                                   id="quote-request-expiration-data"
+                                   class="expiration-date admin__control-text input-text"
+                                   onfocus="this.select()"
+                                   value="<?= $block->escapeHtml(($expirationDate)?$expirationDateFormated:'') ?>"
+                                   <?php if(!$canEdit):?>disabled<?php endif;?>
+                            />
+                            <script>
+                                require([
+                                    "jquery",
+                                    "mage/calendar"
+                                ], function($){
+                                    $("#quote-request-expiration-data").calendar({
+                                        buttonText:"<?php echo __('Select') ?>",
+                                        dateFormat:"yyyy-MM-dd",
+                                        showTime: false
+                                    });
+                                });
+                            </script>
+                        </td>
+                    </tr>
             </table>
             </div>
         </div>
@@ -142,3 +173,9 @@ $quoteStoreDate = $block->formatDate(
         <?php endif; ?>
     </div>
 </section>
+
+<script>
+    require(["Magestore_Quotation/js/model/quote/form"], function(){
+        quote.expirationFieldsBind('quote-request-expiration-data')
+    });
+</script>

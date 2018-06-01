@@ -17,10 +17,23 @@
 
     <?php echo $block->getChildHtml("quotation.cart.info.address");?>
     <div class="cart main actions">
-        <button type="submit"
+        <button type="button"
                 title="<?php echo $block->getSubmitButtonTitle();?>"
                 class="action primary submit">
             <span><?php echo $block->getSubmitButtonTitle();?></span>
         </button>
     </div>
 </form>
+<script>
+    require([
+        'jquery',
+        'Magestore_Quotation/js/model/quote/form'
+    ], function($){
+        if(($("#quotation-info-form").length > 0) && ($("#form-validate").length > 0)){
+            quoteRequest.itemsOnchangeBind();
+            $("#quotation-info-form").find("button.submit").click(function(){
+                quoteRequest.submit();
+            });
+        }
+    });
+</script>

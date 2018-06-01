@@ -31,4 +31,19 @@ class BackendSession extends \Magento\Backend\Model\Session\Quote
         }
         return $this->_quote_request;
     }
+
+    /**
+     * @return $this
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function reloadQuote()
+    {
+        if ($this->getQuoteId()) {
+            $this->_quote_request = $this->quoteFactory->create();
+            $this->_quote_request = $this->quoteRepository->get($this->getQuoteId());
+            $this->_quote_request->setIgnoreOldQty(true);
+            $this->_quote_request->setIsSuperMode(true);
+        }
+        return $this;
+    }
 }

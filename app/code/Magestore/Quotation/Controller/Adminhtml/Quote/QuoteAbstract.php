@@ -5,7 +5,6 @@
  */
 namespace Magestore\Quotation\Controller\Adminhtml\Quote;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\Model\View\Result\ForwardFactory;
 
 /**
@@ -15,34 +14,6 @@ use Magento\Backend\Model\View\Result\ForwardFactory;
 abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\AbstractAction
 {
     /**
-     * @var \Magento\Framework\Escaper
-     */
-    protected $escaper;
-
-    /**
-     * QuoteAbstract constructor.
-     * @param Action\Context $context
-     * @param \Magestore\Quotation\Helper\Data $helper
-     * @param \Magento\Framework\Escaper $escaper
-     */
-    public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magestore\Quotation\Helper\Data $helper,
-        \Magento\Framework\Escaper $escaper
-    ) {
-        parent::__construct($context, $helper);
-        $this->escaper = $escaper;
-    }
-
-    /**
-     * @return \Magento\Backend\Model\Session|mixed
-     */
-    protected function _getSession()
-    {
-        return $this->_objectManager->get(\Magestore\Quotation\Model\BackendSession::class);
-    }
-
-    /**
      * Retrieve quote object
      *
      * @return \Magento\Quote\Model\Quote
@@ -50,16 +21,6 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
     protected function _getQuote()
     {
         return $this->_getSession()->getQuote();
-    }
-
-    /**
-     * Retrieve order create model
-     *
-     * @return \Magestore\Quotation\Model\BackendCart
-     */
-    protected function _getOrderCreateModel()
-    {
-        return $this->_objectManager->get(\Magestore\Quotation\Model\BackendCart::class);
     }
 
     /**
@@ -73,14 +34,24 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
          * Init quote
          */
         if ($quoteId = $this->getRequest()->getParam('quote_id')) {
-            $this->_getSession()->setQuoteId((int)$quoteId);
-            $model = $this->_objectManager->create('Magento\Quote\Model\Quote');
-            $registryObject = $this->_objectManager->get('Magento\Framework\Registry');
-            $model = $model->load($quoteId);
-            if ($model->getId()) {
-                $registryObject->register('current_quote_request', $model);
-            }
+            $this->_initQuote((int)$quoteId);
         }
+        return $this;
+    }
+
+    /**
+     * @param null $quoteId
+     * @return $this
+     */
+    protected function _initQuote($quoteId = null){
+        if($quoteId){
+            $this->_getSession()->setQuoteId((int)$quoteId);
+        }
+        $this->_getSession()->reloadQuote();
+        $this->quotationManagement->isExpired($this->_getQuote());
+        $registryObject = $this->_getRegistry();
+        $registryObject->unregister('current_quote_request');
+        $registryObject->register('current_quote_request', $this->_getQuote());
         return $this;
     }
 
@@ -105,12 +76,31 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
      */
     protected function _processActionData($action = null)
     {
-        $this->_getOrderCreateModel()->setQuote($this->_getQuote());
+        $quote = $this->_getQuote();
+        if($quote && $quote->getId()){
+            $requestAction = $this->getRequest()->getPost('quote_request_action');
+            if(!$requestAction){
+                $this->_getQuotationManagement()->process($quote);
+            }
+            if ($requestAction == 'send') {
+                $this->_getQuotationManagement()->send($quote);
+            }
+            if ($requestAction == 'decline') {
+                $this->_getQuotationManagement()->decline($quote);
+            }
+            $expirationDate = $this->getRequest()->getPost('expiration_date');
+            if(isset($expirationDate)){
+                $this->_getQuotationManagement()->setExpirationDate($quote, $expirationDate);
+            }
+            $this->_initQuote();
+        }
+        $this->_getQuoteProcessModel()->setQuote($this->_getQuote());
+
         /**
          * Adding product to quote from shopping cart, wishlist etc.
          */
         if ($productId = (int)$this->getRequest()->getPost('add_product')) {
-            $this->_getOrderCreateModel()->addProduct($productId, $this->getRequest()->getPostValue());
+            $this->_getQuoteProcessModel()->addProduct($productId, $this->getRequest()->getPostValue());
         }
 
         /**
@@ -120,7 +110,7 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
         ) {
             $items = $this->getRequest()->getPost('item');
             $items = $this->_processFiles($items);
-            $this->_getOrderCreateModel()->addProducts($items);
+            $this->_getQuoteProcessModel()->addProducts($items);
         }
 
         /**
@@ -129,7 +119,7 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
         if ($this->getRequest()->getPost('update_items')) {
             $items = $this->getRequest()->getPost('item', []);
             $items = $this->_processFiles($items);
-            $this->_getOrderCreateModel()->updateQuoteItems($items);
+            $this->_getQuoteProcessModel()->updateQuoteItems($items);
         }
 
         /**
@@ -138,11 +128,11 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
         $removeItemId = (int)$this->getRequest()->getPost('remove_item');
         $removeFrom = (string)$this->getRequest()->getPost('from');
         if ($removeItemId && $removeFrom) {
-            $this->_getOrderCreateModel()->removeItem($removeItemId, $removeFrom);
-            $this->_getOrderCreateModel()->recollectCart();
+            $this->_getQuoteProcessModel()->removeItem($removeItemId, $removeFrom);
+            $this->_getQuoteProcessModel()->recollectCart();
         }
 
-        $this->_getOrderCreateModel()->saveQuote();
+        $this->_getQuoteProcessModel()->saveQuote();
 
 
         return $this;

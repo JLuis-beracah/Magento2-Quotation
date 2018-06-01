@@ -88,6 +88,9 @@ class Grid extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      * @param \Magento\Sales\Model\AdminOrder\Create $orderCreate
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Framework\Registry $registry
+     * @param \Magestore\Quotation\Model\BackendSession $quoteSession
+     * @param \Magestore\Quotation\Model\BackendCart $quoteCart
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param \Magento\Wishlist\Model\WishlistFactory $wishlistFactory
      * @param \Magento\GiftMessage\Model\Save $giftMessageSave
      * @param \Magento\Tax\Model\Config $taxConfig
@@ -95,6 +98,8 @@ class Grid extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      * @param \Magento\GiftMessage\Helper\Message $messageHelper
      * @param StockRegistryInterface $stockRegistry
      * @param StockStateInterface $stockState
+     * @param \Magento\Framework\Stdlib\StringUtils $string
+     * @param \Magento\Catalog\Model\Product\OptionFactory $productOptionFactory
      * @param array $data
      */
     public function __construct(
@@ -103,6 +108,9 @@ class Grid extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         \Magento\Sales\Model\AdminOrder\Create $orderCreate,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Framework\Registry $registry,
+        \Magestore\Quotation\Model\BackendSession $quoteSession,
+        \Magestore\Quotation\Model\BackendCart $quoteCart,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         \Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
         \Magento\GiftMessage\Model\Save $giftMessageSave,
         \Magento\Tax\Model\Config $taxConfig,
@@ -123,7 +131,7 @@ class Grid extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         $this->stockState = $stockState;
         $this->string = $string;
         $this->_productOptionFactory = $productOptionFactory;
-        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $data);
+        parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $quoteSession, $quoteCart, $quotationManagement, $data);
     }
 
     /**

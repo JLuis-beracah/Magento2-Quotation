@@ -15,14 +15,14 @@
     </div>
     <div class="block-content">
     <?php if (!$_quote->getIsVirtual()): ?>
-        <div class="box box-order-shipping-address">
+        <div class="box box-quote-shipping-address box-order-shipping-address">
             <strong class="box-title"><span><?= /* @escapeNotVerified */ __('Shipping Address') ?></span></strong>
             <div class="box-content">
                 <address><?= /* @escapeNotVerified */ $block->getFormattedAddress($_quote->getShippingAddress()) ?></address>
             </div>
         </div>
 
-        <div class="box box-order-shipping-method">
+        <div class="box box-quote-shipping-method box-order-shipping-method">
             <strong class="box-title">
                 <span><?= /* @escapeNotVerified */ __('Shipping Method') ?></span>
             </strong>
