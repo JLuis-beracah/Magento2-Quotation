@@ -20,16 +20,32 @@ class LoadCustomerQuoteObserver implements ObserverInterface
     protected $messageManager;
 
     /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $customerSession;
+
+    /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected $quotationManagement;
+
+    /**
      * LoadCustomerQuoteObserver constructor.
      * @param \Magestore\Quotation\Model\Session $quotationSession
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      */
     public function __construct(
         \Magestore\Quotation\Model\Session $quotationSession,
-        \Magento\Framework\Message\ManagerInterface $messageManager
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Magento\Customer\Model\Session $customerSession,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
     ) {
         $this->quotationSession = $quotationSession;
         $this->messageManager = $messageManager;
+        $this->customerSession = $customerSession;
+        $this->quotationManagement = $quotationManagement;
     }
 
     /**
@@ -45,6 +61,14 @@ class LoadCustomerQuoteObserver implements ObserverInterface
             $this->messageManager->addError($e->getMessage());
         } catch (\Exception $e) {
             $this->messageManager->addException($e, __('Load customer quote request error'));
+        }
+        $validatingRequestId = $this->customerSession->getData("validating_quote_request_id", true);
+        if($validatingRequestId){
+            try{
+                $this->quotationManagement->checkout($validatingRequestId);
+            }catch (\Exception $e){
+                $this->messageManager->addErrorMessage($e->getMessage());
+            }
         }
     }
 }

@@ -43,4 +43,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $quoteCurrency->load($quote->getQuoteCurrencyCode());
         return $quoteCurrency->formatPrecision($amount, 2, [], true, false);
     }
+
+    /**
+     *
+     * @param string $path
+     * @return string
+     */
+    public function getStoreConfig($path){
+        return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * Retrieve url
+     *
+     * @param   string $route
+     * @param   array $params
+     * @return  string
+     */
+    public function getUrl($route, $params = [])
+    {
+        return $this->_getUrl($route, $params);
+    }
 }

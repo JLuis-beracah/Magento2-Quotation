@@ -11,6 +11,13 @@
             <general>
                 <enable>1</enable>
             </general>
+            <email>
+                <enabled>1</enabled>
+                <quote_template>quotation_email_quote_template</quote_template>
+                <quote_guest_template>quotation_email_quote_guest_template</quote_guest_template>
+                <identity>general</identity>
+                <copy_method>bcc</copy_method>\
+            </email>
         </quotation>
     </default>
 </config>

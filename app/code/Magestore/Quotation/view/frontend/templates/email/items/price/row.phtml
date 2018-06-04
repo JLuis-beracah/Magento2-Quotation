@@ -1,0 +1,16 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/** @var \Magestore\Quotation\Block\Quote\Email\Items\DefaultItems $block */
+
+$_item = $block->getItem();
+?>
+
+<?= /* @escapeNotVerified */  $block->getPrice($_item->getRowTotal()) ?>

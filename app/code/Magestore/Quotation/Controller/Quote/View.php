@@ -73,14 +73,17 @@ class View extends \Magestore\Quotation\Controller\AbstractAction
 
         $quote = $this->quoteFactory->create()->load($quoteId);
         if ($quote->getId()) {
-            $this->quotationManagement->isExpired($quote);
-            $this->registry->register('current_quote', $quote);
-            $resultPage = $this->createPageResult();
-            $navigationBlock = $resultPage->getLayout()->getBlock('customer_account_navigation');
-            if ($navigationBlock) {
-                $navigationBlock->setActive('quotation/quote/history');
+            $canView = $this->quotationManagement->canView($quote);
+            if($canView['error'] === false){
+                $this->quotationManagement->isExpired($quote);
+                $this->registry->register('current_quote', $quote);
+                $resultPage = $this->createPageResult();
+                $navigationBlock = $resultPage->getLayout()->getBlock('customer_account_navigation');
+                if ($navigationBlock) {
+                    $navigationBlock->setActive('quotation/quote/history');
+                }
+                return $resultPage;
             }
-            return $resultPage;
         }
         $resultRedirect = $this->createRedirectResult();
         return $resultRedirect->setUrl($this->_url->getUrl('*/*/history'));

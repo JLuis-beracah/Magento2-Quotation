@@ -11,6 +11,11 @@ namespace Magestore\Quotation\Api;
  */
 interface QuotationManagementInterface
 {
+    const ERROR_NOT_LOGIN = "customer_not_login";
+    const ERROR_INVALID_CUSTOMER = "invalid_customer";
+    const ERROR_REQUEST_EXPIRED = "request_expired";
+    const ERROR_REQUEST_IS_NOT_PROCESSED = "request_is_not_processed";
+
     /**
      * @param int $customerId
      * @return \Magento\Quote\Api\Data\CartInterface
@@ -91,4 +96,40 @@ interface QuotationManagementInterface
      * @return bool
      */
     public function isExpired(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @return $this
+     */
+    public function validateAllRequest();
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return $this
+     */
+    public function sendEmail(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @param $quoteId
+     * @throws \Magento\Framework\Exception\ValidatorException
+     */
+    public function checkout($quoteId);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param bool $removeExistedItems
+     * @return $this
+     */
+    public function moveToShoppingCart(\Magento\Quote\Api\Data\CartInterface $quote, $removeExistedItems = true);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return array
+     */
+    public function canView(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return array
+     */
+    public function canCheckout(\Magento\Quote\Api\Data\CartInterface $quote);
 }

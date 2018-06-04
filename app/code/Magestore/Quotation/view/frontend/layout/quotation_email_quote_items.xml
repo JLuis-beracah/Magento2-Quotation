@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Email Order Items List" design_abstraction="custom">
+    <update handle="quotation_email_quote_renderers"/>
+    <update handle="quotation_email_item_price"/>
+    <body>
+        <block class="Magestore\Quotation\Block\Quote\Email\Items" name="items" template="Magestore_Quotation::email/items.phtml" cacheable="false">
+            <block class="Magento\Framework\View\Element\RendererList" name="quotation.email.quote.renderers" as="renderer.list"/>
+        </block>
+    </body>
+</page>

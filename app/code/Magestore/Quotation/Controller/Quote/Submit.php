@@ -100,8 +100,12 @@ class Submit extends \Magestore\Quotation\Controller\AbstractAction
             \Magento\Customer\Api\Data\AddressInterface::class
         );
 
+        $customerSession = $this->quotationCart->getCustomerSession();
+        $customerIsGuest = ($customerSession->isLoggedIn())?false:true;
         $email = $this->getRequest()->getParam('email');
         $remark = $this->getRequest()->getParam('remark');
+
+        $this->quotationCart->getQuote()->setCustomerIsGuest($customerIsGuest);
         $this->quotationCart->getQuote()->setCustomerEmail($email);
         $this->quotationCart->getQuote()->setCustomerNote($remark);
         $this->quotationCart->getQuote()->setShippingAddress($addressDataObject);

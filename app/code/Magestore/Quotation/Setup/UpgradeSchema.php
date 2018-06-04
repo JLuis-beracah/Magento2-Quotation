@@ -61,6 +61,19 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     ]
                 );
         }
+
+        if (version_compare($context->getVersion(), '1.0.3', '<')) {
+            $setup->getConnection()
+                ->addColumn(
+                    $setup->getTable('quote'),
+                    'email_sent',
+                    [
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        'unsigned' => true,
+                        'comment' => 'Email Sent'
+                    ]
+                );
+        }
         $setup->endSetup();
     }
 }
