@@ -39,14 +39,9 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
     protected $helper;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var \Magento\Checkout\Model\Cart
      */
-    protected $checkoutSession;
-
-    /**
-     * @var \Magento\Customer\Model\Session
-     */
-    protected $customerSession;
+    protected $checkoutCart;
 
     /**
      * QuotationManagement constructor.
@@ -55,8 +50,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
      * @param Quote\Email\Sender $quoteSender
      * @param \Magestore\Quotation\Helper\Data $helper
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Checkout\Model\Cart $checkoutCart
      */
     public function __construct(
         \Magento\Framework\Event\ManagerInterface $eventManager,
@@ -64,16 +58,14 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory,
         \Magestore\Quotation\Model\Quote\Email\Sender $quoteSender,
         \Magestore\Quotation\Helper\Data $helper,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Customer\Model\Session $customerSession
+        \Magento\Checkout\Model\Cart $checkoutCart
     ) {
         $this->eventManager = $eventManager;
         $this->quoteRepository = $quoteRepository;
         $this->collectionFactory = $collectionFactory;
         $this->quoteSender = $quoteSender;
         $this->helper = $helper;
-        $this->checkoutSession = $checkoutSession;
-        $this->customerSession = $customerSession;
+        $this->checkoutCart = $checkoutCart;
     }
 
     /**
@@ -300,7 +292,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
                 }else{
                     $errorCode = $canCheckout['error_code'];
                     if($errorCode == self::ERROR_NOT_LOGIN){
-                        $this->customerSession->setData("validating_quote_request_id", $quoteId);
+                        $this->checkoutCart->getCustomerSession()->setData("validating_quote_request_id", $quoteId);
                         $result['redirect_url'] = $this->helper->getUrl('customer/account/login');
                     }else{
                         $error = $canCheckout['error_message'];
@@ -324,30 +316,40 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
      * @return $this
      */
     public function moveToShoppingCart(\Magento\Quote\Api\Data\CartInterface $quote, $removeExistedItems = true){
+        $checkoutSession = $this->checkoutCart->getCheckoutSession();
+        $customerSession = $this->checkoutCart->getCustomerSession();
+        $shoppingCart = $this->checkoutCart->getQuote();
+        $isLoggedIn = $customerSession->isLoggedIn();
         if($removeExistedItems){
-            $this->checkoutSession->clearQuote();
+            if($isLoggedIn){
+                $shoppingCart->setIsActive(false);
+                if($shoppingCart->getId()){
+                    $this->quoteRepository->save($shoppingCart);
+                }
+            }
+            $checkoutSession->clearQuote();
+            $shoppingCart = $checkoutSession->getQuote();
+            $this->updateStatus($shoppingCart, QuoteStatus::STATUS_NONE, QuoteStatus::STATUS_NONE);
+            $this->checkoutCart->setQuote($shoppingCart);
+
         }
-        $shoppingCart = $this->checkoutSession->getQuote();
+        $shoppingCart->setData("quotation_request_id", $quote->getId());
         $shoppingCart->merge($quote);
+
+        if(!$isLoggedIn){
+            $shoppingCart->setCustomerEmail($quote->getCustomerEmail());
+        }
 
         $billingAddress = $quote->getBillingAddress();
         if($billingAddress){
-            if($billingAddress->getId()){
-                $billingAddress->setId(null);
-            }
             $shoppingCart->setBillingAddress($billingAddress);
         }
 
         $shippingAddress = $quote->getShippingAddress();
         if($shippingAddress){
-            if($shippingAddress->getId()){
-                $shippingAddress->setId(null);
-            }
             $shoppingCart->setShippingAddress($shippingAddress);
         }
-        $shoppingCart->collectTotals();
-        $this->quoteRepository->save($shoppingCart);
-        $this->checkoutSession->setQuoteId($shoppingCart->getId());
+        $this->checkoutCart->save();
         return $this;
     }
 
@@ -362,9 +364,9 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
             'error_message' => ''
         ];
         if(!$quote->getCustomerIsGuest()){
-            $isLoggedIn = $this->customerSession->isLoggedIn();
+            $isLoggedIn = $this->checkoutCart->getCustomerSession()->isLoggedIn();
             if($isLoggedIn){
-                $customerId = $this->customerSession->getCustomerId();
+                $customerId = $this->checkoutCart->getCustomerSession()->getCustomerId();
                 if($customerId != $quote->getCustomerId()){
                     $result['error'] = true;
                     $result['error_code'] = self::ERROR_INVALID_CUSTOMER;

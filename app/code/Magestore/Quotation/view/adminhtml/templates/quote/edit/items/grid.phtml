@@ -51,6 +51,7 @@ $_items = $block->getItems();
             <thead>
                 <tr class="headings">
                     <th class="col-product"><span><?= /* @escapeNotVerified */ __('Product') ?></span></th>
+                    <th class="col-remark"><span><?= /* @escapeNotVerified */ __('Remark') ?></span></th>
                     <th class="col-price"><span><?= /* @escapeNotVerified */ __('Price') ?></span></th>
                     <th class="col-qty"><span><?= /* @escapeNotVerified */ __('Qty') ?></span></th>
                     <th class="col-subtotal"><span><?= /* @escapeNotVerified */ __('Subtotal') ?></span></th>
@@ -64,6 +65,7 @@ $_items = $block->getItems();
             <tfoot>
                 <tr>
                     <td class="col-total"><?= /* @escapeNotVerified */ __('Total %1 product(s)', count($_items)) ?></td>
+                    <td class="col-price"></td>
                     <td colspan="2" class="col-subtotal"><?= /* @escapeNotVerified */ __('Subtotal:') ?></td>
                     <td class="col-price"><strong><?= /* @escapeNotVerified */ $block->formatPrice($block->getSubtotal()) ?></strong></td>
                     <td class="col-price"><strong><?= /* @escapeNotVerified */ $block->formatPrice($block->getDiscountAmount()) ?></strong></td>
@@ -101,6 +103,9 @@ $_items = $block->getItems();
                                     <?php endforeach; ?>
                                 </dl>
                             <?php endif; ?>
+                        </td>
+                        <td class="col-remark">
+                            <?= $_item->getAdditionalData() ?>
                         </td>
                         <td class="col-price">
 
@@ -196,6 +201,7 @@ $_items = $block->getItems();
     </div>
     <?php if($canEdit):?>
     <div class="quote-discounts">
+        <?= $block->getButtonHtml(__('Create New Product'), 'product.showCreateForm()', 'action-secondary') ?>
         <?= $block->getButtonHtml(__('Update Items and Quantities'), 'quote.itemsUpdate()', 'action-secondary') ?>
     </div>
     <script>

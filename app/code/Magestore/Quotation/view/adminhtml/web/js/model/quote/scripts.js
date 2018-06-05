@@ -7,11 +7,28 @@ define([
     "jquery",
     'Magento_Ui/js/modal/confirm',
     'Magento_Ui/js/modal/alert',
-    'Magestore_Quotation/js/model/request',
     "mage/translate",
     "prototype",
-    'Magento_Ui/js/lib/view/utils/async'
-], function(jQuery, confirm, alert, Request){
+    'Magento_Ui/js/lib/view/utils/async',
+    'mage/validation'
+], function(jQuery, confirm, alert, __){
+
+    jQuery.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        jQuery.each(a, function() {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
 
     window.AdminQuote = new Class.create();
 
@@ -462,6 +479,78 @@ define([
                     }
                 }
             });
+        }
+    };
+
+    window.AdminProduct = new Class.create();
+
+    AdminProduct.prototype = {
+        htmlFormContainerId: "quotation_product_create_form_html_container",
+        htmlFormId: "quotation_product_create_form_html",
+        initialize : function(data){
+            if(!data) data = {};
+
+        },
+        showCreateForm: function () {
+            var self = this;
+            var form = jQuery("#"+self.htmlFormContainerId);
+            self.modal = form.modal({
+                modalClass: 'magento',
+                title: __("New Product"),
+                type: 'slide',
+                buttons: [{
+                    text: jQuery.mage.__('Cancel'),
+                    'class': 'action cancel',
+                    click: function () {
+                        this.closeModal();
+                    }
+                }, {
+                    text: jQuery.mage.__('Create'),
+                    'class': 'action primary',
+                    click: function () {
+                        self.submit(false);
+                    }
+                }, {
+                    text: jQuery.mage.__('Create And Add To Quote'),
+                    'class': 'action primary',
+                    click: function () {
+                        self.submit(true);
+                    }
+                }]
+            });
+            self.modal.modal('openModal');
+        },
+        /**
+         *
+         * @returns {*}
+         */
+        isValid: function(){
+            var self = this;
+            var createForm = jQuery("#"+self.htmlFormId);
+            createForm.validation();
+            return createForm.validation('isValid');
+        },
+        /**
+         *
+         * @param addToQuote
+         * @returns {AdminProduct}
+         */
+        submit: function(addToQuote){
+            var self = this;
+            if(self.isValid()){
+                var formModal = jQuery("#"+self.htmlFormContainerId);
+                var createForm = jQuery("#"+self.htmlFormId);
+                var params = createForm.serializeObject();
+                params.create_product = 1;
+                if(addToQuote){
+                    params.add_to_quote = 1;
+                }
+                quote.loadArea(["items", "info"], true, params).done(function(){
+                    formModal.modal('closeModal');
+                    createForm[0].reset();
+                });
+            }
+            return self;
         }
     };
 

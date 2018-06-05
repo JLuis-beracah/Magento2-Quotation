@@ -14,6 +14,58 @@ use Magento\Backend\Model\View\Result\ForwardFactory;
 abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\AbstractAction
 {
     /**
+     * @var \Magento\Catalog\Controller\Adminhtml\Product\Builder
+     */
+    protected $productBuilder;
+
+    /**
+     * @var \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper
+     */
+    protected $initializationHelper;
+
+    /**
+     * @var \Magento\Catalog\Model\Product\TypeTransitionManager
+     */
+    protected $productTypeManager;
+
+    /**
+     * @var \Magento\Catalog\Api\ProductRepositoryInterface
+     */
+    protected $productRepository;
+
+    /**
+     * QuoteAbstract constructor.
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magestore\Quotation\Helper\Data $helper
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
+     * @param \Magestore\Quotation\Model\BackendCart $backendCart
+     * @param \Magestore\Quotation\Model\BackendSession $backendSession
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Catalog\Controller\Adminhtml\Product\Builder $productBuilder
+     * @param \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $initializationHelper
+     * @param \Magento\Catalog\Model\Product\TypeTransitionManager $productTypeManager
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Magestore\Quotation\Helper\Data $helper,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
+        \Magestore\Quotation\Model\BackendCart $backendCart,
+        \Magestore\Quotation\Model\BackendSession $backendSession,
+        \Magento\Framework\Registry $registry,
+        \Magento\Catalog\Controller\Adminhtml\Product\Builder $productBuilder,
+        \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $initializationHelper,
+        \Magento\Catalog\Model\Product\TypeTransitionManager $productTypeManager,
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+    ){
+        parent::__construct($context, $helper, $quotationManagement, $backendCart, $backendSession, $registry);
+        $this->productBuilder = $productBuilder;
+        $this->initializationHelper = $initializationHelper;
+        $this->productTypeManager = $productTypeManager;
+        $this->productRepository = $productRepository;
+    }
+
+    /**
      * Retrieve quote object
      *
      * @return \Magento\Quote\Model\Quote
@@ -132,10 +184,63 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             $this->_getQuoteProcessModel()->recollectCart();
         }
 
+        if ($createProduct = (boolean)$this->getRequest()->getPost('create_product')) {
+            $addToQuote = (boolean)$this->getRequest()->getPost('add_to_quote');
+            $product = $this->_createProduct();
+            if($product && $addToQuote){
+                $this->_getQuoteProcessModel()->addProduct($product->getId(), 1);
+                $this->_getQuoteProcessModel()->recollectCart();
+            }
+        }
+
         $this->_getQuoteProcessModel()->saveQuote();
 
 
         return $this;
+    }
+
+    /**
+     * @return \Magento\Catalog\Model\Product
+     */
+    protected function _createProduct(){
+        try {
+            $quote = $this->_getQuote();
+            $request = $this->getRequest();
+            $params = $request->getParams();
+            $params['store'] = $quote->getStoreId();
+            $params['type'] = \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE;
+            $params['set'] = 4;
+            $request->setParams($params);
+            $product = $this->initializationHelper->initialize(
+                $this->productBuilder->build($this->getRequest())
+            );
+            $product->setData('product_has_weight', \Magento\Catalog\Model\Product\Edit\WeightResolver::HAS_WEIGHT);
+            $this->productTypeManager->processProduct($product);
+            try{
+                $existProduct = $this->productRepository->get($product->getSku());
+                $product = false;
+            }catch (\Exception $e){
+                $existProduct = false;
+            }
+            if($existProduct && $existProduct->getId()){
+                throw new \Magento\Framework\Exception\LocalizedException(__('The product with SKU %1 already exist.', $existProduct->getSku()));
+            }else{
+                $this->messageManager->addSuccessMessage(__('The product has been created successfully.'));
+                $product->save();
+                $this->_eventManager->dispatch(
+                    'controller_action_catalog_product_save_entity_after',
+                    ['controller' => $this, 'product' => $product]
+                );
+            }
+
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            $this->_objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);
+            $this->messageManager->addExceptionMessage($e);
+        } catch (\Exception $e) {
+            $this->_objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);
+            $this->messageManager->addErrorMessage($e->getMessage());
+        }
+        return $product;
     }
 
     /**

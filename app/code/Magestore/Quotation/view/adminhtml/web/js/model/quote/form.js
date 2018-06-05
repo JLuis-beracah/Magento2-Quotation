@@ -13,7 +13,8 @@ define([
     var $el = jQuery('#edit_form'),
         config,
         baseUrl,
-        quote;
+        quote,
+        product;
 
     if (!$el.length || !$el.data('quote-config')) {
         return;
@@ -25,5 +26,8 @@ define([
     quote = new AdminQuote(config);
     quote.setLoadBaseUrl(baseUrl);
 
+    product = new AdminProduct();
+
     window.quote = quote;
+    window.product = product;
 });

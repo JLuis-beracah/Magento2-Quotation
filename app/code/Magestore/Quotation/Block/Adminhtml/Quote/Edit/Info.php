@@ -379,9 +379,17 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      * @param $statusCode
      * @return string
      */
-    public function quoteRequestStatusLabel($statusCode){
+    public function getQuoteRequestStatusLabel($statusCode){
         $statuses = QuoteStatus::getOptionArray();
         return ($statusCode && isset($statuses[$statusCode]))?$statuses[$statusCode]:"";
+    }
+
+    /**
+     * @param $emailSent
+     * @return \Magento\Framework\Phrase
+     */
+    public function getQuoteEmailSentLabel($emailSent){
+        return ($emailSent)?__("Yes"):__("No");
     }
 
     /**

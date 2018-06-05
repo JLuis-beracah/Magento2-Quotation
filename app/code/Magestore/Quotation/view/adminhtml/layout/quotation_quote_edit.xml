@@ -35,6 +35,11 @@
                     </block>
                 </block>
             </block>
+            <block class="Magestore\Quotation\Block\Adminhtml\Product\Form"
+                   name="quotation_product_form"
+                   template="Magestore_Quotation::product/form.phtml">
+
+            </block>
         </referenceContainer>
     </body>
 </page>

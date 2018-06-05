@@ -51,7 +51,11 @@ $quoteStoreDate = $block->formatDate(
                 <?php endif;?>
                 <tr>
                     <th><?= $block->escapeHtml(__('Status')) ?></th>
-                    <td><span id="quote_status"><?= $block->quoteRequestStatusLabel($quote->getRequestStatus()) ?></span></td>
+                    <td><span id="quote_status"><?= $block->getQuoteRequestStatusLabel($quote->getRequestStatus()) ?></span></td>
+                </tr>
+                    <tr>
+                    <th><?= $block->escapeHtml(__('Email Sent')) ?></th>
+                    <td><span id="quote_email_sent"><?= $block->getQuoteEmailSentLabel($quote->getEmailSent()) ?></span></td>
                 </tr>
                 <?= $block->getChildHtml() ?>
                 <?php if ($block->isSingleStoreMode() == false):?>
