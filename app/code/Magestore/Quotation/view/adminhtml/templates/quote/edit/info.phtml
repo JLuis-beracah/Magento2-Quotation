@@ -24,6 +24,18 @@ $quoteStoreDate = $block->formatDate(
     true,
     $block->getTimezoneForStore($quote->getStore())
 );
+
+$quoteUpdatedAdminDate = $block->formatDate(
+    $block->getQuoteAdminDate($quote->getUpdatedAt()),
+    \IntlDateFormatter::MEDIUM,
+    true
+);
+$quoteUpdatedStoreDate = $block->formatDate(
+    $quote->getUpdatedAt(),
+    \IntlDateFormatter::MEDIUM,
+    true,
+    $block->getTimezoneForStore($quote->getStore())
+);
 ?>
 
 <section class="admin__page-section quote-view-account-information">
@@ -50,10 +62,30 @@ $quoteStoreDate = $block->formatDate(
                     </tr>
                 <?php endif;?>
                 <tr>
+                    <th><?= $block->escapeHtml(__('Updated')) ?></th>
+                    <td><?= $block->escapeHtml($quoteUpdatedAdminDate) ?></td>
+                </tr>
+                <?php if ($quoteUpdatedAdminDate != $quoteUpdatedStoreDate):?>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Updated (%1)', $block->getTimezoneForStore($quote->getStore()))) ?></th>
+                        <td><?= $block->escapeHtml($quoteUpdatedStoreDate) ?></td>
+                    </tr>
+                <?php endif;?>
+                <tr>
                     <th><?= $block->escapeHtml(__('Status')) ?></th>
                     <td><span id="quote_status"><?= $block->getQuoteRequestStatusLabel($quote->getRequestStatus()) ?></span></td>
                 </tr>
-                    <tr>
+                <?php if($quote->getData("request_ordered_increment_id")):?>
+                <tr>
+                    <th><?= $block->escapeHtml(__('Order')) ?></th>
+                    <td>
+                        <span id="quote_request_ordered_increment_id">
+                            <a href="<?= $block->getOrderDetailUrl() ?>"><?= "#".$quote->getData("request_ordered_increment_id") ?></a>
+                        </span>
+                    </td>
+                </tr>
+                <?php endif;?>
+                <tr>
                     <th><?= $block->escapeHtml(__('Email Sent')) ?></th>
                     <td><span id="quote_email_sent"><?= $block->getQuoteEmailSentLabel($quote->getEmailSent()) ?></span></td>
                 </tr>

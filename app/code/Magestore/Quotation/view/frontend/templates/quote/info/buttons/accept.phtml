@@ -1,0 +1,15 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $block \Magestore\Quotation\Block\Quote\Info\Buttons\Accept */
+?>
+<?php if ($block->canCheckout() && $block->getLink()): ?>
+    <a href="<?= /* @escapeNotVerified */ $block->getLink() ?>" class="action rss accept">
+        <span><?= /* @escapeNotVerified */ $block->getLabel() ?></span>
+    </a>
+<?php endif; ?>

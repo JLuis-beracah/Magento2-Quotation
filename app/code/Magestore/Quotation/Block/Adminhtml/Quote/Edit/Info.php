@@ -408,4 +408,17 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         }
         return $customerName;
     }
+
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getOrderDetailUrl(){
+        $url = "";
+        if ($this->getQuote()) {
+            $orderId = $this->getQuote()->getData("request_ordered_id");
+            $url = $this->getUrl('sales/order/view', ['order_id' => $orderId]);
+        }
+        return $url;
+    }
 }

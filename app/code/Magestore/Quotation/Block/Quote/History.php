@@ -185,7 +185,10 @@ class History extends \Magento\Framework\View\Element\Template
      * @return bool
      */
     public function canShowPrice($quote){
-        return($quote->getRequestStatus() == QuoteStatus::STATUS_PROCESSED)?true:false;
+        return(
+            ($quote->getRequestStatus() == QuoteStatus::STATUS_PROCESSED) ||
+            ($quote->getRequestStatus() == QuoteStatus::STATUS_ORDERED)
+        )?true:false;
     }
 
     /**

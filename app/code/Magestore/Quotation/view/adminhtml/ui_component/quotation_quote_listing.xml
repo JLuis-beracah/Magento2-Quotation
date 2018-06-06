@@ -120,6 +120,16 @@
             </argument>
         </column>
 
+        <column name="request_ordered_increment_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Order #</item>
+                    <item name="sortOrder" xsi:type="number">40</item>
+                </item>
+            </argument>
+        </column>
+
         <column name="request_status">
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">Magestore\Quotation\Model\Source\Quote\Status</item>

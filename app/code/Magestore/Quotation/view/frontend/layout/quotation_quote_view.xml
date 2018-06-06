@@ -13,9 +13,12 @@
         <referenceContainer name="page.main.title">
             <block class="Magestore\Quotation\Block\Quote\Info" name="quote.status" template="Magestore_Quotation::quote/quote_status.phtml"/>
             <block class="Magestore\Quotation\Block\Quote\Info" name="quote.date" template="Magestore_Quotation::quote/quote_date.phtml"/>
-            <container name="quote.actions.container" htmlTag="div" htmlClass="actions-toolbar quote-actions-toolbar">
+            <container name="quote.actions.container" htmlTag="div" htmlClass="actions-toolbar quote-actions-toolbar order-actions-toolbar">
                 <block class="Magestore\Quotation\Block\Quote\Info\Buttons" as="buttons" name="quotation.quote.info.buttons" cacheable="false"/>
             </container>
+        </referenceContainer>
+        <referenceContainer name="quotation.quote.info.buttons">
+            <block class="Magestore\Quotation\Block\Quote\Info\Buttons\Accept" as="buttons.accept" name="quotation.quote.info.buttons.accept" cacheable="false"/>
         </referenceContainer>
         <referenceContainer name="content">
             <block class="Magestore\Quotation\Block\Quote\Info" as="info" name="quotation.quote.info" after="quotation.quote.view"/>

@@ -432,7 +432,7 @@ define([
                         var params = {quote_request_action: 'send'};
                         self.loadArea(["items", "info"], true, params).done(function(){
                             disableElements('save_as_draft');
-                            disableElements('decline');
+                            // disableElements('decline');
                         });
                     },
                     cancel: function() {

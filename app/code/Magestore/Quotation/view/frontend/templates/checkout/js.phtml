@@ -1,0 +1,12 @@
+<script>
+    window.magestoreQuotationConfigProvider = <?php echo $block->getJsJsonConfig(); ?>;
+    require([
+        'jquery',
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/model/quote',
+    ], function($, checkoutData, quote) {
+        var isCheckoutQuotation = window.magestoreQuotationConfigProvider.is_checkout_quotation;
+        var shippingAddress = window.magestoreQuotationConfigProvider.shipping_address;
+        var billingAddress = window.magestoreQuotationConfigProvider.billing_address;
+    })
+</script>

@@ -11,10 +11,18 @@ namespace Magestore\Quotation\Api;
  */
 interface QuotationManagementInterface
 {
-    const ERROR_NOT_LOGIN = "customer_not_login";
-    const ERROR_INVALID_CUSTOMER = "invalid_customer";
-    const ERROR_REQUEST_EXPIRED = "request_expired";
-    const ERROR_REQUEST_IS_NOT_PROCESSED = "request_is_not_processed";
+    const ERROR_NOT_LOGIN = 99;
+    const ERROR_INVALID_CUSTOMER = 98;
+    const ERROR_REQUEST_EXPIRED = 97;
+    const ERROR_REQUEST_IS_NOT_PROCESSED = 96;
+    const ERROR_REQUEST_HAS_BEEN_ORDERED = 95;
+    const ERROR_REQUEST_HAS_BEEN_DECLINED = 94;
+
+    /**
+     * @param int $quoteId
+     * @return \Magento\Quote\Api\Data\CartInterface|null
+     */
+    public function getQuoteRequest($quoteId);
 
     /**
      * @param int $customerId
@@ -51,6 +59,26 @@ interface QuotationManagementInterface
      * @return \Magento\Quote\Api\Data\CartInterface
      */
     public function decline(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @return \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    public function order(\Magento\Sales\Api\Data\OrderInterface $order);
+
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @return bool|\Magento\Quote\Api\Data\CartInterface
+     */
+    public function getOrderQuotation(\Magento\Sales\Api\Data\OrderInterface $order);
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @return bool
+     * @throws \Magento\Framework\Exception\ValidatorException
+     */
+    public function validateBeforePlaceOrder(\Magento\Sales\Api\Data\OrderInterface $order);
 
     /**
      * @param \Magento\Quote\Api\Data\CartInterface $quote
@@ -129,7 +157,15 @@ interface QuotationManagementInterface
 
     /**
      * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return bool
+     * @throws \Magento\Framework\Exception\ValidatorException
+     */
+    public function canOrder(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
      * @return array
+     * @throws \Magento\Framework\Exception\ValidatorException
      */
     public function canCheckout(\Magento\Quote\Api\Data\CartInterface $quote);
 }

@@ -22,6 +22,7 @@ class Status implements \Magento\Framework\Option\ArrayInterface
     const STATUS_PROCESSED = 4;
     const STATUS_DECLINED = 5;
     const STATUS_EXPIRED = 6;
+    const STATUS_ORDERED = 7;
 
     /**
      * @return array
@@ -33,7 +34,8 @@ class Status implements \Magento\Framework\Option\ArrayInterface
             ['label' => __('Processing'), 'value' => self::STATUS_PROCESSING],
             ['label' => __('Processed'), 'value' => self::STATUS_PROCESSED],
             ['label' => __('Declined'), 'value' => self::STATUS_DECLINED],
-            ['label' => __('Expired'), 'value' => self::STATUS_EXPIRED]
+            ['label' => __('Expired'), 'value' => self::STATUS_EXPIRED],
+            ['label' => __('Ordered'), 'value' => self::STATUS_ORDERED]
         ];
     }
 
@@ -47,7 +49,8 @@ class Status implements \Magento\Framework\Option\ArrayInterface
             self::STATUS_PROCESSING => __('Processing'),
             self::STATUS_PROCESSED => __('Processed'),
             self::STATUS_DECLINED => __('Declined'),
-            self::STATUS_EXPIRED => __('Expired')
+            self::STATUS_EXPIRED => __('Expired'),
+            self::STATUS_ORDERED => __('Ordered')
         ];
     }
 

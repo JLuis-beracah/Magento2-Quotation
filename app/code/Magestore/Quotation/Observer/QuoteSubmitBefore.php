@@ -14,7 +14,6 @@ class QuoteSubmitBefore implements ObserverInterface
         'quotation_request_id',
     ];
 
-
     /**
 
      *
@@ -33,7 +32,6 @@ class QuoteSubmitBefore implements ObserverInterface
                 $order->setData($attribute, $quote->getData($attribute));
             }
         }
-
         return $this;
     }
 }

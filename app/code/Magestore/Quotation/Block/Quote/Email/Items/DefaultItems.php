@@ -78,7 +78,10 @@ class DefaultItems extends \Magento\Sales\Block\Order\Email\Items\DefaultItems
      */
     public function canShowPrice(){
         $item = $this->getItem();
-        return($item->getRequestStatus() == QuoteStatus::STATUS_PROCESSED)?true:false;
+        return(
+            ($item->getRequestStatus() == QuoteStatus::STATUS_PROCESSED) ||
+            ($item->getRequestStatus() == QuoteStatus::STATUS_ORDERED)
+        )?true:false;
     }
 
     /**

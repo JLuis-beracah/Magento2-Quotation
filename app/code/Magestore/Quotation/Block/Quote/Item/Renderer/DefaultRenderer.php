@@ -99,7 +99,10 @@ class DefaultRenderer extends \Magento\Sales\Block\Order\Item\Renderer\DefaultRe
      */
     public function canShowPrice(){
         $item = $this->getItem();
-        return($item->getRequestStatus() == QuoteStatus::STATUS_PROCESSED)?true:false;
+        return(
+            ($item->getRequestStatus() == QuoteStatus::STATUS_PROCESSED) ||
+            ($item->getRequestStatus() == QuoteStatus::STATUS_ORDERED)
+        )?true:false;
     }
 
     /**
