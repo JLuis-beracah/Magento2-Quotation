@@ -25,5 +25,13 @@
              parent="Magestore_Quotation::quotation"
              resource="Magestore_Quotation::settings"
              action="adminhtml/system_config/edit/section/quotation"/>
+
+        <add id="Magestore_Quotation::reports_most_requested"
+             title="Most Requested"
+             module="Magestore_Quotation"
+             sortOrder="25"
+             parent="Magento_Reports::report_products"
+             resource="Magestore_Quotation::reports_most_requested"
+             action="quotation/quote_reports/mostrequested"/>
     </menu>
 </config>
