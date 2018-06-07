@@ -8,18 +8,97 @@
 
  ?>
 
-<?php /* <h4 class="icon-head fieldset-legend <?= $block->getHeaderCssClass() ?>"><?= $block->getHeaderText() ?></h4> */ ?>
-<div class="admin__field field-comment">
-    <label for="quote-comment" class="admin__field-label"><span><?= /* @escapeNotVerified */ __('Quote Comments') ?></span></label>
-    <div class="admin__field-control">
-        <textarea
-            id="quote-comment"
-            name="quote[comment][customer_note]"
-            class="admin__control-textarea"><?= /* @escapeNotVerified */ $block->getCommentNote() ?></textarea>
-    </div>
+<div id="quotation_quote_comment_history_block" class="edit-quote-comments edit-order-comments">
+    <?php if ($block->canAddComment()):?>
+        <div class="quote-history-block order-history-block" id="history_form">
+
+            <div class="admin__field">
+                <label for="history_status" class="admin__field-label"><?= /* @noEscape */ __('Status') ?></label>
+                <div class="admin__field-control">
+                    <select name="history[status]" id="history_status" class="admin__control-select">
+                        <?php foreach ($block->getStatuses() as $_code => $_label): ?>
+                            <option value="<?= $block->escapeHtml($_code) ?>"<?php if ($_code == $block->getQuote()->getRequestStatus()): ?> selected="selected"<?php endif; ?>><?= $block->escapeHtml($_label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="admin__field">
+                <label for="history_comment" class="admin__field-label">
+                    <?= /* @noEscape */ __('Comment') ?>
+                </label>
+                <div class="admin__field-control">
+                    <textarea name="history[comment]"
+                              rows="3"
+                              cols="5"
+                              id="history_comment"
+                              class="admin__control-textarea"></textarea>
+                </div>
+            </div>
+
+            <div class="admin__field">
+                <div class="order-history-comments-options">
+                    <div class="admin__field admin__field-option">
+                        <?php if ($block->canSendCommentEmail()): ?>
+                            <input name="history[is_customer_notified]"
+                                   type="checkbox"
+                                   id="history_notify"
+                                   class="admin__control-checkbox"
+                                   value="1" />
+                            <label class="admin__field-label" for="history_notify">
+                                <?= /* @noEscape */ __('Notify Customer by Email') ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="admin__field admin__field-option">
+                        <input name="history[is_visible_on_front]"
+                               type="checkbox"
+                               id="history_visible"
+                               class="admin__control-checkbox"
+                               value="1" />
+                        <label class="admin__field-label" for="history_visible">
+                            <?= /* @noEscape */ __('Visible on Storefront') ?>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="order-history-comments-actions">
+                    <?= $block->getChildHtml('submit_button') ?>
+                </div>
+            </div>
+        </div>
+    <?php endif;?>
+
+    <ul class="note-list">
+        <?php foreach ($block->getCommentHistoryCollection() as $_item): ?>
+            <li class="note-list-item">
+                <span class="note-list-date"><?= /* @noEscape */ $block->formatDate($_item->getCreatedAt(), \IntlDateFormatter::MEDIUM) ?></span>
+                <span class="note-list-time"><?= /* @noEscape */ $block->formatTime($_item->getCreatedAt(), \IntlDateFormatter::MEDIUM) ?></span>
+                <span class="note-list-status"><?= $block->escapeHtml($_item->getStatusLabel()) ?></span>
+                <span class="note-list-created_by note-list-status"><?= __("Comment From: ").$block->escapeHtml($_item->getCreatedBy()) ?></span>
+
+                <!--
+                <span class="note-list-customer">
+                <?= /* @noEscape */ __('Customer') ?>
+                    <?php if ($block->isCustomerNotificationNotApplicable($_item)): ?>
+                        <span class="note-list-customer-notapplicable"><?= /* @noEscape */ __('Notification Not Applicable') ?></span>
+                    <?php elseif ($_item->getIsCustomerNotified()): ?>
+                        <span class="note-list-customer-notified"><?= /* @noEscape */ __('Notified') ?></span>
+                    <?php else: ?>
+                        <span class="note-list-customer-not-notified"><?= /* @noEscape */ __('Not Notified') ?></span>
+                    <?php endif; ?>
+                </span>
+                -->
+                <?php if ($_item->getComment()): ?>
+                    <div class="note-list-comment"><?= $block->escapeHtml($_item->getComment(), ['b', 'br', 'strong', 'i', 'u', 'a']) ?></div>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+    <script>
+        require(['prototype'], function(){
+            if($('quote_status'))$('quote_status').update('<?= $block->escapeJs($block->escapeHtml($block->getQuoteStatusLabel())) ?>');
+        });
+    </script>
 </div>
-<script>
-    require(["Magestore_Quotation/js/model/quote/form"], function(){
-        // quote.commentFieldsBind('quote-comment')
-    });
-</script>

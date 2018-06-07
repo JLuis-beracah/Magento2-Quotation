@@ -6,6 +6,7 @@
 namespace Magestore\Quotation\Block\Quote;
 
 use Magento\Customer\Model\Context;
+use Magestore\Quotation\Api\Data\QuoteCommentHistoryInterface;
 
 /**
  * Class View
@@ -32,20 +33,28 @@ class View extends \Magento\Framework\View\Element\Template
     protected $httpContext;
 
     /**
+     * @var \Magestore\Quotation\Model\ResourceModel\Quote\Comment\History\CollectionFactory
+     */
+    protected $historyCollectionFactory;
+
+    /**
      * View constructor.
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\App\Http\Context $httpContext
+     * @param \Magestore\Quotation\Model\ResourceModel\Quote\Comment\History\CollectionFactory $historyCollectionFactory
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Http\Context $httpContext,
+        \Magestore\Quotation\Model\ResourceModel\Quote\Comment\History\CollectionFactory $historyCollectionFactory,
         array $data = []
     ) {
         $this->_coreRegistry = $registry;
         $this->httpContext = $httpContext;
+        $this->_historyCollectionFactory = $historyCollectionFactory;
         parent::__construct($context, $data);
         $this->_isScopePrivate = true;
     }
@@ -92,5 +101,45 @@ class View extends \Magento\Framework\View\Element\Template
             return __('Back to My Quotes');
         }
         return __('View Another Quote');
+    }
+
+    /**
+     * Return collection of quote comment history items.
+     *
+     * @return HistoryCollection
+     */
+    public function getStatusHistoryCollection()
+    {
+        $quote = $this->getQuote();
+        $collection = $this->_historyCollectionFactory->create()->setQuoteFilter($quote)
+            ->setOrder(QuoteCommentHistoryInterface::CREATED_AT, 'desc')
+            ->setOrder(QuoteCommentHistoryInterface::ENTITY_ID, 'desc');
+        if ($quote->getId()) {
+            foreach ($collection as $status) {
+                $status->setQuote($quote);
+            }
+        }
+        return $collection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getVisibleCommentHistory(){
+        $history = [];
+        foreach ($this->getStatusHistoryCollection() as $status) {
+            if (!$status->isDeleted() && $status->getComment() && $status->getIsVisibleOnFront()) {
+                $history[] = $status;
+            }
+        }
+        return $history;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubmitCommentUrl()
+    {
+        return $this->getUrl('quotation/quote/addComment');
     }
 }

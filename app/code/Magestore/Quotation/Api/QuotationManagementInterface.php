@@ -100,6 +100,12 @@ interface QuotationManagementInterface
 
     /**
      * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return array
+     */
+    public function getChangeAbleStatus(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
      * @param string $expirationDate
      * @return \Magento\Quote\Api\Data\CartInterface
      */
@@ -168,4 +174,27 @@ interface QuotationManagementInterface
      * @throws \Magento\Framework\Exception\ValidatorException
      */
     public function canCheckout(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param string $comment
+     * @param int $status
+     * @param int $visible
+     * @param int $notify
+     * @return \Magestore\Quotation\Api\Data\QuoteCommentHistoryInterface
+     */
+    public function addAdminComment(\Magento\Quote\Api\Data\CartInterface $quote, $comment, $status, $visible, $notify = 0);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param $comment
+     * @return QuoteCommentHistoryInterface
+     */
+    public function addCustomterComment(\Magento\Quote\Api\Data\CartInterface $quote,  $comment);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return \Magestore\Quotation\Model\ResourceModel\Quote\Comment\History\Collection
+     */
+    public function getCommentHistory(\Magento\Quote\Api\Data\CartInterface $quote);
 }

@@ -127,6 +127,86 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     ]
                 );
         }
+
+        if (version_compare($context->getVersion(), '1.0.6', '<')) {
+
+            $table = $setup->getConnection()->newTable(
+                $setup->getTable('quotation_quote_comment_history')
+            )->addColumn(
+                'entity_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+                'Entity Id'
+            )->addColumn(
+                'parent_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => false],
+                'Parent Id'
+            )->addColumn(
+                'is_customer_notified',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                [],
+                'Is Customer Notified'
+            )->addColumn(
+                'is_visible_on_front',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => false, 'default' => '0'],
+                'Is Visible On Front'
+            )->addColumn(
+                'comment',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                '64k',
+                [],
+                'Comment'
+            )->addColumn(
+                'status',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => false, 'default' => QuoteStatus::STATUS_NONE],
+                'Status'
+            )->addColumn(
+                'created_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT],
+                'Created At'
+            )->addIndex(
+                $setup->getIdxName('quotation_quote_comment_history', ['parent_id']),
+                ['parent_id']
+            )->addIndex(
+                $setup->getIdxName('quotation_quote_comment_history', ['created_at']),
+                ['created_at']
+            )->addForeignKey(
+                $setup->getFkName('quotation_quote_comment_history', 'parent_id', 'sales_order', 'entity_id'),
+                'parent_id',
+                $setup->getTable('quote'),
+                'entity_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            )->setComment(
+                'Quotation Quote Comment History'
+            );
+            $setup->getConnection()->createTable($table);
+        }
+
+        if (version_compare($context->getVersion(), '1.0.7', '<')) {
+            $setup->getConnection()
+                ->addColumn(
+                    $setup->getTable('quotation_quote_comment_history'),
+                    'created_by',
+                    [
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                        'length' => 32,
+                        'comment' => 'Quote Comment Created By',
+                        'nullable' => true,
+                        'default' => ""
+                    ]
+                );
+        }
         $setup->endSetup();
     }
 }

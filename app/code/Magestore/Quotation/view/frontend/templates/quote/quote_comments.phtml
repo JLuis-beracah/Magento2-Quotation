@@ -1,26 +1,48 @@
 <?php
 /**
- * Copyright © Magento, Inc. All rights reserved.
+ * Copyright © Magestore, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 
 // @codingStandardsIgnoreFile
 
 ?>
-<?php /** @var  $block \Magento\Quote\Block\Quote\View*/?>
-
-<?php //$_history = $block->getQuote()->getCustomerNote() ?>
-<?php //if (count($_history)): ?>
-    <div class="block block-quote-details-comments block-order-details-comments">
-        <div class="block-title"><strong><?= /* @escapeNotVerified */ __('Quote Comments') ?></strong></div>
-        <div class="block-content">
-            <dl class="quote-comments order-comments">
-<!--                --><?php //foreach ($_history as $_historyItem): ?>
-                    <dt class="comment-date"><?= /* @escapeNotVerified */ $block->formatDate($block->getQuote()->getCreatedAt(), \IntlDateFormatter::MEDIUM, true) ?></dt>
-                    <dd class="comment-content"><?= $block->escapeHtml($block->getQuote()->getCustomerNote()) ?></dd>
-<!--                --><?php //endforeach; ?>
-            </dl>
-
-        </div>
+<?php /** @var  $block \Magestore\Quotation\Block\Quote\View*/?>
+<?php $_history = $block->getVisibleCommentHistory() ?>
+<?php if (count($_history)): ?>
+<div class="block block-quote-details-comments block-order-details-comments">
+    <div class="block-title"><strong><?= /* @escapeNotVerified */ __('Quote Comments') ?></strong></div>
+    <div class="block-content">
+        <table class="quote-comments order-comments">
+            <?php foreach ($_history as $_historyItem): ?>
+            <tr>
+                <td class="comment_created_at"><?= /* @escapeNotVerified */ $block->formatDate($_historyItem->getCreatedAt(), \IntlDateFormatter::MEDIUM, true) ?></td>
+                <td class="comment_content"><?= $block->escapeHtml($_historyItem->getComment()) ?></td>
+                <td class="comment_by"><?= __("Comment By: ").$block->escapeHtml($_historyItem->getCreatedBy()) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
     </div>
-<?php //endif; ?>
+</div>
+<?php endif; ?>
+
+<div class="block block-quote-details-comments-form block-order-details-comments">
+    <div class="block-title"><strong><?= /* @escapeNotVerified */ __('Add Comment To Quote') ?></strong></div>
+    <div class="block-content">
+        <form id="quote_add_comment_form" action="<?php echo $block->getSubmitCommentUrl();?>", method="post">
+            <input type="hidden" name="quote_id" value="<?= $block->getQuote()->getId()?>"/>
+            <dl class="quote-comments order-comments">
+                <textarea name="comment"
+                          rows="3"
+                          cols="5"
+                          id="quote_new_comment"
+                          class="input-text"></textarea>
+            </dl>
+            <dl class="actions order-comments">
+                <button type="submit" title="<?= __("Submit Comment")?>" class="action submit primary">
+                    <span><?= __("Submit Comment")?></span>
+                </button>
+            </dl>
+        </form>
+    </div>
+</div>

@@ -8,6 +8,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magestore\Quotation\Api\QuotationManagementInterface" type="Magestore\Quotation\Model\QuotationManagement"/>
+    <preference for="Magestore\Quotation\Api\QuoteCommentHistoryRepositoryInterface" type="Magestore\Quotation\Model\Quote\Comment\HistoryRepository"/>
+    <preference for="Magestore\Quotation\Api\Data\QuoteCommentHistoryInterface" type="Magestore\Quotation\Model\Quote\Comment\History"/>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">

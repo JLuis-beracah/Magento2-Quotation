@@ -6,7 +6,7 @@
 namespace Magestore\Quotation\Model;
 
 use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
-use Magestore\Webpos\Model\Cart\Data\Quote;
+use Magestore\Quotation\Api\Data\QuoteCommentHistoryInterface;
 
 /**
  * Class QuotationManagement
@@ -55,6 +55,11 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
     protected $onepageCheckout;
 
     /**
+     * @var \Magestore\Quotation\Api\QuoteCommentHistoryRepositoryInterface
+     */
+    protected $quoteCommentHistoryRepository;
+
+    /**
      * QuotationManagement constructor.
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
@@ -64,6 +69,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
      * @param \Magento\Checkout\Model\Cart $checkoutCart
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Checkout\Model\Type\Onepage $onepageCheckout
+     * @param \Magestore\Quotation\Api\QuoteCommentHistoryRepositoryInterface $quoteCommentHistoryRepository
      */
     public function __construct(
         \Magento\Framework\Event\ManagerInterface $eventManager,
@@ -73,7 +79,8 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         \Magestore\Quotation\Helper\Data $helper,
         \Magento\Checkout\Model\Cart $checkoutCart,
         \Psr\Log\LoggerInterface $logger,
-        \Magento\Checkout\Model\Type\Onepage $onepageCheckout
+        \Magento\Checkout\Model\Type\Onepage $onepageCheckout,
+        \Magestore\Quotation\Api\QuoteCommentHistoryRepositoryInterface $quoteCommentHistoryRepository
     ) {
         $this->eventManager = $eventManager;
         $this->quoteRepository = $quoteRepository;
@@ -83,6 +90,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         $this->checkoutCart = $checkoutCart;
         $this->logger = $logger;
         $this->onepageCheckout = $onepageCheckout;
+        $this->quoteCommentHistoryRepository = $quoteCommentHistoryRepository;
     }
 
     /**
@@ -261,6 +269,49 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         ($requestStatus == QuoteStatus::STATUS_PROCESSED) ||
         ($requestStatus == QuoteStatus::STATUS_ORDERED)
         )?false:true;
+    }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return array
+     */
+    public function getChangeAbleStatus(\Magento\Quote\Api\Data\CartInterface $quote){
+        $requestStatus = $quote->getData("request_status");
+        $statusList = QuoteStatus::getOptionArray();
+        switch ($requestStatus){
+            case QuoteStatus::STATUS_NEW:
+                unset($statusList[QuoteStatus::STATUS_PENDING]);
+                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
+                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+                break;
+            case QuoteStatus::STATUS_PROCESSING:
+                unset($statusList[QuoteStatus::STATUS_PENDING]);
+                unset($statusList[QuoteStatus::STATUS_NEW]);
+                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
+                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+                break;
+            case QuoteStatus::STATUS_PROCESSED:
+                unset($statusList[QuoteStatus::STATUS_PENDING]);
+                unset($statusList[QuoteStatus::STATUS_NEW]);
+                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
+                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+                break;
+            case QuoteStatus::STATUS_EXPIRED:
+                unset($statusList[QuoteStatus::STATUS_PENDING]);
+                unset($statusList[QuoteStatus::STATUS_NEW]);
+                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+                break;
+            case QuoteStatus::STATUS_PENDING:
+            case QuoteStatus::STATUS_DECLINED:
+            case QuoteStatus::STATUS_ORDERED:
+                $statusList = [$requestStatus => $statusList[$requestStatus]];
+                break;
+        }
+        return $statusList;
     }
 
     /**
@@ -543,5 +594,56 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
             $this->canOrder($quote);
         }
         return $canCheckout;
+    }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param string $comment
+     * @param int $status
+     * @param int $visible
+     * @param int $notify
+     * @return \Magestore\Quotation\Api\Data\QuoteCommentHistoryInterface
+     */
+    public function addAdminComment(\Magento\Quote\Api\Data\CartInterface $quote, $comment, $status, $visible, $notify = 0){
+        $history = $this->quoteCommentHistoryRepository->createNew();
+        $statusList = QuoteStatus::getOptionArray();
+        if($status && isset($statusList[$status])){
+            $history->setQuote($quote);
+            $history->setComment($comment);
+            $history->setCreatedBy(QuoteCommentHistoryInterface::ADMIN);
+            $history->setStatus($status);
+            $history->setIsVisibleOnFront($visible);
+            $history->setIsCustomerNotified($notify);
+            $this->quoteCommentHistoryRepository->save($history);
+            $this->updateStatus($quote, $status, $status);
+        }
+        return $history;
+    }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param $comment
+     * @return QuoteCommentHistoryInterface
+     */
+    public function addCustomterComment(\Magento\Quote\Api\Data\CartInterface $quote,  $comment){
+        $history = $this->quoteCommentHistoryRepository->createNew();
+        $history->setQuote($quote);
+        $history->setComment($comment);
+        $history->setCreatedBy(QuoteCommentHistoryInterface::CUSTOMER);
+        $history->setStatus($quote->getRequestStatus());
+        $history->setIsVisibleOnFront(1);
+        $history->setIsCustomerNotified(1);
+        $this->quoteCommentHistoryRepository->save($history);
+        return $history;
+    }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return \Magestore\Quotation\Model\ResourceModel\Quote\Comment\History\Collection
+     */
+    public function getCommentHistory(\Magento\Quote\Api\Data\CartInterface $quote){
+        $collection = $this->quoteCommentHistoryRepository->getCollection();
+        $collection->setQuoteFilter($quote);
+        return $collection;
     }
 }
