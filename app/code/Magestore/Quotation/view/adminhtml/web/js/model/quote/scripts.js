@@ -107,7 +107,7 @@ define([
 
         setCurrencyId : function(id){
             this.currencyId = id;
-            this.loadArea(['data', 'info'], true);
+            this.loadArea(['data', 'info', 'totals'], true);
         },
 
         setCurrencySymbol : function(symbol){
@@ -115,11 +115,11 @@ define([
         },
 
         addProduct : function(id){
-            this.loadArea(['items', 'info'], true, {add_product:id});
+            this.loadArea(['items', 'info', 'totals'], true, {add_product:id});
         },
 
         removeQuoteItem : function(id){
-            this.loadArea(['items', 'info'], true,
+            this.loadArea(['items', 'info', 'totals'], true,
                 {remove_item:id, from:'quote'});
         },
 
@@ -147,7 +147,7 @@ define([
                 }
             }
             self.quoteItemChanged = false;
-            self.loadArea(["items", "info"], true, fieldsPrepare);
+            self.loadArea(["items", "info", 'totals'], true, fieldsPrepare);
         },
 
         itemsOnchangeBind : function(){
@@ -430,7 +430,7 @@ define([
                 actions: {
                     confirm: function() {
                         var params = {quote_request_action: 'send'};
-                        self.loadArea(["items", "info"], true, params).done(function(){
+                        self.loadArea(["items", "info", 'totals'], true, params).done(function(){
                             disableElements('save_as_draft');
                             // disableElements('decline');
                         });
@@ -468,7 +468,7 @@ define([
                 actions: {
                     confirm: function() {
                         var params = {quote_request_action: 'decline'};
-                        self.loadArea(["items", "info"], true, params).done(function(){
+                        self.loadArea(["items", "info", 'totals'], true, params).done(function(){
                             disableElements('save_as_draft');
                             disableElements('decline');
                             disableElements('send');
@@ -545,7 +545,7 @@ define([
                 if(addToQuote){
                     params.add_to_quote = 1;
                 }
-                quote.loadArea(["items", "info"], true, params).done(function(){
+                quote.loadArea(["items", "info", 'totals'], true, params).done(function(){
                     formModal.modal('closeModal');
                     createForm[0].reset();
                 });

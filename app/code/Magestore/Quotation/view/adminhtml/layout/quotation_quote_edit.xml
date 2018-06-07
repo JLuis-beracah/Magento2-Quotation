@@ -31,7 +31,7 @@
                             </block>
                         </block>
                         <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Comment" template="Magestore_Quotation::quote/edit/comment.phtml" name="comment"/>
-
+                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Totals" template="Magestore_Quotation::quote/edit/totals.phtml" name="totals"/>
                     </block>
                 </block>
             </block>

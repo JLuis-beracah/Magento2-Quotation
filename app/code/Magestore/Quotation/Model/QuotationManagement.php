@@ -295,6 +295,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
             case QuoteStatus::STATUS_PROCESSED:
                 unset($statusList[QuoteStatus::STATUS_PENDING]);
                 unset($statusList[QuoteStatus::STATUS_NEW]);
+                unset($statusList[QuoteStatus::STATUS_PROCESSING]);
                 unset($statusList[QuoteStatus::STATUS_EXPIRED]);
                 unset($statusList[QuoteStatus::STATUS_DECLINED]);
                 unset($statusList[QuoteStatus::STATUS_ORDERED]);

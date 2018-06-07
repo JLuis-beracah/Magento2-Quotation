@@ -26,6 +26,12 @@
                 <block class="Magestore\Quotation\Block\Quote\Items" name="quote_items" template="Magestore_Quotation::quote/items.phtml">
                     <block class="Magento\Framework\View\Element\RendererList" name="quotation.quote.items.renderers" as="renderer.list"/>
                     <block class="Magento\Theme\Block\Html\Pager" name="quotation_quote_item_pager"/>
+                    <block class="Magestore\Quotation\Block\Quote\Totals" name="quote_totals" template="Magento_Sales::order/totals.phtml">
+                        <arguments>
+                            <argument name="label_properties" xsi:type="string">colspan="5" class="mark"</argument>
+                            <argument name="value_properties" xsi:type="string">class="amount"</argument>
+                        </arguments>
+                    </block>
                 </block>
             </block>
             <block class="Magestore\Quotation\Block\Quote\View" name="quote.comments" template="Magestore_Quotation::quote/quote_comments.phtml"/>

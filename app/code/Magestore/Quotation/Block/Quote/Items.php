@@ -7,6 +7,7 @@
 namespace Magestore\Quotation\Block\Quote;
 
 use Magento\Quote\Api\Data\CartItemInterface;
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
 
 /**
  * Class Items
@@ -128,5 +129,16 @@ class Items extends \Magento\Sales\Block\Items\AbstractItems
     public function getQuote()
     {
         return $this->_coreRegistry->registry('current_quote');
+    }
+
+    /**
+     * @return bool
+     */
+    public function canShowPrice(){
+        $quote = $this->getQuote();
+        return(
+            ($quote->getRequestStatus() == QuoteStatus::STATUS_PROCESSED) ||
+            ($quote->getRequestStatus() == QuoteStatus::STATUS_ORDERED)
+        )?true:false;
     }
 }

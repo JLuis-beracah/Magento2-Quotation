@@ -1,0 +1,17 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<legend class="admin__legend"><span><?= /* @escapeNotVerified */ __('Quote Totals') ?></span></legend>
+<br>
+<table class="admin__table-secondary data-table">
+    <tbody>
+        <?= /* @escapeNotVerified */ $block->renderTotals() ?>
+        <?= /* @escapeNotVerified */ $block->renderTotals('footer') ?>
+    </tbody>
+</table>

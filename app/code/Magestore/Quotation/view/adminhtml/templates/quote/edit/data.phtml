@@ -26,10 +26,18 @@
         </section>
         <section class="admin__page-section quote-summary">
             <div class="admin__page-section-title">
-                <span class="title"><?= /* @escapeNotVerified */ __('Quote History') ?></span>
+                <span class="title"><?= /* @escapeNotVerified */ __('Quote Total') ?></span>
             </div>
             <div class="admin__page-section-content">
-                <?= $block->getChildHtml('comment') ?>
+                <div class="admin__page-section-item quote-comments-history order-comments-history">
+                    <div class="admin__page-section-item-title">
+                        <span class="title"><?= __("Notes for this Order")?></span>
+                    </div>
+                    <?= $block->getChildHtml('comment') ?>
+                </div>
+                <fieldset id="quote-totals" class="admin__fieldset quote-totals order-totals">
+                    <?= $block->getChildHtml('totals') ?>
+                </fieldset>
             </div>
         </section>
     </div>

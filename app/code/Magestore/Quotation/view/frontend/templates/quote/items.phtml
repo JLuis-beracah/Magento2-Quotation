@@ -44,6 +44,11 @@
                     </td>
                 </tr>
             <?php endif ?>
+            <?php
+            if($block->canShowPrice()){
+                echo $block->getChildHtml("quote_totals");
+            }
+            ?>
         </tfoot>
     </table>
 </div>

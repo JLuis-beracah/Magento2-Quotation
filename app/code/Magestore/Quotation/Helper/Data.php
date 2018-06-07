@@ -45,6 +45,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @param $quote
+     * @param $amount
+     * @return mixed
+     */
+    public function formatQuoteBasePrice($quote, $amount){
+        $quoteCurrency =  $this->currencyFactory->create();
+        $quoteCurrency->load($quote->getBaseCurrencyCode());
+        return $quoteCurrency->formatPrecision($amount, 2, [], true, false);
+    }
+
+
+    /**
      *
      * @param string $path
      * @return string

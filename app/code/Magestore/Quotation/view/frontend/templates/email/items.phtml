@@ -34,5 +34,10 @@
                 <?= $block->getItemHtml($_item) ?>
             </tbody>
         <?php endforeach; ?>
+        <?php if($block->canShowPrice()):?>
+            <tfoot class="order-totals">
+            <?= $block->getChildHtml('quote_totals') ?>
+            </tfoot>
+        <?php endif;?>
     </table>
 <?php endif; ?>
