@@ -195,6 +195,7 @@ $quoteUpdatedStoreDate = $block->formatDate(
             <?php /* Billing Address */ ?>
             <div class="admin__page-section-item-title">
                 <span class="title"><?= $block->escapeHtml(__('Billing Address')) ?></span>
+                <div class="actions"><?= /* @noEscape */ $block->getAddressEditLink($quote->getBillingAddress()); ?></div>
             </div>
             <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getBillingAddress()); ?></address>
         </div>
@@ -203,6 +204,7 @@ $quoteUpdatedStoreDate = $block->formatDate(
                 <?php /* Shipping Address */ ?>
                 <div class="admin__page-section-item-title">
                     <span class="title"><?= $block->escapeHtml(__('Shipping Address')) ?></span>
+                    <div class="actions"><?= /* @noEscape */ $block->getAddressEditLink($quote->getShippingAddress()); ?></div>
                 </div>
                 <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getShippingAddress()); ?></address>
             </div>

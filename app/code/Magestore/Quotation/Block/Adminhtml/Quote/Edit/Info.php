@@ -421,4 +421,20 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         }
         return $url;
     }
+
+    /**
+     * Get link to edit quote address page
+     *
+     * @param \Magento\Quote\Model\Quote\Address $address
+     * @param string $label
+     * @return string
+     */
+    public function getAddressEditLink($address, $label = '')
+    {
+        if (empty($label)) {
+            $label = __('Edit');
+        }
+        $url = $this->getUrl('quotation/quote/address', ['address_id' => $address->getId()]);
+        return '<a href="' . $this->escapeUrl($url) . '">' . $this->escapeHtml($label) . '</a>';
+    }
 }
