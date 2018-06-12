@@ -23,7 +23,7 @@ class Sender
     protected $helper;
 
     /**
-     * @var \Magento\Sales\Model\Order\Email\SenderBuilderFactory
+     * @var SenderBuilderFactory
      */
     protected $senderBuilderFactory;
 
@@ -62,7 +62,7 @@ class Sender
     /**
      * Sender constructor.
      * @param \Magestore\Quotation\Helper\Data $helper
-     * @param \Magento\Sales\Model\Order\Email\SenderBuilderFactory $senderBuilderFactory
+     * @param SenderBuilderFactory $senderBuilderFactory
      * @param OrderAddressRenderer $addressRenderer
      * @param Template $templateContainer
      * @param Container $identityContainer
@@ -72,7 +72,7 @@ class Sender
      */
     public function __construct(
         \Magestore\Quotation\Helper\Data $helper,
-        \Magento\Sales\Model\Order\Email\SenderBuilderFactory $senderBuilderFactory,
+        \Magestore\Quotation\Model\Quote\Email\SenderBuilderFactory $senderBuilderFactory,
         \Magento\Sales\Model\Order\Address\Renderer $addressRenderer,
         \Magento\Sales\Model\Order\Email\Container\Template $templateContainer,
         \Magestore\Quotation\Model\Quote\Email\Container $identityContainer,
@@ -106,6 +106,9 @@ class Sender
         $sender = $this->getSender();
 
         try {
+            $fileName = $this->getQuotePdfFileName($quote);
+            $sender->getTransportBuilder()->setPdfFilename($fileName);
+            $sender->getTransportBuilder()->setAttachPdf(true);
             $sender->send();
             $sender->sendCopyTo();
         } catch (\Exception $e) {
@@ -241,5 +244,13 @@ class Sender
         ]);
         $urlPaths = explode("?SID", $url);
         return $urlPaths[0];
+    }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return string
+     */
+    public function getQuotePdfFileName(\Magento\Quote\Api\Data\CartInterface  $quote){
+        return __("Quotation_#%1.pdf", $quote->getId())->__toString();
     }
 }
