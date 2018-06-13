@@ -57,12 +57,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 
     /**
-     *
-     * @param string $path
-     * @return string
+     * @param $path
+     * @param null $storeCode
+     * @return mixed
      */
-    public function getStoreConfig($path){
-        return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    public function getStoreConfig($path, $storeCode = null){
+        return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeCode);
     }
 
     /**

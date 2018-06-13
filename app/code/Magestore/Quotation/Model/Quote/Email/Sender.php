@@ -106,9 +106,12 @@ class Sender
         $sender = $this->getSender();
 
         try {
-            $fileName = $this->getQuotePdfFileName($quote);
-            $sender->getTransportBuilder()->setPdfFilename($fileName);
-            $sender->getTransportBuilder()->setAttachPdf(true);
+            $attachPdf = $this->isAttachQuotationAsPdf($quote->getStore()->getCode());
+            if($attachPdf){
+                $fileName = $this->getQuotePdfFileName($quote);
+                $sender->getTransportBuilder()->setPdfFilename($fileName);
+                $sender->getTransportBuilder()->setAttachPdf(true);
+            }
             $sender->send();
             $sender->sendCopyTo();
         } catch (\Exception $e) {
@@ -252,5 +255,14 @@ class Sender
      */
     public function getQuotePdfFileName(\Magento\Quote\Api\Data\CartInterface  $quote){
         return __("Quotation_#%1.pdf", $quote->getId())->__toString();
+    }
+
+    /**
+     * @param null $storeCode
+     * @return bool
+     */
+    public function isAttachQuotationAsPdf($storeCode = null){
+        $attachPdf = $this->helper->getStoreConfig("quotation/email/send_pdf", $storeCode);
+        return ($attachPdf)?true:false;
     }
 }

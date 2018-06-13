@@ -75,20 +75,23 @@ class TransportBuilder extends \Magento\Framework\Mail\Template\TransportBuilder
      */
     protected function generatePdfAttachment($fileName)
     {
-        $pdfObject = $this->message->getBody();
-        $pdf = new \Zend_Pdf();
-        $page = $pdf->newPage(\Zend_Pdf_Page::SIZE_A4);
-        $pdf->pages[] = $page;
-        $page->setFont(\Zend_Pdf_Font::fontWithName(\Zend_Pdf_Font::FONT_HELVETICA), 20);  //Set Font
-        $page->rawWrite($pdfObject->getContent());
-        $pdfData = $pdf->render();
-        $this->message->createAttachment(
-            $pdfData,
-            'application/pdf',
-            \Zend_Mime::DISPOSITION_ATTACHMENT,
-            \Zend_Mime::ENCODING_BASE64,
-            $fileName
-        );
+        if (class_exists('\Dompdf\Dompdf')) {
+            $template = $this->getTemplate();
+            $html = $template->processTemplate();
+            $dompdf = new \Dompdf\Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->set_option('isHtml5ParserEnabled', true);
+            $dompdf->set_option('isRemoteEnabled', true);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            $this->message->createAttachment(
+                $dompdf->output(),
+                'application/pdf',
+                \Zend_Mime::DISPOSITION_ATTACHMENT,
+                \Zend_Mime::ENCODING_BASE64,
+                $fileName
+            );
+        }
         return $this;
     }
 }

@@ -48,6 +48,11 @@
                     <label>Send Quotation Email Copy Method</label>
                     <source_model>Magento\Config\Model\Config\Source\Email\Method</source_model>
                 </field>
+                <field id="send_pdf" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send PDF as attachment</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Need install the library by the following command: composer require dompdf/dompdf</comment>
+                </field>
             </group>
         </section>
     </system>
