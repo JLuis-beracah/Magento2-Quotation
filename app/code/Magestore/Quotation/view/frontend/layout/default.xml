@@ -19,5 +19,17 @@
                 </arguments>
             </block>
         </referenceBlock>
+        <referenceBlock name="top.links">
+            <block class="Magento\Framework\View\Element\Html\Link\Current"
+                   name="quotation-cart"
+                   after="register-link-new"
+                   ifconfig="quotation/general/enable"
+                   cacheable="false" >
+                <arguments>
+                    <argument name="label" xsi:type="string" translate="true">Quote Me</argument>
+                    <argument name="path" xsi:type="string">quotation/quote</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
     </body>
 </page>
