@@ -6,6 +6,7 @@
 namespace Magestore\Quotation\Controller\Adminhtml\Quote;
 
 use Magento\Backend\Model\View\Result\ForwardFactory;
+use Magestore\Quotation\Model\CustomProduct\Type as CustomProductType;
 
 /**
  * Class QuoteAbstract
@@ -184,13 +185,8 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             $this->_getQuoteProcessModel()->recollectCart();
         }
 
-        if ($createProduct = (boolean)$this->getRequest()->getPost('create_product')) {
-            $addToQuote = (boolean)$this->getRequest()->getPost('add_to_quote');
-            $product = $this->_createProduct();
-            if($product && $addToQuote){
-                $this->_getQuoteProcessModel()->addProduct($product->getId(), 1);
-                $this->_getQuoteProcessModel()->recollectCart();
-            }
+        if ($addCustomProduct = (boolean)$this->getRequest()->getPost('add_custom_product')) {
+            $this->_addCustomProduct();
         }
 
         $this->_getQuoteProcessModel()->saveQuote();
@@ -241,6 +237,34 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             $this->messageManager->addErrorMessage($e->getMessage());
         }
         return $product;
+    }
+
+    /**
+     * Add custom product
+     */
+    protected function _addCustomProduct(){
+        try {
+            $request = $this->getRequest();
+            $params = $request->getParam("product");
+            try{
+                $product = $this->productRepository->get(CustomProductType::DEFAULT_CUSTOM_PRODUCT_SKU);
+                $buyRequest['options'] = $params;
+                $buyRequest["qty"] = 1;
+            }catch (\Exception $e){
+                $product = false;
+            }
+            if($product){
+                $this->_getQuoteProcessModel()->addProduct($product->getId(), $buyRequest);
+                $this->_getQuoteProcessModel()->recollectCart();
+            }
+
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            $this->_objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);
+            $this->messageManager->addExceptionMessage($e);
+        } catch (\Exception $e) {
+            $this->_objectManager->get(\Psr\Log\LoggerInterface::class)->critical($e);
+            $this->messageManager->addErrorMessage($e->getMessage());
+        }
     }
 
     /**

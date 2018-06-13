@@ -505,16 +505,10 @@ define([
                         this.closeModal();
                     }
                 }, {
-                    text: jQuery.mage.__('Create'),
+                    text: jQuery.mage.__('Add To Quote'),
                     'class': 'action primary',
                     click: function () {
-                        self.submit(false);
-                    }
-                }, {
-                    text: jQuery.mage.__('Create And Add To Quote'),
-                    'class': 'action primary',
-                    click: function () {
-                        self.submit(true);
+                        self.submit();
                     }
                 }]
             });
@@ -532,19 +526,15 @@ define([
         },
         /**
          *
-         * @param addToQuote
          * @returns {AdminProduct}
          */
-        submit: function(addToQuote){
+        submit: function(){
             var self = this;
             if(self.isValid()){
                 var formModal = jQuery("#"+self.htmlFormContainerId);
                 var createForm = jQuery("#"+self.htmlFormId);
                 var params = createForm.serializeObject();
-                params.create_product = 1;
-                if(addToQuote){
-                    params.add_to_quote = 1;
-                }
+                params.add_custom_product = 1;
                 quote.loadArea(["items", "info", 'totals'], true, params).done(function(){
                     formModal.modal('closeModal');
                     createForm[0].reset();

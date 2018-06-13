@@ -11,7 +11,13 @@ $_item = $block->getItem();
 ?>
 <tr id="quote-item-row-<?= /* @escapeNotVerified */ $_item->getId() ?>">
     <td class="col name" data-th="<?= $block->escapeHtml(__('Product Name')) ?>">
-        <a href="<?php echo $_item->getProduct()->getUrlInStore();?>"><strong class="product name product-item-name"><?= $block->escapeHtml($_item->getName()) ?></strong></a>
+        <?php if(!$block->isCustomItem()):?>
+        <a href="<?php echo $_item->getProduct()->getUrlInStore();?>">
+        <?php endif; ?>
+            <strong class="product name product-item-name"><?= $block->escapeHtml($_item->getName()) ?></strong>
+        <?php if(!$block->isCustomItem()):?>
+        </a>
+        <?php endif; ?>
         <?php if ($_options = $block->getItemOptions()): ?>
         <dl class="item-options">
         <?php foreach ($_options as $_option) : ?>

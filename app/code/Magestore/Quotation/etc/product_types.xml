@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright © 2018 Magestore. All rights reserved.
+  ~ See COPYING.txt for license details.
+  -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Catalog:etc/product_types.xsd">
+    <type name="quotation_custom_product"
+          label="Quotation Custom Product"
+          modelInstance="Magestore\Quotation\Model\CustomProduct\Type" indexPriority="60" sortOrder="80" isQty="true">
+        <priceModel instance="Magestore\Quotation\Model\CustomProduct\Price" />
+    </type>
+</config>

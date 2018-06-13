@@ -9,6 +9,7 @@
 namespace Magestore\Quotation\Block\Quote\Item\Renderer;
 
 use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
+use Magestore\Quotation\Model\CustomProduct\Type as CustomProductType;
 
 /**
  * Class DefaultRenderer
@@ -120,5 +121,13 @@ class DefaultRenderer extends \Magento\Sales\Block\Order\Item\Renderer\DefaultRe
             $label = $statusLabels[$itemRequestStatus];
         }
         return $label;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustomItem(){
+        $item = $this->getItem();
+        return ($item->getSku() == CustomProductType::DEFAULT_CUSTOM_PRODUCT_SKU)?true:false;
     }
 }

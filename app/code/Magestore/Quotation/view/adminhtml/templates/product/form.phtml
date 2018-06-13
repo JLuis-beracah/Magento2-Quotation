@@ -14,13 +14,13 @@
 
         <div class="admin__field _required">
             <label class="admin__field-label"
-                   for="new_product_name">
+                   for="custom_product_name">
                 <span><?= __("Product Name") ?></span>
             </label>
             <div class="admin__field-control">
                 <input class="admin__control-text required-entry"
                        type="text"
-                       id="new_product_name"
+                       id="custom_product_name"
                        name="product[name]"
                        maxlength="255"/>
             </div>
@@ -28,50 +28,67 @@
 
         <div class="admin__field _required">
             <label class="admin__field-label"
-                   for="new_product_sku">
-                <span><?= __("SKU") ?></span>
-            </label>
-            <div class="admin__field-control">
-                <input class="admin__control-text required-entry"
-                       type="text"
-                       id="new_product_sku"
-                       name="product[sku]"
-                       maxlength="255"/>
-            </div>
-        </div>
-
-        <div class="admin__field _required">
-            <label class="admin__field-label"
-                   for="new_product_price">
+                   for="custom_product_price">
                 <span><?= __("Price") ?></span>
             </label>
             <div class="admin__field-control">
                 <input class="admin__control-text required-entry validate-number"
                        type="text"
-                       id="new_product_price"
+                       id="custom_product_price"
                        name="product[price]"/>
+            </div>
+        </div>        
+        
+        <div class="admin__field">
+            <label class="admin__field-label"
+                   for="custom_product_tax_class">
+                <span><?= __("Tax Class") ?></span>
+            </label>
+            <div class="admin__field-control">
+                <select class="admin__control-select"
+                        id="custom_product_tax_class"
+                        name="product[tax_class_id]">
+                    <?php foreach ($block->getTaxClasses() as $taxClass):?>
+                        <option value="<?= $taxClass["value"]?>"><?= $taxClass["label"]?></option>
+                    <?php endforeach;?>
+                </select>
             </div>
         </div>
 
         <div class="admin__field">
             <label class="admin__field-label"
-                   for="new_product_description">
+                   for="custom_product_tax_class">
+                <span><?= __("Shipable") ?></span>
+            </label>
+            <div class="admin__field-control">
+                <select class="admin__control-select"
+                        id="custom_product_tax_class"
+                        name="product[is_virtual]">
+                    <option value="0"><?= __("Yes")?></option>
+                    <option value="1"><?= __("No")?></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="admin__field">
+            <label class="admin__field-label"
+                   for="custom_product_description">
                 <span><?= __("Description") ?></span>
             </label>
             <div class="admin__field-control">
             <textarea class="admin__control-textarea"
-                      id="new_product_description"
+                      id="custom_product_description"
                       name="product[description]"></textarea>
             </div>
         </div>
 
 <!--        <div class="admin__field">-->
 <!--            <label class="admin__field-label"-->
-<!--                   for="new_product_image">-->
+<!--                   for="custom_product_image">-->
 <!--                <span>--><?//= __("Product Image") ?><!--</span>-->
 <!--            </label>-->
 <!--            <div class="admin__field-control">-->
-<!--                <input id="new_product_image"-->
+<!--                <input id="custom_product_image"-->
 <!--                       type="file"-->
 <!--                       name="image"-->
 <!--                       multiple="multiple" class=""/>-->
