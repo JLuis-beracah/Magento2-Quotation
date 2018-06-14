@@ -221,6 +221,20 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     ]
                 );
         }
+
+        if (version_compare($context->getVersion(), '1.1.1', '<')) {
+            $setup->getConnection()
+                ->addColumn(
+                    $setup->getTable('quote_item'),
+                    'admin_discount_percentage',
+                    [
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                        'nullable' => true,
+                        'default' => 0,
+                        'comment' => 'Admin Discount Percentage'
+                    ]
+                );
+        }
         $setup->endSetup();
     }
 }

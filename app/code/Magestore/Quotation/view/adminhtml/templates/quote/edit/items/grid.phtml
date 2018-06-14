@@ -155,7 +155,28 @@ $_items = $block->getItems();
                         </td>
                         <td class="col-discount col-price">
                             <?= /* @escapeNotVerified */ $block->formatPrice(-$_item->getTotalDiscountAmount()) ?>
-                       </td>
+                            <div class="discount-price-block">
+                                <input id="item_use_discount_<?= /* @escapeNotVerified */ $_item->getId() ?>"
+                                       class="admin__control-checkbox"
+                                       name="item[<?= /* @escapeNotVerified */ $_item->getId() ?>][use_discount]"
+                                       <?php if (!$_item->getNoDiscount()): ?>checked="checked"<?php endif; ?>
+                                       value="1"
+                                       onclick="quote.toggleAdminDiscount(this, 'item_admin_discount_<?= /* @escapeNotVerified */ $_item->getId() ?>');"
+                                       type="checkbox" />
+                                <label
+                                        for="item_use_discount_<?= /* @escapeNotVerified */ $_item->getId() ?>"
+                                        class="normal admin__field-label">
+                                    <span><?= /* @escapeNotVerified */ __('Apply') ?></span></label>
+                            </div>
+                            <input id="item_admin_discount_<?= /* @escapeNotVerified */ $_item->getId() ?>"
+                                   name="item[<?= /* @escapeNotVerified */ $_item->getId() ?>][admin_discount_percentage]"
+                                   value="<?= /* @escapeNotVerified */  ($_item->getAdminDiscountPercentage())?$_item->getAdminDiscountPercentage():"" ?>"
+                                    <?php if ($_item->getNoDiscount()): ?>
+                                   style="display:none"
+                                    <?php endif; ?>
+                                   placeholder="%"
+                                   class="input-text item-price item-admin-discount-percentage admin__control-text"/>
+                        </td>
                         <td class="col-price col-row-subtotal">
                             <?= $block->getItemRowTotalWithDiscountHtml($_item) ?>
                         </td>

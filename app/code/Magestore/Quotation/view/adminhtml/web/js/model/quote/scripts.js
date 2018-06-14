@@ -342,6 +342,17 @@ define([
             }
         },
 
+        toggleAdminDiscount: function(checkbox, elemId) {
+            if (checkbox.checked) {
+                $(elemId).disabled = false;
+                $(elemId).show();
+            }
+            else {
+                $(elemId).disabled = true;
+                $(elemId).hide();
+            }
+        },
+
         submit : function()
         {
             jQuery('#edit_form').trigger('processStart');

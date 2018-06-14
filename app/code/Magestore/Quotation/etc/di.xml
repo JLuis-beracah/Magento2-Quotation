@@ -17,4 +17,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\SalesRule\Model\Validator">
+        <plugin name="quotation_quote_add_admin_discount" type="Magestore\Quotation\Plugin\SalesRule\Validator" sortOrder="5" />
+    </type>
 </config>

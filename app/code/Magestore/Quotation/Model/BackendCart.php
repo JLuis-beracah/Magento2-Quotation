@@ -88,6 +88,12 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
                     $item->setOriginalCustomPrice(null);
                     $item->setCustomPrice(null);
                 }
+                if($item && isset($info['admin_discount_percentage'])){
+                    $percentage = intval($info['admin_discount_percentage']);
+                    $percentage = min(100, $percentage);
+                    $percentage = max(0, $percentage);
+                    $item->setAdminDiscountPercentage($percentage);
+                }
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->recollectCart();

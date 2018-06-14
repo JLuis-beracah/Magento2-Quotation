@@ -10,6 +10,7 @@
         <quotation>
             <general>
                 <enable>1</enable>
+                <use_admin_discount_with_promotion_rules>0</use_admin_discount_with_promotion_rules>
             </general>
             <email>
                 <enabled>1</enabled>

@@ -16,3 +16,8 @@
 #quotation_product_create_form_container #quotation_product_create_form_html{
     display: block;
 }
+
+.admin__control-text.item-admin-discount-percentage{
+    width: 10rem;
+    margin: 5px 0px;
+}
