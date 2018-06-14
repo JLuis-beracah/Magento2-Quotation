@@ -145,6 +145,10 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             if(isset($expirationDate)){
                 $this->_getQuotationManagement()->setExpirationDate($quote, $expirationDate);
             }
+            $salesrep = $this->getRequest()->getPost('salesrep');
+            if(isset($salesrep)){
+                $this->_getQuotationManagement()->setSalesrep($quote, $salesrep);
+            }
             $this->_initQuote();
         }
         $this->_getQuoteProcessModel()->setQuote($this->_getQuote());

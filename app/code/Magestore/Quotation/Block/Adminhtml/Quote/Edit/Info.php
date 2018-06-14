@@ -54,6 +54,11 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
     protected $toOrderAddress;
 
     /**
+     * @var \Magento\User\Model\ResourceModel\User\CollectionFactory
+     */
+    protected $userCollectionFactory;
+
+    /**
      * Info constructor.
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Backend\Model\Session\Quote $sessionQuote
@@ -69,6 +74,7 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      * @param \Magento\Customer\Model\Metadata\ElementFactory $elementFactory
      * @param \Magento\Sales\Model\Order\Address\Renderer $addressRenderer
      * @param ConvertQuoteAddressToOrderAddress $toOrderAddress
+     * @param \Magento\User\Model\ResourceModel\User\CollectionFactory $userCollectionFactory
      * @param array $data
      */
     public function __construct(
@@ -86,6 +92,7 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         \Magento\Customer\Model\Metadata\ElementFactory $elementFactory,
         \Magento\Sales\Model\Order\Address\Renderer $addressRenderer,
         ConvertQuoteAddressToOrderAddress $toOrderAddress,
+        \Magento\User\Model\ResourceModel\User\CollectionFactory $userCollectionFactory,
         array $data = []
     ) {
         $this->adminHelper = $adminHelper;
@@ -94,6 +101,7 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         $this->_metadataElementFactory = $elementFactory;
         $this->addressRenderer = $addressRenderer;
         $this->toOrderAddress = $toOrderAddress;
+        $this->userCollectionFactory = $userCollectionFactory;
         parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $registry, $quoteSession, $quoteCart, $quotationManagement, $data);
     }
 
@@ -436,5 +444,24 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
         }
         $url = $this->getUrl('quotation/quote/address', ['address_id' => $address->getId()]);
         return '<a href="' . $this->escapeUrl($url) . '">' . $this->escapeHtml($label) . '</a>';
+    }
+
+    /**
+     * @return array
+     */
+    public function getSalesreps(){
+        $salesreps = [
+            ["id" => 0, "name" => __("Select Sales Representative")]
+        ];
+        $adminUsers = $this->userCollectionFactory->create()->addFieldToFilter('is_active', 1);
+        if($adminUsers->getSize() > 0){
+            foreach ($adminUsers as $adminUser){
+                $salesreps[] = [
+                    "id" => $adminUser->getId(),
+                    "name" => $adminUser->getFirstname()." ".$adminUser->getLastname()
+                ];
+            }
+        }
+        return $salesreps;
     }
 }

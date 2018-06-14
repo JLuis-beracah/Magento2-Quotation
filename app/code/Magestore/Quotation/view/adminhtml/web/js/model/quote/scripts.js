@@ -177,6 +177,20 @@ define([
                 expiration_date:expirationDate
             });
         },
+        salesrepFieldsBind : function(elementId){
+            if($(elementId)){
+                var self = this;
+                var element = jQuery("#"+elementId);
+                element.change(function(){
+                    self.salesrepFieldChange(element.val());
+                });
+            }
+        },
+        salesrepFieldChange : function(salesrep){
+            this.saveData({
+                salesrep:salesrep
+            });
+        },
 
         commentFieldsBind : function(container){
             if($(container)){

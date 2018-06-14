@@ -647,4 +647,18 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         $collection->setQuoteFilter($quote);
         return $collection;
     }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param int $salesrep
+     * @return \Magento\Quote\Api\Data\CartInterface
+     */
+    public function setSalesrep(\Magento\Quote\Api\Data\CartInterface $quote, $salesrep = 0){
+        $quote->setData("salesrep", $salesrep);
+        if($quote->getId()){
+            $this->quoteRepository->save($quote);
+        }
+        return $quote;
+    }
+
 }

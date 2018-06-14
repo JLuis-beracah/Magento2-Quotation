@@ -197,4 +197,12 @@ interface QuotationManagementInterface
      * @return \Magestore\Quotation\Model\ResourceModel\Quote\Comment\History\Collection
      */
     public function getCommentHistory(\Magento\Quote\Api\Data\CartInterface $quote);
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param int $salesrep
+     * @return \Magento\Quote\Api\Data\CartInterface
+     */
+    public function setSalesrep(\Magento\Quote\Api\Data\CartInterface $quote, $salesrep = 0);
+
 }

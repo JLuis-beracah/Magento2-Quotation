@@ -133,6 +133,20 @@ $quoteUpdatedStoreDate = $block->formatDate(
                             </script>
                         </td>
                     </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Assign Sales Representative')) ?></th>
+                        <td>
+                            <select name="quote-request-salesrep"
+                                    id="quote-request-salesrep-data"
+                                    class="admin__control-select">
+                                <?php foreach ($block->getSalesreps() as $salesrep):?>
+                                    <option value="<?= $salesrep["id"]?>"
+                                        <?php echo ($salesrep["id"] == $quote->getSalesrep())?"selected":"";?>
+                                    ><?= $salesrep["name"]?></option>
+                                <?php endforeach;?>
+                            </select>
+                        </td>
+                    </tr>
             </table>
             </div>
         </div>
@@ -214,6 +228,7 @@ $quoteUpdatedStoreDate = $block->formatDate(
 
 <script>
     require(["Magestore_Quotation/js/model/quote/form"], function(){
-        quote.expirationFieldsBind('quote-request-expiration-data')
+        quote.expirationFieldsBind('quote-request-expiration-data');
+        quote.salesrepFieldsBind('quote-request-salesrep-data');
     });
 </script>
