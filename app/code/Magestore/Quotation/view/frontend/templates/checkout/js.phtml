@@ -4,9 +4,26 @@
         'jquery',
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/quote',
-    ], function($, checkoutData, quote) {
+        'uiRegistry'
+    ], function($, checkoutData, quote, registry) {
         var isCheckoutQuotation = window.magestoreQuotationConfigProvider.is_checkout_quotation;
         var shippingAddress = window.magestoreQuotationConfigProvider.shipping_address;
         var billingAddress = window.magestoreQuotationConfigProvider.billing_address;
+        if(isCheckoutQuotation){
+            registry.async('checkoutProvider')(function (checkoutProvider) {
+                if (shippingAddress) {
+                    checkoutProvider.set(
+                        'shippingAddress',
+                        $.extend(true, {}, checkoutProvider.get('shippingAddress'), shippingAddress)
+                    );
+                }
+                if (billingAddress) {
+                    checkoutProvider.set(
+                        'billingAddress',
+                        $.extend(true, {}, checkoutProvider.get('billingAddress'), billingAddress)
+                    );
+                }
+            });
+        }
     })
 </script>

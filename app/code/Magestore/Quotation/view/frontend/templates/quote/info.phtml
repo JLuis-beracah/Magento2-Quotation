@@ -27,7 +27,7 @@
                 <span><?= /* @escapeNotVerified */ __('Shipping Method') ?></span>
             </strong>
             <div class="box-content">
-                <?= /* @escapeNotVerified */ __('Shipping & Handling price varies. Please select required quantity and checkout online to see applicable price.') ?>
+                <?= /* @escapeNotVerified */ $block->getShippingMethodInfo() ?>
             </div>
         </div>
     <?php endif; ?>

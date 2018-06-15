@@ -91,6 +91,18 @@ class Totals extends \Magento\Sales\Block\Order\Totals
             ['code' => 'subtotal', 'value' => $source->getSubtotal(), 'label' => __('Subtotal')]
         );
 
+        if($source->getShippingAddress()->getShippingMethod()){
+            $this->_totals['shipping'] = new \Magento\Framework\DataObject(
+                [
+                    'code' => 'shipping',
+                    'field' => 'shipping',
+                    'strong' => true,
+                    'value' => $source->getShippingAddress()->getShippingAmount(),
+                    'label' => __('Shipping & Handling (%1)', $source->getShippingAddress()->getShippingDescription()),
+                ]
+            );
+        }
+
         $this->_totals['grand_total'] = new \Magento\Framework\DataObject(
             [
                 'code' => 'grand_total',

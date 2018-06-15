@@ -105,4 +105,18 @@ class Info extends \Magento\Framework\View\Element\Template
         }
         return $statusLabel;
     }
+
+    /**
+     * @return \Magento\Framework\Phrase|string
+     */
+    public function getShippingMethodInfo(){
+        $shippingMethodInfo = __('Shipping & Handling price varies. Please select required quantity and checkout online to see applicable price.');
+        $quote = $this->getQuote();
+        if($quote){
+            if($quote->getShippingAddress()->getShippingMethod() == "admin_shipping_standard"){
+                $shippingMethodInfo = $quote->getShippingAddress()->getShippingDescription();
+            }
+        }
+        return $shippingMethodInfo;
+    }
 }

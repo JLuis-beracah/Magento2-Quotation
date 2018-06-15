@@ -129,14 +129,16 @@ class Adminshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier impl
         $rate->setCost($this->getConfigData('price'));
 
         $quotationRequest = $this->getQuotationRequest();
-        $adminShippingAmount = $quotationRequest->getAdminShippingAmount();
-        $adminShippingDescription = $quotationRequest->getAdminShippingDescription();
-        if($adminShippingAmount !== null){
-            $rate->setPrice($adminShippingAmount);
-            $rate->setCost($adminShippingAmount);
-        }
-        if($adminShippingDescription){
-            $rate->setMethodTitle($adminShippingDescription);
+        if($quotationRequest){
+            $adminShippingAmount = $quotationRequest->getAdminShippingAmount();
+            $adminShippingDescription = $quotationRequest->getAdminShippingDescription();
+            if($adminShippingAmount !== null){
+                $rate->setPrice($adminShippingAmount);
+                $rate->setCost($adminShippingAmount);
+            }
+            if($adminShippingDescription){
+                $rate->setMethodTitle($adminShippingDescription);
+            }
         }
         return $rate;
     }
@@ -161,12 +163,10 @@ class Adminshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier impl
         if($areaCode  === 'adminhtml'){
             return $this->backendQuotationCart->getQuote();
         }
-        if($areaCode  === 'frontend'){
-            $quote = $this->checkoutCart->getQuote();
-            $quotationRequestId = $quote->getQuotationRequestId();
-            if($quotationRequestId){
-                return $this->quotationManagement->getQuoteRequest($quotationRequestId);
-            }
+        $quote = $this->checkoutCart->getQuote();
+        $quotationRequestId = $quote->getQuotationRequestId();
+        if($quotationRequestId){
+            return $this->quotationManagement->getQuoteRequest($quotationRequestId);
         }
         return null;
     }
@@ -185,16 +185,19 @@ class Adminshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier impl
      */
     public function isActive()
     {
-        $areaCode = $this->getCurrentArea();
-        if($areaCode  === 'adminhtml'){
-            return ($this->_request->getRouteName() == "quotation")?true:false;
-        }
-        if($areaCode  === 'frontend'){
-            $quote = $this->checkoutCart->getQuote();
-            $quotationRequestId = $quote->getQuotationRequestId();
-            $shipMethod = $quote->getShippingAddress()->getShippingMethod();
-            if($quotationRequestId && ($shipMethod == $this->getShippingMethodCode())){
-                return true;
+        $active = $this->getConfigData('active');
+        if ($active == 1 || $active == 'true'){
+            $areaCode = $this->getCurrentArea();
+            if($areaCode  === 'adminhtml'){
+                return ($this->_request->getRouteName() == "quotation")?true:false;
+            }
+            if($areaCode  === 'frontend'){
+                $quote = $this->checkoutCart->getQuote();
+                $quotationRequestId = $quote->getQuotationRequestId();
+                $shipMethod = $quote->getShippingAddress()->getShippingMethod();
+                if($quotationRequestId && ($shipMethod == $this->getShippingMethodCode())){
+                    return true;
+                }
             }
         }
         return false;
