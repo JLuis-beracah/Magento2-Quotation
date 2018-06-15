@@ -38,6 +38,8 @@ define([
             this.loadBaseUrl    = false;
             this.quoteId     = data.quote_id ? data.quote_id : false;
             this.overlayData = $H({});
+            this.isOnlyVirtualProduct = false;
+            this.isShippingMethodReseted = data.shipping_method_reseted ? data.shipping_method_reseted : false;
             jQuery.async('#quote-items', (function(){
                 this.dataArea = new QuoteFormArea('data', $(this.getAreaId('data')), this);
                 this.itemsArea = Object.extend(new QuoteFormArea('items', $(this.getAreaId('items')), this), {
@@ -107,7 +109,7 @@ define([
 
         setCurrencyId : function(id){
             this.currencyId = id;
-            this.loadArea(['data', 'info', 'totals'], true);
+            this.loadArea(['data', 'info', 'totals', 'shipping_method'], true);
         },
 
         setCurrencySymbol : function(symbol){
@@ -115,12 +117,12 @@ define([
         },
 
         addProduct : function(id){
-            this.loadArea(['items', 'info', 'totals'], true, {add_product:id});
+            this.loadArea(['items', 'info', 'totals', 'shipping_method'], true, {add_product:id, reset_shipping: true});
         },
 
         removeQuoteItem : function(id){
-            this.loadArea(['items', 'info', 'totals'], true,
-                {remove_item:id, from:'quote'});
+            this.loadArea(['items', 'info', 'totals', 'shipping_method'], true,
+                {remove_item:id, from:'quote', reset_shipping: true});
         },
 
 
@@ -147,7 +149,7 @@ define([
                 }
             }
             self.quoteItemChanged = false;
-            self.loadArea(["items", "info", 'totals'], true, fieldsPrepare);
+            self.loadArea(["items", "info", 'totals', 'shipping_method'], true, fieldsPrepare);
         },
 
         itemsOnchangeBind : function(){
@@ -455,7 +457,7 @@ define([
                 actions: {
                     confirm: function() {
                         var params = {quote_request_action: 'send'};
-                        self.loadArea(["items", "info", 'totals'], true, params).done(function(){
+                        self.loadArea(["items", "info", 'totals', 'shipping_method'], true, params).done(function(){
                             disableElements('save_as_draft');
                             // disableElements('decline');
                         });
@@ -493,7 +495,7 @@ define([
                 actions: {
                     confirm: function() {
                         var params = {quote_request_action: 'decline'};
-                        self.loadArea(["items", "info", 'totals'], true, params).done(function(){
+                        self.loadArea(["items", "info", 'totals','shipping_method'], true, params).done(function(){
                             disableElements('save_as_draft');
                             disableElements('decline');
                             disableElements('send');
@@ -504,7 +506,33 @@ define([
                     }
                 }
             });
-        }
+        },
+
+        resetShippingMethod : function(data){
+            var areasToLoad = ['totals', 'items'];
+            if(!this.isOnlyVirtualProduct) {
+                areasToLoad.push('shipping_method');
+            }
+
+            data['reset_shipping'] = 1;
+            this.isShippingMethodReseted = true;
+            this.loadArea(areasToLoad, true, data);
+        },
+
+        loadShippingRates : function(){
+            this.isShippingMethodReseted = false;
+            this.loadArea(['shipping_method', 'totals'], true, {collect_shipping_rates: 1});
+        },
+
+        setShippingMethod : function(method){
+            var data = {};
+            data['quote[shipping_method]'] = method;
+            if(method == "admin_shipping_standard"){
+                data['quote[admin_shipping_amount]'] = ($("admin_shipping_custom_price").value != null)?$("admin_shipping_custom_price").value:null;
+                data['quote[admin_shipping_description]'] = $("admin_shipping_custom_description").value;
+            }
+            this.loadArea(['shipping_method', 'totals'], true, data);
+        },
     };
 
     window.AdminProduct = new Class.create();
@@ -560,7 +588,8 @@ define([
                 var createForm = jQuery("#"+self.htmlFormId);
                 var params = createForm.serializeObject();
                 params.add_custom_product = 1;
-                quote.loadArea(["items", "info", 'totals'], true, params).done(function(){
+                params.reset_shipping = 1;
+                quote.loadArea(["items", "info", 'totals', 'shipping_method'], true, params).done(function(){
                     formModal.modal('closeModal');
                     createForm[0].reset();
                 });

@@ -21,3 +21,8 @@
     width: 10rem;
     margin: 5px 0px;
 }
+#quote-shipping_method{
+    border-bottom: 1px solid #cccccc;
+    margin-bottom: 1.7rem;
+    padding-bottom: 10px;
+}

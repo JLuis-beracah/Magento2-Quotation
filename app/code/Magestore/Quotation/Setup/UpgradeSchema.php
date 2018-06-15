@@ -235,6 +235,29 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     ]
                 );
         }
+        if (version_compare($context->getVersion(), '1.1.2', '<')) {
+            $setup->getConnection()->addColumn(
+                $setup->getTable('quote'),
+                'admin_shipping_amount',
+                array(
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'nullable' => true,
+                    'length' => '12,4',
+                    'comment' => 'Admin Shipping Amount'
+                )
+            );
+
+            $setup->getConnection()->addColumn(
+                $setup->getTable('quote'),
+                'admin_shipping_description',
+                array(
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'length' => '255',
+                    'comment' => 'Admin Shipping Description'
+                )
+            );
+        }
         $setup->endSetup();
     }
 }

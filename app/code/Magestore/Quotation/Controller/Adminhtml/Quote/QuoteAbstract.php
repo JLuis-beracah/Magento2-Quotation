@@ -154,6 +154,13 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
         $this->_getQuoteProcessModel()->setQuote($this->_getQuote());
 
         /**
+         * Import post data, in order to make quote valid
+         */
+        if ($data = $this->getRequest()->getPost('quote')) {
+            $this->_getQuoteProcessModel()->importPostData($data);
+        }
+
+        /**
          * Adding product to quote from shopping cart, wishlist etc.
          */
         if ($productId = (int)$this->getRequest()->getPost('add_product')) {
@@ -191,6 +198,24 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
 
         if ($addCustomProduct = (boolean)$this->getRequest()->getPost('add_custom_product')) {
             $this->_addCustomProduct();
+        }
+
+        /**
+         * Change shipping address flag
+         */
+        if (!$this->_getQuoteProcessModel()->getQuote()->isVirtual() && $this->getRequest()->getPost('reset_shipping')
+        ) {
+            $this->_getQuoteProcessModel()->resetShippingMethod(true);
+        }
+
+        /**
+         * Collecting shipping rates
+         */
+        if (!$this->_getQuoteProcessModel()->getQuote()->isVirtual() && $this->getRequest()->getPost(
+                'collect_shipping_rates'
+            )
+        ) {
+            $this->_getQuoteProcessModel()->collectShippingRates();
         }
 
         $this->_getQuoteProcessModel()->saveQuote();

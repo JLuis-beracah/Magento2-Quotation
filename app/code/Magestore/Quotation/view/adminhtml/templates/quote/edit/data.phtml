@@ -26,7 +26,6 @@
         </section>
         <section class="admin__page-section quote-summary">
             <div class="admin__page-section-title">
-                <span class="title"><?= /* @escapeNotVerified */ __('Quote Total') ?></span>
             </div>
             <div class="admin__page-section-content">
                 <div class="admin__page-section-item quote-comments-history order-comments-history">
@@ -34,6 +33,9 @@
                         <span class="title"><?= __("Notes for this Order")?></span>
                     </div>
                     <?= $block->getChildHtml('comment') ?>
+                </div>
+                <div id="quote-shipping_method" class="admin__page-section-item quote-shipping-method order-shipping-method">
+                    <?= $block->getChildHtml('shipping_method') ?>
                 </div>
                 <fieldset id="quote-totals" class="admin__fieldset quote-totals order-totals">
                     <?= $block->getChildHtml('totals') ?>

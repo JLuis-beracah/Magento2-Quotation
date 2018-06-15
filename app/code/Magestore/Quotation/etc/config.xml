@@ -21,5 +21,15 @@
                 <send_pdf>0</send_pdf>
             </email>
         </quotation>
+        <carriers>
+            <admin_shipping>
+                <active>1</active>
+                <model>Magestore\Quotation\Model\Shipping\Method\Adminshipping</model>
+                <title>Admin Shipping</title>
+                <name>Standard</name>
+                <price>0</price>
+                <sort_order>10</sort_order>
+            </admin_shipping>
+        </carriers>
     </default>
 </config>

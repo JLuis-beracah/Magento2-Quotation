@@ -30,6 +30,13 @@
                             <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items\Grid" template="Magestore_Quotation::quote/edit/items/grid.phtml" name="items_grid">
                             </block>
                         </block>
+                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method"
+                               template="Magento_Sales::order/create/abstract.phtml"
+                               name="shipping_method">
+                            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method\Form"
+                                   template="Magestore_Quotation::quote/edit/shipping/method/form.phtml"
+                                   name="quote_edit_shipping_form" as="form"/>
+                        </block>
                         <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Comment" template="Magestore_Quotation::quote/edit/comment.phtml" name="comment"/>
                         <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Totals" template="Magestore_Quotation::quote/edit/totals.phtml" name="totals"/>
                     </block>

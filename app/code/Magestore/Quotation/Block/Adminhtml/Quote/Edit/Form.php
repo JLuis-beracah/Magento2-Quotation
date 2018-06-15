@@ -168,7 +168,7 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
     {
         $data = [];
         $data['quote_id'] = $this->getQuote()->getId();
-
+        $data['shipping_method_reseted'] = !(bool)$this->getQuote()->getShippingAddress()->getShippingMethod();
         return $this->_jsonEncoder->encode($data);
     }
 }

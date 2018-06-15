@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+
+            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method"
+                   template="Magento_Sales::order/create/abstract.phtml"
+                   name="shipping_method">
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method\Form"
+                       template="Magestore_Quotation::quote/edit/shipping/method/form.phtml"
+                       name="quote_edit_shipping_form" as="form"/>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

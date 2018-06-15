@@ -105,4 +105,38 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
 
         return $this;
     }
+
+    /**
+     * @param array $data
+     * @return $this|\Magento\Sales\Model\AdminOrder\Create
+     */
+    public function importPostData($data)
+    {
+        parent::importPostData($data);
+        if($this->getShippingMethod() && $this->getShippingMethod() == 'admin_shipping_standard') {
+            if (isset($data['admin_shipping_amount'])) {
+                $shippingPrice = $this->_parseAmount($data['admin_shipping_amount']);
+                $this->getQuote()->setAdminShippingAmount($shippingPrice);
+            }
+            if (isset($data['admin_shipping_description'])) {
+                $this->getQuote()->setAdminShippingDescription($data['admin_shipping_description']);
+            }
+            $this->collectShippingRates();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $amount
+     * @return float|int|null
+     */
+    public function _parseAmount($amount){
+        if($amount === ""){
+            return null;
+        }
+        $amount = floatval($amount);
+        $amount = $amount > 0 ? $amount : 0;
+        return $amount;
+    }
 }
