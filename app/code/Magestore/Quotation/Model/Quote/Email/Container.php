@@ -10,7 +10,7 @@ class Container extends \Magento\Sales\Model\Order\Email\Container\Container imp
     /**
      * Configuration paths
      */
-    const XML_PATH_EMAIL_COPY_METHOD = 'quotation/order/copy_method';
+    const XML_PATH_EMAIL_COPY_METHOD = 'quotation/email/copy_method';
     const XML_PATH_EMAIL_COPY_TO = 'quotation/email/copy_to';
     const XML_PATH_EMAIL_IDENTITY = 'quotation/email/identity';
     const XML_PATH_EMAIL_TEMPLATE = 'quotation/email/quote_template';

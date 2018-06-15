@@ -16,6 +16,7 @@
                 <enabled>1</enabled>
                 <quote_template>quotation_email_quote_template</quote_template>
                 <quote_guest_template>quotation_email_quote_guest_template</quote_guest_template>
+                <quote_new_comment_template>quotation_email_quote_new_comment_template</quote_new_comment_template>
                 <identity>general</identity>
                 <copy_method>bcc</copy_method>
                 <send_pdf>0</send_pdf>

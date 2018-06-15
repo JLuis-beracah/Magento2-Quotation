@@ -35,6 +35,11 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
     protected $quoteSender;
 
     /**
+     * @var \Magestore\Quotation\Model\Quote\Comment\Email\Sender
+     */
+    protected $quoteCommentSender;
+
+    /**
      * @var \Magestore\Quotation\Helper\Data
      */
     protected $helper;
@@ -64,7 +69,8 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
-     * @param Quote\Email\Sender $quoteSender
+     * @param \Magestore\Quotation\Model\Quote\Email\Sender $quoteSender
+     * @param \Magestore\Quotation\Model\Quote\Comment\Email\Sender
      * @param \Magestore\Quotation\Helper\Data $helper
      * @param \Magento\Checkout\Model\Cart $checkoutCart
      * @param \Psr\Log\LoggerInterface $logger
@@ -76,6 +82,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory,
         \Magestore\Quotation\Model\Quote\Email\Sender $quoteSender,
+        \Magestore\Quotation\Model\Quote\Comment\Email\Sender $quoteCommentSender,
         \Magestore\Quotation\Helper\Data $helper,
         \Magento\Checkout\Model\Cart $checkoutCart,
         \Psr\Log\LoggerInterface $logger,
@@ -86,6 +93,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         $this->quoteRepository = $quoteRepository;
         $this->collectionFactory = $collectionFactory;
         $this->quoteSender = $quoteSender;
+        $this->quoteCommentSender = $quoteCommentSender;
         $this->helper = $helper;
         $this->checkoutCart = $checkoutCart;
         $this->logger = $logger;
@@ -617,6 +625,9 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
             $history->setIsCustomerNotified($notify);
             $this->quoteCommentHistoryRepository->save($history);
             $this->updateStatus($quote, $status, $status);
+            if($notify){
+                $this->quoteCommentSender->send($history);
+            }
         }
         return $history;
     }

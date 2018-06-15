@@ -1,0 +1,30 @@
+<!--
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<!--@subject {{trans "New update on your quote request at %store_name" store_name=$store.getFrontendName()}} @-->
+{{template config_path="design/email/header_template"}}
+<table>
+    <tr class="email-intro">
+        <td>
+            <p class="greeting">{{var customer_name}}</p>
+            <p>
+                {{trans 'Thank you for the quote request, your quotation has some news:'}}
+            </p>
+        </td>
+    </tr>
+    <tr class="email-summary">
+        <td>
+            <p>{{trans 'New comment: '}} <span class="no-link">{{var comment}}</span></p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>{{trans 'For more details or to place an order please visit the '}}<a href="{{var quote_detail_url}}">{{trans 'Quote Details page'}}</a></p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

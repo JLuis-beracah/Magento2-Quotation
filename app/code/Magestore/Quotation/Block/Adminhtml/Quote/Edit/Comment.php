@@ -82,7 +82,7 @@ class Comment extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEd
      */
     public function canSendCommentEmail()
     {
-        return false;
+        return true;
     }
 
 

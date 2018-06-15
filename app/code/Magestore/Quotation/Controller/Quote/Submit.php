@@ -104,13 +104,15 @@ class Submit extends \Magestore\Quotation\Controller\AbstractAction
         $customerIsGuest = ($customerSession->isLoggedIn())?false:true;
         $email = $this->getRequest()->getParam('email');
         $remark = $this->getRequest()->getParam('remark');
-
         $this->quotationCart->getQuote()->setCustomerIsGuest($customerIsGuest);
         $this->quotationCart->getQuote()->setCustomerEmail($email);
         $this->quotationCart->getQuote()->setCustomerNote($remark);
         $this->quotationCart->getQuote()->setShippingAddress($addressDataObject);
         $this->quotationCart->getQuote()->setBillingAddress($addressDataObject);
         $this->quotationCart->save();
+        if($remark){
+            $this->quotationCart->addComment($remark);
+        }
         $this->quotationCart->submit();
         $resultRedirect = $this->createRedirectResult();
         return $resultRedirect->setUrl($this->_url->getUrl('*/*/success'));

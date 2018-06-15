@@ -290,6 +290,14 @@ class Cart extends \Magento\Checkout\Model\Cart
     }
 
     /**
+     * @param $comment
+     */
+    public function addComment($comment){
+        $quote = $this->getQuote();
+        $this->quotationManagement->addCustomterComment($quote,  $comment);
+    }
+
+    /**
      * @return $this
      */
     public function submit(){

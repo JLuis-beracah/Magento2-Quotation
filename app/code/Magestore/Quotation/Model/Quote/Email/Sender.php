@@ -5,42 +5,18 @@
  */
 namespace Magestore\Quotation\Model\Quote\Email;
 
-use Magento\Sales\Model\Order\Address\Renderer as OrderAddressRenderer;
-use Magento\Sales\Model\Order\Email\Container\IdentityInterface;
-use Magento\Sales\Model\Order\Email\Container\Template;
 use Magento\Quote\Model\Quote\Address\ToOrderAddress as ConvertQuoteAddressToOrderAddress;
-use Magento\Framework\Event\ManagerInterface;
 
 /**
  * Class Sender
  * @package Magestore\Quotation\Model\Quote
  */
-class Sender
+class Sender extends \Magestore\Quotation\Model\Quote\Email\AbstractSender
 {
     /**
-     * @var \Magestore\Quotation\Helper\Data
-     */
-    protected $helper;
-
-    /**
-     * @var SenderBuilderFactory
-     */
-    protected $senderBuilderFactory;
-
-    /**
-     * @var OrderAddressRenderer
+     * @var \Magento\Sales\Model\Order\Address\Renderer
      */
     protected $addressRenderer;
-
-    /**
-     * @var Template
-     */
-    protected $templateContainer;
-
-    /**
-     * @var IdentityInterface
-     */
-    protected $identityContainer;
 
     /**
      * @var ConvertQuoteAddressToOrderAddress
@@ -48,46 +24,39 @@ class Sender
     protected $toOrderAddress;
 
     /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * Application Event Dispatcher
-     *
-     * @var ManagerInterface
-     */
-    protected $eventManager;
-
-    /**
      * Sender constructor.
      * @param \Magestore\Quotation\Helper\Data $helper
-     * @param SenderBuilderFactory $senderBuilderFactory
-     * @param OrderAddressRenderer $addressRenderer
-     * @param Template $templateContainer
-     * @param Container $identityContainer
+     * @param \Magestore\Quotation\Model\Quote\Email\TransportBuilder $transportBuilder
+     * @param \Magestore\Quotation\Model\Quote\Email\SenderBuilderFactory $senderBuilderFactory
+     * @param \Magento\Sales\Model\Order\Email\Container\Template $templateContainer
+     * @param \Magestore\Quotation\Model\Quote\Email\Container $identityContainer
      * @param \Psr\Log\LoggerInterface $logger
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param ConvertQuoteAddressToOrderAddress $toOrderAddress
-     * @param ManagerInterface $eventManager
+     * @param \Magento\Sales\Model\Order\Address\Renderer $addressRenderer
      */
     public function __construct(
         \Magestore\Quotation\Helper\Data $helper,
+        \Magestore\Quotation\Model\Quote\Email\TransportBuilder $transportBuilder,
         \Magestore\Quotation\Model\Quote\Email\SenderBuilderFactory $senderBuilderFactory,
-        \Magento\Sales\Model\Order\Address\Renderer $addressRenderer,
         \Magento\Sales\Model\Order\Email\Container\Template $templateContainer,
         \Magestore\Quotation\Model\Quote\Email\Container $identityContainer,
         \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\Event\ManagerInterface $eventManager,
         ConvertQuoteAddressToOrderAddress $toOrderAddress,
-        ManagerInterface $eventManager
+        \Magento\Sales\Model\Order\Address\Renderer $addressRenderer
     ) {
-        $this->helper = $helper;
-        $this->senderBuilderFactory = $senderBuilderFactory;
+        parent::__construct(
+            $helper,
+            $transportBuilder,
+            $senderBuilderFactory,
+            $templateContainer,
+            $identityContainer,
+            $logger,
+            $eventManager
+        );
         $this->addressRenderer = $addressRenderer;
-        $this->templateContainer = $templateContainer;
-        $this->identityContainer = $identityContainer;
-        $this->logger = $logger;
         $this->toOrderAddress = $toOrderAddress;
-        $this->eventManager = $eventManager;
     }
 
     /**
@@ -127,13 +96,14 @@ class Sender
      */
     protected function prepareTemplate(\Magento\Quote\Api\Data\CartInterface $quote)
     {
+        $customerName = $this->getCustomerName($quote);
         $transport = [
             'quote' => $quote,
             'billing' => $quote->getBillingAddress(),
             'store' => $quote->getStore(),
             'formattedShippingAddress' => $this->getFormattedShippingAddress($quote),
             'formattedBillingAddress' => $this->getFormattedBillingAddress($quote),
-            'customer_name' => $this->getCustomerName($quote),
+            'customer_name' => $customerName,
             'created_at_formated' => $this->getRequestedDateFormated($quote),
             'checkout_url' => $this->getCheckoutUrl($quote)
         ];
@@ -150,42 +120,12 @@ class Sender
 
         if ($quote->getCustomerIsGuest()) {
             $templateId = $this->identityContainer->getGuestTemplateId();
-            $customerName = (string)__('Guest');
-            $address = $quote->getShippingAddress();
-            if($address){
-                $customerName = $address->getFirstname() . ' ' . $address->getLastname();
-            }
         } else {
             $templateId = $this->identityContainer->getTemplateId();
-            $customerName = $quote->getCustomerFirstname() . ' ' . $quote->getCustomerLastname();
         }
         $this->identityContainer->setCustomerName($customerName);
         $this->identityContainer->setCustomerEmail($quote->getCustomerEmail());
         $this->templateContainer->setTemplateId($templateId);
-    }
-
-    /**
-     * @return Sender
-     */
-    protected function getSender()
-    {
-        return $this->senderBuilderFactory->create(
-            [
-                'templateContainer' => $this->templateContainer,
-                'identityContainer' => $this->identityContainer,
-            ]
-        );
-    }
-
-    /**
-     * @return array
-     */
-    protected function getTemplateOptions()
-    {
-        return [
-            'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
-            'store' => $this->identityContainer->getStore()->getStoreId()
-        ];
     }
 
     /**
@@ -208,24 +148,6 @@ class Sender
     {
         $address = $this->toOrderAddress->convert($quote->getBillingAddress());
         return $this->addressRenderer->format($address, 'html');
-    }
-
-    /**
-     * @param \Magento\Quote\Api\Data\CartInterface $quote
-     * @return string
-     */
-    protected function getCustomerName(\Magento\Quote\Api\Data\CartInterface $quote)
-    {
-        if ($quote->getCustomerFirstname()) {
-            $customerName = $quote->getCustomerFirstname() . ' ' . $quote->getCustomerLastname();
-        } else {
-            $customerName = (string)__('Guest');
-            $address = $quote->getShippingAddress();
-            if($address){
-                $customerName = $address->getFirstname() . ' ' . $address->getLastname();
-            }
-        }
-        return $customerName;
     }
 
     /**
