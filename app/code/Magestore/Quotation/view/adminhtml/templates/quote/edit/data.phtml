@@ -14,7 +14,9 @@
     });
 </script>
     <div class="quote-details">
-        
+        <div id="quote-search" style="display: none" class="admin__page-section quote-search-items order-search-items">
+            <?= $block->getChildHtml('search') ?>
+        </div>
         <section id="quote-items" class="admin__page-section quote-items" data-mage-init='{"loader": {}}'>
             <?= $block->getChildHtml('items') ?>
         </section>

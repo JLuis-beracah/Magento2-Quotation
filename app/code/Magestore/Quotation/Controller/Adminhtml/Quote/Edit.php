@@ -6,13 +6,11 @@
  */
 namespace Magestore\Quotation\Controller\Adminhtml\Quote;
 
-use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
-
 /**
  * Class Edit
  * @package Magestore\Quotation\Controller\Adminhtml\Quote
  */
-class Edit extends \Magestore\Quotation\Controller\Adminhtml\AbstractAction
+class Edit extends \Magestore\Quotation\Controller\Adminhtml\Quote\QuoteAbstract
 {
 
     /**
@@ -20,32 +18,10 @@ class Edit extends \Magestore\Quotation\Controller\Adminhtml\AbstractAction
      */
     public function execute()
     {
-        $id = $this->getRequest()->getParam('id');
-        $resultRedirect = $this->createRedirectResult();
-        $model = $this->_objectManager->create('Magento\Quote\Model\Quote');
-        $registryObject = $this->_objectManager->get('Magento\Framework\Registry');
-        $isValidRequest = false;
-        if ($id) {
-            $model = $model->load($id);
-            if ($model->getId()) {
-                $isValidRequest = true;
-            }
-        }
-        if(!$isValidRequest){
-            $this->messageManager->addErrorMessage(__('This quote request no longer exists.'));
-            return $resultRedirect->setPath('quotation/*/', ['_current' => true]);
-        }
-        $data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
-        if (!empty($data)) {
-            $model->setData($data);
-        }
-        if($model->getRequestStatus() == QuoteStatus::STATUS_PROCESSED){
-            $this->quotationManagement->isExpired($model);
-            $model = $model->load($id);
-        }
-        $registryObject->register('current_quote_request', $model);
+        $this->_initSession();
+        $quote = $this->_getQuote();
         $resultPage = $this->createPageResult();
-        $resultPage->getConfig()->getTitle()->prepend(__('Quote #%1', $model->getId()));
+        $resultPage->getConfig()->getTitle()->prepend(($quote->getId())?__('Quote #%1', $quote->getId()):__('New Quote'));
         return $resultPage;
     }
 

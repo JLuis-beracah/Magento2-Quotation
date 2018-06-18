@@ -10,8 +10,16 @@
 require([
     "prototype",
     "Magestore_Quotation/js/model/quote/form",
+    "Magento_Catalog/catalog/product/composite/configure",
     "domReady!"
 ], function(){
-
+    if (window.productConfigure) {
+        productConfigure.addListType('product_to_add', {
+            urlFetch: '<?= /* @escapeNotVerified */ $block->getUrl('sales/order_create/configureProductToAdd') ?>'
+        });
+        productConfigure.addListType('quote_items', {
+            urlFetch: '<?= /* @escapeNotVerified */ $block->getUrl('sales/order_create/configureQuoteItems') ?>'
+        });
+    }
 });
 </script>

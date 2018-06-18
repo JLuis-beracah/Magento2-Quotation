@@ -158,7 +158,13 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
      */
     public function process(\Magento\Quote\Api\Data\CartInterface $quote){
         $quote->setIsActive(false);
-        $this->updateStatus($quote, QuoteStatus::STATUS_PROCESSING);
+        if(
+            $quote->getRequestStatus() != QuoteStatus::STATUS_ADMIN_PENDING &&
+            $quote->getRequestStatus() != QuoteStatus::STATUS_NONE &&
+            $quote->getRequestStatus() != QuoteStatus::STATUS_PENDING
+        ){
+            $this->updateStatus($quote, QuoteStatus::STATUS_PROCESSING);
+        }
         return $quote;
     }
 
@@ -246,6 +252,8 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
     public function canDecline(\Magento\Quote\Api\Data\CartInterface $quote){
         $requestStatus = $quote->getData("request_status");
         return (
+        ($requestStatus == QuoteStatus::STATUS_NONE) ||
+        ($requestStatus == QuoteStatus::STATUS_ADMIN_PENDING) ||
         ($requestStatus == QuoteStatus::STATUS_DECLINED) ||
         ($requestStatus == QuoteStatus::STATUS_EXPIRED) ||
         ($requestStatus == QuoteStatus::STATUS_ORDERED)
@@ -259,6 +267,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
     public function canSend(\Magento\Quote\Api\Data\CartInterface $quote){
         $requestStatus = $quote->getData("request_status");
         return (
+        ($requestStatus == QuoteStatus::STATUS_NONE) ||
         ($requestStatus == QuoteStatus::STATUS_DECLINED) ||
         ($requestStatus == QuoteStatus::STATUS_EXPIRED) ||
         ($requestStatus == QuoteStatus::STATUS_ORDERED)
@@ -272,6 +281,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
     public function canEdit(\Magento\Quote\Api\Data\CartInterface $quote){
         $requestStatus = $quote->getData("request_status");
         return (
+        ($requestStatus == QuoteStatus::STATUS_NONE) ||
         ($requestStatus == QuoteStatus::STATUS_DECLINED) ||
         ($requestStatus == QuoteStatus::STATUS_EXPIRED) ||
         ($requestStatus == QuoteStatus::STATUS_PROCESSED) ||
@@ -287,6 +297,13 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         $requestStatus = $quote->getData("request_status");
         $statusList = QuoteStatus::getOptionArray();
         switch ($requestStatus){
+            case QuoteStatus::STATUS_ADMIN_PENDING:
+                $statusList[QuoteStatus::STATUS_ADMIN_PENDING] = QuoteStatus::LABEL_ADMIN_PENDING;
+                unset($statusList[QuoteStatus::STATUS_PENDING]);
+                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
+                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+                break;
             case QuoteStatus::STATUS_NEW:
                 unset($statusList[QuoteStatus::STATUS_PENDING]);
                 unset($statusList[QuoteStatus::STATUS_EXPIRED]);
@@ -616,7 +633,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
     public function addAdminComment(\Magento\Quote\Api\Data\CartInterface $quote, $comment, $status, $visible, $notify = 0){
         $history = $this->quoteCommentHistoryRepository->createNew();
         $statusList = QuoteStatus::getOptionArray();
-        if($status && isset($statusList[$status])){
+        if($status && (isset($statusList[$status]) || ($status == QuoteStatus::STATUS_ADMIN_PENDING))){
             $history->setQuote($quote);
             $history->setComment($comment);
             $history->setCreatedBy(QuoteCommentHistoryInterface::ADMIN);

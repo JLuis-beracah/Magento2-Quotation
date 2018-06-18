@@ -43,7 +43,8 @@ class Collection extends \Magento\Framework\View\Element\UiComponent\DataProvide
         parent::_initSelect();
         $this->getSelect()->where('request_status NOT IN(?)', [
             QuoteStatus::STATUS_NONE,
-            QuoteStatus::STATUS_PENDING
+            QuoteStatus::STATUS_PENDING,
+            QuoteStatus::STATUS_ADMIN_PENDING
         ]);
         return $this;
     }

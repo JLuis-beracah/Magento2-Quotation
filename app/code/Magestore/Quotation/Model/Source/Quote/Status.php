@@ -23,6 +23,9 @@ class Status implements \Magento\Framework\Option\ArrayInterface
     const STATUS_DECLINED = 5;
     const STATUS_EXPIRED = 6;
     const STATUS_ORDERED = 7;
+    const STATUS_ADMIN_PENDING = 8;
+
+    const LABEL_ADMIN_PENDING = "Admin Creating";
 
     /**
      * @return array

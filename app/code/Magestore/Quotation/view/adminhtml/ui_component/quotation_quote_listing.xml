@@ -11,6 +11,14 @@
             <item name="deps" xsi:type="string">quotation_quote_listing.quotation_quote_listing_data_source</item>
         </item>
         <item name="spinner" xsi:type="string">quotation_quote_columns</item>
+        <item name="buttons" xsi:type="array">
+            <item name="add" xsi:type="array">
+                <item name="name" xsi:type="string">add</item>
+                <item name="label" xsi:type="string" translate="true">Create Quote</item>
+                <item name="class" xsi:type="string">primary</item>
+                <item name="url" xsi:type="string">quotation/quote/edit</item>
+            </item>
+        </item>
     </argument>
     <dataSource name="quotation_quote_listing_data_source">
         <argument name="dataProvider" xsi:type="configurableObject">

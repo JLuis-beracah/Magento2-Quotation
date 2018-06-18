@@ -22,6 +22,11 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
     protected $_quote_request;
 
     /**
+     * @var \Magestore\Quotation\Model\GeneralSession
+     */
+    protected $_general_session;
+
+    /**
      * @return \Magestore\Quotation\Model\BackendSession
      */
     public function getSession()
@@ -32,6 +37,19 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
             $this->_session = ObjectManager::getInstance()->get(\Magestore\Quotation\Model\BackendSession::class);
         }
         return $this->_session;
+    }
+
+    /**
+     * @return \Magestore\Quotation\Model\GeneralSession
+     */
+    public function getGeneralSession()
+    {
+        if( !$this->_general_session ||
+            !($this->_general_session instanceof \Magestore\Quotation\Model\GeneralSession)
+        ) {
+            $this->_general_session = ObjectManager::getInstance()->get(\Magestore\Quotation\Model\GeneralSession::class);
+        }
+        return $this->_general_session;
     }
 
     /**

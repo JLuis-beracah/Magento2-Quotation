@@ -9,27 +9,24 @@
     <update handle="quotation_quote_edit_item_price"/>
     <body>
         <referenceContainer name="content">
-            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit" name="quotation_quote_detail">
-                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Form" template="Magestore_Quotation::quote/edit/form.phtml" name="quotation_quote_detail_form" as="form">
-                    <block class="Magento\Sales\Block\Adminhtml\Order\Create\Messages" name="message"/>
-                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Info" name="quote_info" template="Magestore_Quotation::quote/edit/info.phtml">
-                    </block>
-                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Data" template="Magestore_Quotation::quote/edit/data.phtml" name="data">
-                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items" template="Magento_Sales::order/create/items.phtml" name="items">
-                            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items\Grid" template="Magestore_Quotation::quote/edit/items/grid.phtml" name="items_grid">
-                            </block>
-                        </block>
-                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method"
-                               template="Magento_Sales::order/create/abstract.phtml"
-                               name="shipping_method">
-                            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method\Form"
-                                   template="Magestore_Quotation::quote/edit/shipping/method/form.phtml"
-                                   name="quote_edit_shipping_form" as="form"/>
-                        </block>
-                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Comment" template="Magestore_Quotation::quote/edit/comment.phtml" name="comment"/>
-                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Totals" template="Magestore_Quotation::quote/edit/totals.phtml" name="totals"/>
+            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Data" template="Magestore_Quotation::quote/edit/data.phtml" name="data">
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items" template="Magento_Sales::order/create/items.phtml" name="items">
+                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items\Grid" template="Magestore_Quotation::quote/edit/items/grid.phtml" name="items_grid">
                     </block>
                 </block>
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method"
+                       template="Magento_Sales::order/create/abstract.phtml"
+                       name="shipping_method">
+                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method\Form"
+                           template="Magestore_Quotation::quote/edit/shipping/method/form.phtml"
+                           name="quote_edit_shipping_form" as="form"/>
+                </block>
+
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Search" template="Magento_Sales::order/create/abstract.phtml" name="search">
+                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Search\Grid" name="search_grid" as="grid"/>
+                </block>
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Comment" template="Magestore_Quotation::quote/edit/comment.phtml" name="comment"/>
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Totals" template="Magestore_Quotation::quote/edit/totals.phtml" name="totals"/>
             </block>
         </referenceContainer>
     </body>

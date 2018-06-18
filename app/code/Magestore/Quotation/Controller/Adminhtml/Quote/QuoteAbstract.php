@@ -7,6 +7,7 @@ namespace Magestore\Quotation\Controller\Adminhtml\Quote;
 
 use Magento\Backend\Model\View\Result\ForwardFactory;
 use Magestore\Quotation\Model\CustomProduct\Type as CustomProductType;
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
 
 /**
  * Class QuoteAbstract
@@ -83,11 +84,63 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
      */
     protected function _initSession()
     {
+        $quoteId = $this->getRequest()->getParam('quote_id');
+        $customerId = $this->getRequest()->getParam('customer_id');
+        $currencyId = $this->getRequest()->getParam('currency_id');
+        $storeId = $this->getRequest()->getParam('store_id');
+        $generalSession = $this->_getQuoteProcessModel()->getGeneralSession();
+
+
+        $newQuotationQuoteId = $generalSession->getNewQuotationQuoteId();
+        $newQuotationCustomerId = $generalSession->getNewQuotationCustomerId();
+        $newQuotationCurrencyId = $generalSession->getNewQuotationCurrencyId();
+        $newQuotationStoreId = $generalSession->getNewQuotationStoreId();
+        if(!$quoteId){
+            $quoteId = ($newQuotationQuoteId)?$newQuotationQuoteId:$quoteId;
+            $customerId = (!$customerId && $newQuotationCustomerId)?$newQuotationCustomerId:$customerId;
+            $currencyId = (!$currencyId && $newQuotationCurrencyId)?$newQuotationCurrencyId:$currencyId;
+            $storeId = (!$currencyId && $newQuotationStoreId)?$newQuotationStoreId:$storeId;
+        }
+
+        /**
+         * Identify customer
+         */
+        if ($customerId) {
+            $this->_getSession()->setCustomerId((int)$customerId);
+            if(!$quoteId){
+                $generalSession->setNewQuotationCustomerId((int)$customerId);
+            }
+        }
+
+        /**
+         * Identify store
+         */
+        if ($storeId) {
+            $this->_getSession()->setStoreId((int)$storeId);
+            if(!$quoteId){
+                $generalSession->setNewQuotationStoreId((int)$storeId);
+            }
+        }
+
+        /**
+         * Identify currency
+         */
+        if ($currencyId) {
+            $this->_getSession()->setCurrencyId((string)$currencyId);
+            $this->_getQuoteProcessModel()->setRecollect(true);
+            if(!$quoteId){
+                $generalSession->setNewQuotationCurrencyId((string)$currencyId);
+            }
+        }
+
+
         /**
          * Init quote
          */
-        if ($quoteId = $this->getRequest()->getParam('quote_id')) {
+        if ($quoteId) {
             $this->_initQuote((int)$quoteId);
+        }else{
+            $this->_initQuote();
         }
         return $this;
     }
@@ -99,9 +152,33 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
     protected function _initQuote($quoteId = null){
         if($quoteId){
             $this->_getSession()->setQuoteId((int)$quoteId);
+            $this->_getSession()->reloadQuote();
+            $quote = $this->_getQuote();
+            if(!$quote->getId()){
+                $this->messageManager->addErrorMessage(__('This quote request no longer exists.'));
+                return $this->createRedirectResult()->setPath('quotation/quote/', ['_current' => true]);
+            }
+            if($quote->getRequestStatus() == QuoteStatus::STATUS_PROCESSED){
+                $this->quotationManagement->isExpired($quote);
+                $this->_getSession()->reloadQuote();
+            }
+        }else{
+            $quote = $this->_getQuote();
+            if($quote->getRequestStatus() != QuoteStatus::STATUS_ADMIN_PENDING){
+                $this->_getSession()->reset();
+            }
+            $this->_getSession()->reAssignCustomer();
+            $generalSession = $this->_getQuoteProcessModel()->getGeneralSession();
+            $generalSession->setNewQuotationQuoteId($quote->getId());
         }
-        $this->_getSession()->reloadQuote();
-        $this->quotationManagement->isExpired($this->_getQuote());
+        $quote = $this->_getQuote();
+        $data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
+        if (!empty($data)) {
+            $quote->setData($data);
+        }
+        if($customerId = $quote->getCustomerId()){
+            $this->_getSession()->setCustomerId((int)$customerId);
+        }
         $registryObject = $this->_getRegistry();
         $registryObject->unregister('current_quote_request');
         $registryObject->register('current_quote_request', $this->_getQuote());
@@ -220,7 +297,10 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
 
         $this->_getQuoteProcessModel()->saveQuote();
 
-
+        if ($adminSubmit = (boolean)$this->getRequest()->getPost('clear_session')) {
+            $this->_getSession()->reset();
+            $this->resetNewQuotationSession();
+        }
         return $this;
     }
 
@@ -324,6 +404,15 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
     {
         $id = $this->_getQuote()->getId();
         $this->_getQuote()->load($id);
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function resetNewQuotationSession(){
+        $generalSession = $this->_getQuoteProcessModel()->getGeneralSession();
+        $generalSession->reset();
         return $this;
     }
 }

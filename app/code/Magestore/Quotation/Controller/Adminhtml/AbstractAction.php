@@ -111,7 +111,7 @@ abstract class AbstractAction extends \Magento\Backend\App\Action
     }
 
     /**
-     * @return \Magento\Backend\Model\Session|mixed
+     * @return \Magestore\Quotation\Model\BackendSession|mixed
      */
     protected function _getSession()
     {

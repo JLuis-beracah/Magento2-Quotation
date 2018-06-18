@@ -136,7 +136,21 @@ class Comment extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEd
      */
     public function getQuoteStatusLabel(){
         $statues = QuoteStatus::getOptionArray();
-        return $statues[$this->getQuote()->getRequestStatus()];
+        $status = $this->getQuote()->getRequestStatus();
+        $label = "";
+        if($status == QuoteStatus::STATUS_NONE){
+            $label = __("None");
+        }
+        if($status == QuoteStatus::STATUS_PENDING){
+            $label = __("Pending");
+        }
+        if($status == QuoteStatus::STATUS_ADMIN_PENDING){
+            $label = __(QuoteStatus::LABEL_ADMIN_PENDING);
+        }
+        if(isset($statues[$status])){
+            $label = $statues[$status];
+        }
+        return $label;
     }
 
     /**

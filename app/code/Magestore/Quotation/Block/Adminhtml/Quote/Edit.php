@@ -5,6 +5,8 @@
  */
 namespace Magestore\Quotation\Block\Adminhtml\Quote;
 
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
+
 /**
  * Class Edit
  * @package Magestore\Quotation\Block\Adminhtml\Quote
@@ -70,11 +72,19 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
             $this->quotationManagement->isExpired($quote);
             $canEdit = $this->quotationManagement->canEdit($quote);
             if($canEdit){
-                $this->buttonList->add('save_as_draft', [
-                    'label' => __("Save as Draft"),
-                    'class' => 'save_as_draft',
-                    'onclick' => "quote.submit()"
-                ]);
+                if($quote->getRequestStatus() == QuoteStatus::STATUS_ADMIN_PENDING){
+                    $this->buttonList->add('cancel', [
+                        'label' => __("Cancel"),
+                        'class' => 'cancel',
+                        'onclick' => "quote.cancel()"
+                    ]);
+                }else{
+                    $this->buttonList->add('save_as_draft', [
+                        'label' => __("Save as Draft"),
+                        'class' => 'save_as_draft',
+                        'onclick' => "quote.submit()"
+                    ]);
+                }
             }
 
             $canDecline = $this->quotationManagement->canDecline($quote);
@@ -93,7 +103,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
                 $this->buttonList->add('send', [
                     'label' => __("Send"),
                     'class' => 'send primary',
-                    'onclick' => "quote.send('{$confirm}')"
+                    'onclick' => "quote.send('{$confirm}', true)"
                 ]);
             }
         }

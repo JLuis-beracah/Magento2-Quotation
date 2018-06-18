@@ -389,7 +389,12 @@ class Info extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      */
     public function getQuoteRequestStatusLabel($statusCode){
         $statuses = QuoteStatus::getOptionArray();
-        return ($statusCode && isset($statuses[$statusCode]))?$statuses[$statusCode]:"";
+        if($statusCode == QuoteStatus::STATUS_ADMIN_PENDING){
+            $label = __(QuoteStatus::LABEL_ADMIN_PENDING);
+        }else{
+            $label = ($statusCode && isset($statuses[$statusCode]))?$statuses[$statusCode]:"";
+        }
+        return $label;
     }
 
     /**

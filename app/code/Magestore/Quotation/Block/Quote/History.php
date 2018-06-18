@@ -116,6 +116,7 @@ class History extends \Magento\Framework\View\Element\Template
             }
             $quotes->addFieldToFilter('request_status', array("neq" => QuoteStatus::STATUS_NONE));
             $quotes->addFieldToFilter('request_status', array("neq" => QuoteStatus::STATUS_PENDING));
+            $quotes->addFieldToFilter('request_status', array("neq" => QuoteStatus::STATUS_ADMIN_PENDING));
             $this->quotes = $quotes;
         }
         return $this->quotes;

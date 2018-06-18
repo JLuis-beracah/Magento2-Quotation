@@ -19,6 +19,6 @@ class Header extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdi
         if ($this->getQuote()->getId()) {
             return __('Quote #%1', $this->getQuote()->getId());
         }
-        return __('Quote #%1', 0);
+        return __('New Quote');
     }
 }

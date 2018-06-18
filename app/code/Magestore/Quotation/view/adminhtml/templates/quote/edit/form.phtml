@@ -20,6 +20,12 @@
     <div id="quote-message">
         <?= $block->getChildHtml('message') ?>
     </div>
+    <div id="quote-customer-selector" class="fieldset-wrapper quote-customer-selector order-customer-selector" style="display:<?= /* @escapeNotVerified */ $block->getCustomerSelectorDisplay() ?>">
+        <?= $block->getChildHtml('customer.grid.container') ?>
+    </div>
+    <div id="quote-store-selector" class="fieldset-wrapper" style="display:<?= /* @escapeNotVerified */ $block->getStoreSelectorDisplay() ?>">
+        <?= $block->getChildHtml('store') ?>
+    </div>
     <div id="quote-info" style="display:<?= /* @escapeNotVerified */ $block->getDataSelectorDisplay() ?>">
         <?= $block->getChildHtml('quote_info') ?>
     </div>

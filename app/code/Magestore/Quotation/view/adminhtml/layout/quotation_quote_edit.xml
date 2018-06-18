@@ -9,6 +9,7 @@
     <head>
         <css src="Magestore_Quotation::css/style.css"/>
     </head>
+    <update handle="quotation_quote_edit_customer_block"/>
     <update handle="quotation_quote_edit_item_price"/>
     <body>
         <referenceBlock name="menu">
@@ -16,6 +17,10 @@
                 <argument name="itemId" xsi:type="string">Magestore_Quotation::quotation</argument>
             </action>
         </referenceBlock>
+        <referenceContainer name="after.body.start">
+            <block class="Magento\Backend\Block\Template" name="optional_zip_countries" as="optional_zip_countries" template="Magento_Directory::js/optional_zip_countries.phtml"/>
+            <block class="Magento\Catalog\Block\Adminhtml\Product\Composite\Configure" name="after.body.start.product_composite_configure" template="Magento_Catalog::catalog/product/composite/configure.phtml"/>
+        </referenceContainer>
         <referenceContainer name="js">
             <block class="Magento\Backend\Block\Template" template="Magestore_Quotation::quote/edit/js.phtml" name="quote_request"/>
         </referenceContainer>
@@ -23,6 +28,10 @@
             <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit" name="quotation_quote_detail">
                 <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Form" template="Magestore_Quotation::quote/edit/form.phtml" name="quotation_quote_detail_form" as="form">
                     <block class="Magento\Sales\Block\Adminhtml\Order\Create\Messages" name="message"/>
+                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Customer" template="Magento_Sales::order/create/abstract.phtml" name="customer.grid.container"/>
+                    <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Store" template="Magento_Sales::order/create/abstract.phtml" name="store">
+                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Store\Select" template="Magestore_Quotation::quote/edit/store/select.phtml" name="select"/>
+                    </block>
                     <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Info" name="quote_info" template="Magestore_Quotation::quote/edit/info.phtml">
                     </block>
                     <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Data" template="Magestore_Quotation::quote/edit/data.phtml" name="data">
@@ -36,6 +45,9 @@
                             <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method\Form"
                                    template="Magestore_Quotation::quote/edit/shipping/method/form.phtml"
                                    name="quote_edit_shipping_form" as="form"/>
+                        </block>
+                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Search" template="Magento_Sales::order/create/abstract.phtml" name="search">
+                            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Search\Grid" name="search_grid" as="grid"/>
                         </block>
                         <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Comment" template="Magestore_Quotation::quote/edit/comment.phtml" name="comment"/>
                         <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Totals" template="Magestore_Quotation::quote/edit/totals.phtml" name="totals"/>

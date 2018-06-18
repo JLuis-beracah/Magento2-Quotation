@@ -3,7 +3,7 @@
 }
 #edit_form #quote-data,
 #edit_form #quote-info{
-    display: block !important;
+    /*display: block !important;*/
 }
 
 #edit_form #quote-info .admin__page-section .admin__page-section-content{
@@ -25,4 +25,8 @@
     border-bottom: 1px solid #cccccc;
     margin-bottom: 1.7rem;
     padding-bottom: 10px;
+}
+#quote-search .actions,
+#quote-items .actions{
+    float: right;
 }

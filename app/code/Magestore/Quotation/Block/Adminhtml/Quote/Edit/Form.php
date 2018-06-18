@@ -168,7 +168,31 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
     {
         $data = [];
         $data['quote_id'] = $this->getQuote()->getId();
-        $data['shipping_method_reseted'] = !(bool)$this->getQuote()->getShippingAddress()->getShippingMethod();
+        $data['quote_listing_url'] = $this->getUrl('quotation/quote/');
+
+        if ($this->getCustomerId()) {
+            $data['customer_id'] = $this->getCustomerId();
+            $data['addresses'] = [];
+            $addresses = $this->customerRepository->getById($this->getCustomerId())->getAddresses();
+            foreach ($addresses as $address) {
+                $addressForm = $this->_customerFormFactory->create(
+                    'customer_address',
+                    'adminhtml_customer_address',
+                    $this->addressMapper->toFlatArray($address)
+                );
+                $data['addresses'][$address->getId()] = $addressForm->outputData(
+                    \Magento\Eav\Model\AttributeDataFactory::OUTPUT_FORMAT_JSON
+                );
+            }
+        }
+        if ($this->getStoreId() !== null) {
+            $data['store_id'] = $this->getStoreId();
+            $currency = $this->_localeCurrency->getCurrency($this->getStore()->getCurrentCurrencyCode());
+            $symbol = $currency->getSymbol() ? $currency->getSymbol() : $currency->getShortName();
+            $data['currency_symbol'] = $symbol;
+            $data['shipping_method_reseted'] = !(bool)$this->getQuote()->getShippingAddress()->getShippingMethod();
+            $data['payment_method'] = $this->getQuote()->getPayment()->getMethod();
+        }
         return $this->_jsonEncoder->encode($data);
     }
 }
