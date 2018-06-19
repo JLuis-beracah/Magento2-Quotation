@@ -105,8 +105,12 @@ class Sender extends \Magestore\Quotation\Model\Quote\Email\AbstractSender
             'formattedBillingAddress' => $this->getFormattedBillingAddress($quote),
             'customer_name' => $customerName,
             'created_at_formated' => $this->getRequestedDateFormated($quote),
-            'checkout_url' => $this->getCheckoutUrl($quote)
+            'checkout_url' => $this->getCheckoutUrl($quote),
+            'quote_detail_url' => $this->getQuoteDetailUrl($quote)
         ];
+        if($quote->getExpirationDate()){
+            $transport['expiration_date_formated'] = $this->getExpirationDateFormated($quote);
+        }
         $transport = new \Magento\Framework\DataObject($transport);
 
         $this->eventManager->dispatch(
@@ -156,20 +160,18 @@ class Sender extends \Magestore\Quotation\Model\Quote\Email\AbstractSender
      */
     protected function getRequestedDateFormated(\Magento\Quote\Api\Data\CartInterface $quote)
     {
-        return $quote->getCreatedAt();
+        return $this->helper->formatDate($quote->getCreatedAt(), \IntlDateFormatter::MEDIUM, true);
     }
 
     /**
      * @param \Magento\Quote\Api\Data\CartInterface $quote
      * @return string
      */
-    public function getCheckoutUrl(\Magento\Quote\Api\Data\CartInterface $quote){
-        $url = $this->helper->getUrl("quotation/quote/checkout", [
-            'id' => $quote->getEntityId()
-        ]);
-        $urlPaths = explode("?SID", $url);
-        return $urlPaths[0];
+    protected function getExpirationDateFormated(\Magento\Quote\Api\Data\CartInterface $quote)
+    {
+        return $this->helper->formatDate($quote->getExpirationDate(), \IntlDateFormatter::MEDIUM, true);
     }
+
 
     /**
      * @param \Magento\Quote\Api\Data\CartInterface $quote
@@ -187,4 +189,6 @@ class Sender extends \Magestore\Quotation\Model\Quote\Email\AbstractSender
         $attachPdf = $this->helper->getStoreConfig("quotation/email/send_pdf", $storeCode);
         return ($attachPdf)?true:false;
     }
+
+
 }

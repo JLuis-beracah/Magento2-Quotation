@@ -59,7 +59,7 @@ class QuoteActions extends Column
                 $name = $this->getData('name');
                 if (isset($item['entity_id'])) {
                     $item[$name]['edit'] = [
-                        'href' => $this->_urlBuilder->getUrl($this->_editUrl, ['quote_id' => $item['entity_id']]),
+                        'href' => $this->_urlBuilder->getUrl($this->_editUrl, ['id' => $item['entity_id']]),
                         'label' => __('Detail')
                     ];
 

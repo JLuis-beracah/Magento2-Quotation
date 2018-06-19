@@ -6,6 +6,7 @@
 namespace Magestore\Quotation\Block\Adminhtml\Quote\Edit;
 
 use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
 
 /**
  * Class Form
@@ -122,8 +123,9 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      */
     public function getCustomerSelectorDisplay()
     {
+        $status = $this->getQuote()->getRequestStatus();
         $customerId = $this->getCustomerId();
-        if ($customerId === null) {
+        if ($customerId === null && ($status == QuoteStatus::STATUS_ADMIN_PENDING)) {
             return 'block';
         }
         return 'none';
@@ -136,9 +138,10 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      */
     public function getStoreSelectorDisplay()
     {
+        $status = $this->getQuote()->getRequestStatus();
         $storeId = $this->getStoreId();
         $customerId = $this->getCustomerId();
-        if ($customerId !== null && !$storeId) {
+        if ($customerId !== null && !$storeId && ($status == QuoteStatus::STATUS_ADMIN_PENDING)) {
             return 'block';
         }
         return 'none';
@@ -191,7 +194,6 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
             $symbol = $currency->getSymbol() ? $currency->getSymbol() : $currency->getShortName();
             $data['currency_symbol'] = $symbol;
             $data['shipping_method_reseted'] = !(bool)$this->getQuote()->getShippingAddress()->getShippingMethod();
-            $data['payment_method'] = $this->getQuote()->getPayment()->getMethod();
         }
         return $this->_jsonEncoder->encode($data);
     }

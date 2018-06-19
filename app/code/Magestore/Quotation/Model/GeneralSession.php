@@ -15,6 +15,10 @@ class GeneralSession extends \Magento\Backend\Model\Session\Quote
      * @return $this
      */
     public function reset(){
+        $this->setNewQuotationQuoteId(null);
+        $this->setNewQuotationCustomerId(null);
+        $this->setNewQuotationCurrencyId(null);
+        $this->setNewQuotationStoreId(null);
         $this->storage->unsetData("new_quotation_quote_id");
         $this->storage->unsetData("new_quotation_customer_id");
         $this->storage->unsetData("new_quotation_currencry_id");

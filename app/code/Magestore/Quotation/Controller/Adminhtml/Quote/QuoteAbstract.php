@@ -84,52 +84,98 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
      */
     protected function _initSession()
     {
+        $editQuoteId = $this->getRequest()->getParam('id');
         $quoteId = $this->getRequest()->getParam('quote_id');
         $customerId = $this->getRequest()->getParam('customer_id');
         $currencyId = $this->getRequest()->getParam('currency_id');
         $storeId = $this->getRequest()->getParam('store_id');
+        $isCreatingNewQuote = ($editQuoteId != null)?false:true;
+
         $generalSession = $this->_getQuoteProcessModel()->getGeneralSession();
+        $quoteSession = $this->_getSession();
 
 
         $newQuotationQuoteId = $generalSession->getNewQuotationQuoteId();
         $newQuotationCustomerId = $generalSession->getNewQuotationCustomerId();
         $newQuotationCurrencyId = $generalSession->getNewQuotationCurrencyId();
         $newQuotationStoreId = $generalSession->getNewQuotationStoreId();
-        if(!$quoteId){
-            $quoteId = ($newQuotationQuoteId)?$newQuotationQuoteId:$quoteId;
-            $customerId = (!$customerId && $newQuotationCustomerId)?$newQuotationCustomerId:$customerId;
-            $currencyId = (!$currencyId && $newQuotationCurrencyId)?$newQuotationCurrencyId:$currencyId;
-            $storeId = (!$currencyId && $newQuotationStoreId)?$newQuotationStoreId:$storeId;
-        }
 
-        /**
-         * Identify customer
-         */
-        if ($customerId) {
-            $this->_getSession()->setCustomerId((int)$customerId);
-            if(!$quoteId){
-                $generalSession->setNewQuotationCustomerId((int)$customerId);
+        if($isCreatingNewQuote){
+            if($quoteId  == null){
+                $quoteId = ($newQuotationQuoteId)?$newQuotationQuoteId:$quoteId;
+                $customerId = (!$customerId && $newQuotationCustomerId)?$newQuotationCustomerId:$customerId;
+                $currencyId = (!$currencyId && $newQuotationCurrencyId)?$newQuotationCurrencyId:$currencyId;
+                $storeId = (!$storeId && $newQuotationStoreId)?$newQuotationStoreId:$storeId;
             }
-        }
-
-        /**
-         * Identify store
-         */
-        if ($storeId) {
-            $this->_getSession()->setStoreId((int)$storeId);
-            if(!$quoteId){
-                $generalSession->setNewQuotationStoreId((int)$storeId);
+            if(!empty($quoteId)){
+                $isNew = $quoteSession->isNewAdminQuote((int)$quoteId);
+                if(!$isNew){
+                    $quoteId = null;
+                    $quoteSession->reset();
+                    $this->resetNewQuotationSession();
+                }
+            }else{
+                $quoteSession->setQuoteId(null);
+                $generalSession->setNewQuotationQuoteId(null);
             }
-        }
+            /**
+             * Identify customer
+             */
+            if ($customerId != null) {
+                $quoteSession->setCustomerId((int)$customerId);
+                if(!$quoteId){
+                    $generalSession->setNewQuotationCustomerId((int)$customerId);
+                }
+            }else{
+                $quoteSession->setCustomerId(null);
+                $generalSession->setNewQuotationCustomerId(null);
+            }
 
-        /**
-         * Identify currency
-         */
-        if ($currencyId) {
-            $this->_getSession()->setCurrencyId((string)$currencyId);
-            $this->_getQuoteProcessModel()->setRecollect(true);
-            if(!$quoteId){
-                $generalSession->setNewQuotationCurrencyId((string)$currencyId);
+            /**
+             * Identify store
+             */
+            if ($storeId != null) {
+                $quoteSession->setStoreId((int)$storeId);
+                if(!$quoteId){
+                    $generalSession->setNewQuotationStoreId((int)$storeId);
+                }
+            }else{
+                $quoteSession->setStoreId(null);
+                $generalSession->setNewQuotationStoreId(null);
+            }
+
+            /**
+             * Identify currency
+             */
+            if ($currencyId != null) {
+                $quoteSession->setCurrencyId((string)$currencyId);
+                $this->_getQuoteProcessModel()->setRecollect(true);
+                if(!$quoteId){
+                    $generalSession->setNewQuotationCurrencyId((string)$currencyId);
+                }
+            }else{
+                $quoteSession->setCurrencyId(null);
+                $generalSession->setNewQuotationCurrencyId(null);
+            }
+        }else{
+            $quoteId = ($editQuoteId)?$editQuoteId:$quoteId;
+            $quote = $this->quotationManagement->getQuoteRequest($quoteId);
+            if($quote){
+                if ($quote->getCustomerId()) {
+                    $quoteSession->setCustomerId((int)$quote->getCustomerId());
+                }else{
+                    $quoteSession->setCustomerId(null);
+                }
+                if ($quote->getStoreId()) {
+                    $quoteSession->setStoreId((int)$quote->getStoreId());
+                }else{
+                    $quoteSession->setStoreId(null);
+                }
+                if ($quote->getCurrency()) {
+                    $quoteSession->setCurrencyId($quote->getCurrency()->getId());
+                }else{
+                    $quoteSession->setCurrencyId(null);
+                }
             }
         }
 
@@ -137,7 +183,7 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
         /**
          * Init quote
          */
-        if ($quoteId) {
+        if ($quoteId != null) {
             $this->_initQuote((int)$quoteId);
         }else{
             $this->_initQuote();
@@ -150,26 +196,30 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
      * @return $this
      */
     protected function _initQuote($quoteId = null){
-        if($quoteId){
-            $this->_getSession()->setQuoteId((int)$quoteId);
-            $this->_getSession()->reloadQuote();
+        $quoteSession = $this->_getSession();
+        if($quoteId != null){
+            $quoteSession->setQuoteId((int)$quoteId);
+            $quoteSession->reloadQuote();
             $quote = $this->_getQuote();
+//            if($quote->getRequestStatus() != QuoteStatus::STATUS_ADMIN_PENDING){
+//                $quoteSession->reset();
+//                $quote = $this->_getQuote();
+//            }
             if(!$quote->getId()){
                 $this->messageManager->addErrorMessage(__('This quote request no longer exists.'));
                 return $this->createRedirectResult()->setPath('quotation/quote/', ['_current' => true]);
             }
             if($quote->getRequestStatus() == QuoteStatus::STATUS_PROCESSED){
                 $this->quotationManagement->isExpired($quote);
-                $this->_getSession()->reloadQuote();
+                $quoteSession->reloadQuote();
             }
         }else{
             $quote = $this->_getQuote();
-            if($quote->getRequestStatus() != QuoteStatus::STATUS_ADMIN_PENDING){
-                $this->_getSession()->reset();
-            }
             $this->_getSession()->reAssignCustomer();
-            $generalSession = $this->_getQuoteProcessModel()->getGeneralSession();
-            $generalSession->setNewQuotationQuoteId($quote->getId());
+            if($quote->getId()){
+                $generalSession = $this->_getQuoteProcessModel()->getGeneralSession();
+                $generalSession->setNewQuotationQuoteId($quote->getId());
+            }
         }
         $quote = $this->_getQuote();
         $data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
@@ -217,6 +267,9 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             }
             if ($requestAction == 'decline') {
                 $this->_getQuotationManagement()->decline($quote);
+            }
+            if ($requestAction == 'submit') {
+                $this->_getQuotationManagement()->submit($quote);
             }
             $expirationDate = $this->getRequest()->getPost('expiration_date');
             if(isset($expirationDate)){

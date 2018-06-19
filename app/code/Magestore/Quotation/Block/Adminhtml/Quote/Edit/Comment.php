@@ -108,7 +108,7 @@ class Comment extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEd
      */
     public function getSubmitUrl()
     {
-        return $this->getUrl('quotation/quote/addComment', ['quote_id' => $this->getQuote()->getId()]);
+        return $this->getUrl('quotation/quote/addComment', ['quote_id' => $this->getQuote()->getId(), 'id' => $this->getQuote()->getId()]);
     }
 
     /**

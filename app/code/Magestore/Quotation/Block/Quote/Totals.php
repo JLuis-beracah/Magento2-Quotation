@@ -103,6 +103,23 @@ class Totals extends \Magento\Sales\Block\Order\Totals
             );
         }
 
+        $address = ($source->isVirtual())?$source->getBillingAddress():$source->getShippingAddress();
+        if ((double)$address->getDiscountAmount() != 0) {
+            if ($address->getDiscountDescription()) {
+                $discountLabel = __('Discount (%1)', $address->getDiscountDescription());
+            } else {
+                $discountLabel = __('Discount');
+            }
+            $this->_totals['discount'] = new \Magento\Framework\DataObject(
+                [
+                    'code' => 'discount',
+                    'field' => 'discount_amount',
+                    'value' => $address->getDiscountAmount(),
+                    'label' => $discountLabel,
+                ]
+            );
+        }
+
         $this->_totals['grand_total'] = new \Magento\Framework\DataObject(
             [
                 'code' => 'grand_total',

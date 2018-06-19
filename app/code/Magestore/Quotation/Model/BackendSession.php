@@ -26,33 +26,43 @@ class BackendSession extends \Magento\Backend\Model\Session\Quote
     public function getQuote()
     {
         if (($this->_quote_request === null)) {
-            if($this->getQuoteId()){
-                $this->_quote_request = $this->quoteFactory->create();
-                $this->_quote_request = $this->quoteRepository->get($this->getQuoteId());
-                $this->_quote_request->setIgnoreOldQty(true);
-                $this->_quote_request->setIsSuperMode(true);
-            }else{
-                $this->_quote_request = $this->quoteFactory->create();
-                if ($this->getStoreId()) {
-                    $this->_quote_request->setCustomerGroupId($this->groupManagement->getDefaultGroup()->getId());
-                    $this->_quote_request->setIsActive(false);
-                    $this->_quote_request->setStoreId($this->getStoreId());
-                    $this->_quote_request->setRequestStatus(QuoteStatus::STATUS_ADMIN_PENDING);
-                    $this->quoteRepository->save($this->_quote_request);
-                    $this->setQuoteId($this->_quote_request->getId());
-                    $this->_quote_request = $this->quoteRepository->get($this->getQuoteId(), [$this->getStoreId()]);
+            $this->_quote_request = $this->quoteFactory->create();
+            $this->_quote_request->setRequestStatus(QuoteStatus::STATUS_ADMIN_PENDING);
+            $this->initQuoteData();
+        }else{
+            $this->initQuoteData();
+        }
+//        $this->_quote_request->setIgnoreOldQty(true);
+//        $this->_quote_request->setIsSuperMode(true);
+        return $this->_quote_request;
+    }
 
-                    if ($this->getCustomerId() && $this->getCustomerId() != $this->_quote_request->getCustomerId()) {
-                        $customer = $this->customerRepository->getById($this->getCustomerId());
-                        $this->_quote_request->assignCustomer($customer);
-                        $this->quoteRepository->save($this->_quote_request);
-                    }
-                }
-                $this->_quote_request->setIgnoreOldQty(true);
-                $this->_quote_request->setIsSuperMode(true);
+    /**
+     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function initQuoteData(){
+        if ($this->getStoreId()) {
+            if (!$this->getQuoteId()) {
+                $this->_quote_request->setCustomerGroupId($this->groupManagement->getDefaultGroup()->getId());
+                $this->_quote_request->setIsActive(false);
+                $this->_quote_request->setStoreId($this->getStoreId());
+
+                $this->quoteRepository->save($this->_quote_request);
+                $this->setQuoteId($this->_quote_request->getId());
+                $this->_quote_request = $this->quoteRepository->get($this->getQuoteId(), [$this->getStoreId()]);
+            } else {
+                $this->_quote_request = $this->quoteRepository->get($this->getQuoteId(), [$this->getStoreId()]);
+                $this->_quote_request->setStoreId($this->getStoreId());
+            }
+
+            if ($this->getCustomerId() && $this->getCustomerId() != $this->_quote_request->getCustomerId()) {
+                $customer = $this->customerRepository->getById($this->getCustomerId());
+                $this->_quote_request->assignCustomer($customer);
             }
         }
-        return $this->_quote_request;
+        return $this;
     }
 
     /**
@@ -62,10 +72,9 @@ class BackendSession extends \Magento\Backend\Model\Session\Quote
     public function reloadQuote()
     {
         if ($this->getQuoteId()) {
-            $this->_quote_request = $this->quoteFactory->create();
             $this->_quote_request = $this->quoteRepository->get($this->getQuoteId());
-            $this->_quote_request->setIgnoreOldQty(true);
-            $this->_quote_request->setIsSuperMode(true);
+//            $this->_quote_request->setIgnoreOldQty(true);
+//            $this->_quote_request->setIsSuperMode(true);
         }
         return $this;
     }
@@ -75,11 +84,11 @@ class BackendSession extends \Magento\Backend\Model\Session\Quote
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function reAssignCustomer(){
-        if ($this->getCustomerId() && $this->getCustomerId() != $this->getQuote()->getCustomerId()) {
+        if ($this->getCustomerId() && $this->getCustomerId() != $this->_quote_request->getCustomerId()) {
             $customer = $this->customerRepository->getById($this->getCustomerId());
             $this->_quote_request->assignCustomer($customer);
-            $this->quoteRepository->save($this->_quote_request);
-            $this->reloadQuote();
+//            $this->quoteRepository->save($this->_quote_request);
+//            $this->reloadQuote();
         }
     }
 
@@ -89,6 +98,32 @@ class BackendSession extends \Magento\Backend\Model\Session\Quote
     public function reset(){
         $this->clearStorage();
         $this->_quote_request = null;
+        $this->setCustomerId(null);
+        $this->setStoreId(null);
+        $this->setQuoteId(null);
+        $this->setCurrencyId(null);
         return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function clearQuote(){
+        $this->_quote_request = null;
+        return $this;
+    }
+
+    /**
+     * @param $quoteId
+     * @return bool
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function isNewAdminQuote($quoteId){
+        $isNew = false;
+        if ($quoteId) {
+            $quote = $this->quoteRepository->get($quoteId);
+            $isNew = ($quote && ($quote->getRequestStatus() == QuoteStatus::STATUS_ADMIN_PENDING))?true:false;
+        }
+        return $isNew;
     }
 }

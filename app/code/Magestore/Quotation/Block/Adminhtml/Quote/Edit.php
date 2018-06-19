@@ -19,6 +19,11 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
     protected $quoteSession;
 
     /**
+     * @var \Magestore\Quotation\Model\GeneralSession
+     */
+    protected $generalSession;
+
+    /**
      * @var \Magestore\Quotation\Api\QuotationManagementInterface
      */
     protected $quotationManagement;
@@ -32,6 +37,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      * Edit constructor.
      * @param \Magento\Backend\Block\Widget\Context $context
      * @param \Magestore\Quotation\Model\BackendSession $quoteSession
+     * @param \Magestore\Quotation\Model\GeneralSession $generalSession
      * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param \Magento\Framework\Registry $registry
      * @param array $data
@@ -39,11 +45,13 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
     public function __construct(
         \Magento\Backend\Block\Widget\Context $context,
         \Magestore\Quotation\Model\BackendSession $quoteSession,
+        \Magestore\Quotation\Model\GeneralSession $generalSession,
         \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         \Magento\Framework\Registry $registry,
         array $data = []
     ) {
         $this->quoteSession = $quoteSession;
+        $this->generalSession = $generalSession;
         $this->quotationManagement = $quotationManagement;
         $this->registry = $registry;
         parent::__construct($context, $data);
@@ -68,23 +76,15 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         $this->buttonList->remove('save');
 
         $quote = $this->_getQuote();
-        if($quote){
+        if($quote && $quote->getRequestStatus() && ($quote->getRequestStatus() != QuoteStatus::STATUS_ADMIN_PENDING)){
             $this->quotationManagement->isExpired($quote);
             $canEdit = $this->quotationManagement->canEdit($quote);
             if($canEdit){
-                if($quote->getRequestStatus() == QuoteStatus::STATUS_ADMIN_PENDING){
-                    $this->buttonList->add('cancel', [
-                        'label' => __("Cancel"),
-                        'class' => 'cancel',
-                        'onclick' => "quote.cancel()"
-                    ]);
-                }else{
-                    $this->buttonList->add('save_as_draft', [
-                        'label' => __("Save as Draft"),
-                        'class' => 'save_as_draft',
-                        'onclick' => "quote.submit()"
-                    ]);
-                }
+                $this->buttonList->add('save_as_draft', [
+                    'label' => __("Save as Draft"),
+                    'class' => 'save_as_draft',
+                    'onclick' => "quote.submit()"
+                ]);
             }
 
             $canDecline = $this->quotationManagement->canDecline($quote);
@@ -105,6 +105,29 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
                     'class' => 'send primary',
                     'onclick' => "quote.send('{$confirm}', true)"
                 ]);
+            }
+        }else{
+            $this->buttonList->add('cancel', [
+                'label' => __("Cancel"),
+                'class' => 'cancel',
+                'onclick' => "quote.cancel()"
+            ]);
+            $this->buttonList->add('submit_quote_top_button', [
+                'label' => __("Submit"),
+                'class' => 'submit primary',
+                'onclick' => "quote.submitRequest()"
+            ]);
+            $confirm = __('Are you sure to send this quote to customer?');
+            $this->buttonList->add('send_quote_top_button', [
+                'label' => __("Send"),
+                'class' => 'send primary',
+                'onclick' => "quote.send('{$confirm}', true)"
+            ]);
+            $customerId = $this->generalSession->getNewQuotationCustomerId();
+            $storeId = $this->generalSession->getNewQuotationStoreId();
+            if (!$quote->getId() && ($customerId === null || !$storeId)) {
+                $this->buttonList->update('submit_quote_top_button', 'style', 'display:none');
+                $this->buttonList->update('send_quote_top_button', 'style', 'display:none');
             }
         }
     }

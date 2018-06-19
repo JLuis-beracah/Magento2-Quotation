@@ -79,6 +79,9 @@ class Type extends \Magento\Catalog\Model\Product\Type\AbstractType
         if($options && isset($options['price'])){
             $product->addCustomOption('price', $options['price']);
         }
+        if($options && isset($options['weight'])){
+            $product->addCustomOption('weight', $options['weight']);
+        }
         if($options && isset($options['description'])){
             $product->addCustomOption('description', $options['description']);
         }

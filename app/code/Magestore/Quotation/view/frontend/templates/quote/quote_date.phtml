@@ -11,3 +11,8 @@
 <div class="quote-date order-date">
     <?= /* @escapeNotVerified */ __('<span class="label">Requested Date:</span> %1', '<date>' . $block->formatDate($block->getQuote()->getCreatedAt(), \IntlDateFormatter::LONG) . '</date>') ?>
 </div>
+<?php if($block->getQuote()->getExpirationDate()):?>
+<div class="quote-expiration-date" style="font-weight: 700;color: #666666;">
+    <?= /* @escapeNotVerified */ __('<span class="label" style="margin-right: 5px">Expire on:</span> %1', '<date>' . $block->formatDate($block->getQuote()->getExpirationDate(), \IntlDateFormatter::LONG) . '</date>') ?>
+</div>
+<?php endif;?>

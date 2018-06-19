@@ -33,6 +33,11 @@ class SalesQuoteItemSetProduct implements ObserverInterface
             $item = $observer->getEvent()->getQuoteItem();
             $item->setName($name->getValue());
         }
+        $name = $product->getCustomOption('weight');
+        if ($name && $name->getValue()) {
+            $item = $observer->getEvent()->getQuoteItem();
+            $item->setWeight($name->getValue());
+        }
         $description = $product->getCustomOption('description');
         if ($description && $description->getValue()) {
             $item = $observer->getEvent()->getQuoteItem();

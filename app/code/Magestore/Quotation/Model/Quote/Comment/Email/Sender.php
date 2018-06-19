@@ -98,16 +98,4 @@ class Sender extends \Magestore\Quotation\Model\Quote\Email\AbstractSender
         $this->templateContainer->setTemplateId($templateId);
     }
 
-    /**
-     * @param \Magento\Quote\Api\Data\CartInterface $quote
-     * @return string
-     */
-    public function getQuoteDetailUrl(\Magento\Quote\Api\Data\CartInterface $quote){
-        $url = $this->helper->getUrl("quotation/quote/view", [
-            'quote_id' => $quote->getEntityId()
-        ]);
-        $urlPaths = explode("?SID", $url);
-        return $urlPaths[0];
-    }
-
 }

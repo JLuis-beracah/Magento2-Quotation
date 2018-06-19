@@ -612,8 +612,11 @@ define([
         },
 
         dataShow : function(){
-            if ($('send')) {
-                $('send').show();
+            if ($('submit_quote_top_button')) {
+                $('submit_quote_top_button').show();
+            }
+            if ($('send_quote_top_button')) {
+                $('send_quote_top_button').show();
             }
             this.showArea('data');
             this.showArea('info');
@@ -867,6 +870,9 @@ define([
             if (!params.quote_id) {
                 params.quote_id = this.quoteId;
             }
+            if (!params.id && this.quoteId) {
+                params.id = this.quoteId;
+            }
             if (!params.customer_id) {
                 params.customer_id = this.customerId;
             }
@@ -1074,6 +1080,13 @@ define([
         cancel: function(){
             var self = this;
             var params = {clear_session: true};
+            self.loadArea([], true, params).done(function(){
+                window.location.href = self.quote_listing_url;
+            });
+        },
+        submitRequest: function(){
+            var self = this;
+            var params = {quote_request_action:'submit', clear_session: true};
             self.loadArea([], true, params).done(function(){
                 window.location.href = self.quote_listing_url;
             });

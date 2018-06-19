@@ -298,11 +298,7 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         $statusList = QuoteStatus::getOptionArray();
         switch ($requestStatus){
             case QuoteStatus::STATUS_ADMIN_PENDING:
-                $statusList[QuoteStatus::STATUS_ADMIN_PENDING] = QuoteStatus::LABEL_ADMIN_PENDING;
-                unset($statusList[QuoteStatus::STATUS_PENDING]);
-                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
-                unset($statusList[QuoteStatus::STATUS_DECLINED]);
-                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+                $statusList = [QuoteStatus::STATUS_ADMIN_PENDING => QuoteStatus::LABEL_ADMIN_PENDING];
                 break;
             case QuoteStatus::STATUS_NEW:
                 unset($statusList[QuoteStatus::STATUS_PENDING]);

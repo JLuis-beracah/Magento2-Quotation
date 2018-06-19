@@ -20,17 +20,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $currencyFactory;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
+    protected $timezone;
+
+    /**
      * Data constructor.
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Directory\Model\CurrencyFactory $currencyFactory
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Directory\Model\CurrencyFactory $currencyFactory
+        \Magento\Directory\Model\CurrencyFactory $currencyFactory,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     )
     {
         parent::__construct($context);
         $this->currencyFactory = $currencyFactory;
+        $this->timezone = $timezone;
     }
 
     /**
@@ -75,5 +83,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getUrl($route, $params = [])
     {
         return $this->_getUrl($route, $params);
+    }
+
+    /**
+     * Retrieve formatting date
+     *
+     * @param null|string|\DateTimeInterface $date
+     * @param int $format
+     * @param bool $showTime
+     * @param null|string $timezone
+     * @return string
+     */
+    public function formatDate(
+        $date = null,
+        $format = \IntlDateFormatter::SHORT,
+        $showTime = false,
+        $timezone = null
+    ) {
+        $date = $date instanceof \DateTimeInterface ? $date : new \DateTime($date);
+        return $this->timezone->formatDateTime(
+            $date,
+            $format,
+            $showTime ? $format : \IntlDateFormatter::NONE,
+            null,
+            $timezone
+        );
     }
 }

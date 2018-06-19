@@ -27,6 +27,9 @@
         <td>
             <h1>{{trans 'Your Quote'}} <span class="no-link">#{{var quote.entity_id}}</span></h1>
             <p>{{trans 'Requested on'}} <span class="no-link">{{var created_at_formated}}</span></p>
+            {{depend expiration_date_formated}}
+            <p>{{trans 'Expire on'}} <span class="no-link">{{var expiration_date_formated}}</span></p>
+            {{/depend}}
         </td>
     </tr>
     <tr class="email-information">
@@ -48,7 +51,7 @@
     </tr>
     <tr>
         <td>
-            <p>{{trans 'For more details or to place an order please visit the Quote Details page'}}</p>
+            <p>{{trans 'For more details or to place an order please visit the '}}<a href="{{var quote_detail_url}}">{{trans 'Quote Details page'}}</a></p>
         </td>
     </tr>
 </table>
