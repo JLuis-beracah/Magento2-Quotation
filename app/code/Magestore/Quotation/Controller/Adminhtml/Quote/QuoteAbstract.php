@@ -306,7 +306,7 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
                 if($quote->getCustomerId()){
                     $this->_getQuoteProcessModel()->updateCustomerData($data['account']);
                 }else{
-                    if(isset($data['account']['email'])){
+                    if(isset($data['account']['email']) && ($quote->getRequestStatus() == QuoteStatus::STATUS_ADMIN_PENDING)){
                         $this->_getQuoteProcessModel()->validateNewCustomerEmail($data['account']['email']);
                     }
                 }

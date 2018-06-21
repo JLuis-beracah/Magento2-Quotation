@@ -155,6 +155,7 @@ $_items = $block->getItems();
                         </td>
                         <td class="col-discount col-price">
                             <?= /* @escapeNotVerified */ $block->formatPrice(-$_item->getTotalDiscountAmount()) ?>
+                            <?php if ($canEdit): ?>
                             <div class="discount-price-block">
                                 <input id="item_use_discount_<?= /* @escapeNotVerified */ $_item->getId() ?>"
                                        class="admin__control-checkbox"
@@ -176,6 +177,7 @@ $_items = $block->getItems();
                                     <?php endif; ?>
                                    placeholder="%"
                                    class="input-text item-price item-admin-discount-percentage admin__control-text"/>
+                            <?php endif;?>
                         </td>
                         <td class="col-price col-row-subtotal">
                             <?= $block->getItemRowTotalWithDiscountHtml($_item) ?>

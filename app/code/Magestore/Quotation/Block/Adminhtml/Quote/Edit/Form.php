@@ -154,12 +154,14 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
      */
     public function getDataSelectorDisplay()
     {
+        $status = $this->getQuote()->getRequestStatus();
         $storeId = $this->getStoreId();
         $customerId = $this->getCustomerId();
-        if ($customerId !== null && $storeId) {
+        if(($status == QuoteStatus::STATUS_ADMIN_PENDING) && !($customerId !== null && $storeId)){
+            return 'none';
+        }else{
             return 'block';
         }
-        return 'none';
     }
 
     /**
@@ -171,6 +173,7 @@ class Form extends \Magestore\Quotation\Block\Adminhtml\Quote\Edit\AbstractEdit
     {
         $data = [];
         $data['quote_id'] = $this->getQuote()->getId();
+        $data['can_edit'] = $this->canEdit();
         $data['quote_listing_url'] = $this->getUrl('quotation/quote/');
 
         if ($this->getCustomerId()) {

@@ -45,3 +45,7 @@
 .admin__page-section-item.quote-account-information.head-account{
     padding-left: 20px;
 }
+
+.quote-comments-history{
+    min-height:300px;
+}

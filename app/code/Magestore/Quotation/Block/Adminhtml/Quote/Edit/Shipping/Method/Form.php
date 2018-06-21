@@ -19,6 +19,11 @@ class Form extends \Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Method\F
     protected $registry;
 
     /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface
+     */
+    protected $quotationManagement;
+
+    /**
      * Form constructor.
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Backend\Model\Session\Quote $sessionQuote
@@ -26,6 +31,7 @@ class Form extends \Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Method\F
      * @param PriceCurrencyInterface $priceCurrency
      * @param \Magento\Tax\Helper\Data $taxData
      * @param \Magento\Framework\Registry $registry
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param array $data
      */
     public function __construct(
@@ -35,10 +41,12 @@ class Form extends \Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Method\F
         PriceCurrencyInterface $priceCurrency,
         \Magento\Tax\Helper\Data $taxData,
         \Magento\Framework\Registry $registry,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         array $data = []
     ) {
         parent::__construct($context, $sessionQuote, $orderCreate, $priceCurrency, $taxData, $data);
         $this->registry = $registry;
+        $this->quotationManagement = $quotationManagement;
     }
 
     /**
@@ -75,5 +83,13 @@ class Form extends \Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Method\F
      */
     public function getAdminShippingMethodCode(){
         return "admin_shipping_standard";
+    }
+
+    /**
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function canEdit(){
+        return $this->quotationManagement->canEdit($this->getQuote());
     }
 }

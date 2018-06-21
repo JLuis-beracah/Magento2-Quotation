@@ -54,6 +54,7 @@ define([
             this.collectElementsValue = true;
             this.summarizePrice = true;
             this.quote_listing_url = data.quote_listing_url ? data.quote_listing_url : "";
+            this.can_edit = data.can_edit ? data.can_edit : false;
             jQuery.async('#quote-items', (function(){
                 this.dataArea = new QuoteFormArea('data', $(this.getAreaId('data')), this);
                 this.itemsArea = Object.extend(new QuoteFormArea('items', $(this.getAreaId('items')), this), {
@@ -88,10 +89,10 @@ define([
                         this._parent.itemsArea.setNode($(this._parent.getAreaId('items')));
                         this._parent.itemsArea.onLoad();
                     });
-
+                    var self = this;
                     this.itemsArea.onLoad = this.itemsArea.onLoad.wrap(function(proceed) {
                         proceed();
-                        if ($(searchAreaId) && !$(searchAreaId).visible() && !$(searchButtonId)) {
+                        if ($(searchAreaId) && !$(searchAreaId).visible() && !$(searchButtonId) && self.can_edit) {
                             this.addControlButton(searchButton);
                         }
                     });

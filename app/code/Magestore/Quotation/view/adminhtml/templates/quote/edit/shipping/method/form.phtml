@@ -84,11 +84,13 @@
                     </strong>
                 </dd>
             </dl>
+            <?php if($block->canEdit()):?>
             <a href="#"
                onclick="$('quote-shipping-method-info').hide();$('quote-shipping-method-choose').show();return false"
                class="action-default">
                 <span><?= /* @escapeNotVerified */ __('Click to change shipping method') ?></span>
             </a>
+            <?php endif;?>
         </div>
     <?php else: ?>
         <script>

@@ -149,7 +149,60 @@ $quoteUpdatedStoreDate = $block->formatDate(
             </table>
             </div>
         </div>
+        <?php if($block->canEdit()):?>
         <?= $block->getChildHtml('form_account') ?>
+        <?php else:?>
+        <div class="admin__page-section-item quote-account-information">
+            <?php /* Account Information */ ?>
+            <div class="admin__page-section-item-title">
+                <span class="title"><?= $block->escapeHtml(__('Account Information')) ?></span>
+                <div class="actions">
+                    <?php if ($customerUrl = $block->getCustomerViewUrl()) : ?>
+                        <a href="<?= /* @noEscape */ $block->getCustomerViewUrl() ?>" target="_blank">
+                            <?= $block->escapeHtml(__('Edit Customer')) ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="admin__page-section-item-content">
+                <table class="admin__table-secondary quote-account-information-table">
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Customer Name')) ?></th>
+                        <td>
+                            <?php if ($customerUrl = $block->getCustomerViewUrl()): ?>
+                                <a href="<?= $block->escapeUrl($customerUrl) ?>" target="_blank">
+                                    <span><?= $block->escapeHtml($block->getCustomerName($quote)) ?></span>
+                                </a>
+                            <?php else: ?>
+                                <?= $block->escapeHtml($block->getCustomerName($quote)) ?>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Email')) ?></th>
+                        <td><a href="mailto:<?php echo $block->escapeHtml($quote->getCustomerEmail()) ?>"><?php echo $block->escapeHtml($quote->getCustomerEmail()) ?></a></td>
+                    </tr>
+                    <?php if ($groupName = $block->getCustomerGroupName()) : ?>
+                        <tr>
+                            <th><?= $block->escapeHtml(__('Customer Group')) ?></th>
+                            <td><?= $block->escapeHtml($groupName) ?></td>
+                        </tr>
+                    <?php endif; ?>
+                    <?php foreach ($block->getCustomerAccountData() as $data):?>
+                        <tr>
+                            <th><?= $block->escapeHtml($data['label']) ?></th>
+                            <td><?= $block->escapeHtml($data['value'], ['br']) ?></td>
+                        </tr>
+                    <?php endforeach;?>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Additional Recipient Emails')) ?></th>
+                        <td class="additional-recipient-emails" style="max-width: 400px"><?= $block->escapeHtml($quote->getAdditionalRecipientEmails()) ?></td>
+                    </tr>
+                    <?= $block->getChildHtml('extra_customer_info') ?>
+                </table>
+            </div>
+        </div>
+        <?php endif;?>
     </div>
 </section>
 
@@ -162,7 +215,9 @@ $quoteUpdatedStoreDate = $block->formatDate(
             <?php /* Billing Address */ ?>
             <div class="admin__page-section-item-title">
                 <span class="title"><?= $block->escapeHtml(__('Billing Address')) ?></span>
+                <?php if($block->canEdit()):?>
                 <div class="actions"><?= /* @noEscape */ $block->getAddressEditLink($quote->getBillingAddress()); ?></div>
+                <?php endif;?>
             </div>
             <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getBillingAddress()); ?></address>
         </div>
@@ -171,7 +226,9 @@ $quoteUpdatedStoreDate = $block->formatDate(
                 <?php /* Shipping Address */ ?>
                 <div class="admin__page-section-item-title">
                     <span class="title"><?= $block->escapeHtml(__('Shipping Address')) ?></span>
+                    <?php if($block->canEdit()):?>
                     <div class="actions"><?= /* @noEscape */ $block->getAddressEditLink($quote->getShippingAddress()); ?></div>
+                    <?php endif?>
                 </div>
                 <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getShippingAddress()); ?></address>
             </div>
