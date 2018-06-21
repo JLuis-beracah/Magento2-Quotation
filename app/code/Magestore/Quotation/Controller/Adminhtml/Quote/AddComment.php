@@ -34,10 +34,10 @@ class AddComment extends \Magestore\Quotation\Controller\Adminhtml\Quote\QuoteAb
                 $response = ['error' => true, 'message' => $e->getMessage()];
             } catch (\Exception $e) {
                 $response = ['error' => true, 'message' => __('We cannot add quote comment history.')];
+                $response = ['error' => true, 'message' => $e->getMessage()];
             }
             if (is_array($response)) {
-                $resultJson = $this->createJsonResult();
-                $resultJson->setData($response);
+                $resultJson = $this->createJsonResult($response);
                 return $resultJson;
             }
         }

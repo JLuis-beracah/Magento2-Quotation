@@ -17,6 +17,21 @@ class Container extends \Magento\Sales\Model\Order\Email\Container\Container imp
     const XML_PATH_EMAIL_GUEST_TEMPLATE = 'quotation/email/quote_guest_template';
     const XML_PATH_EMAIL_ENABLED = 'quotation/email/enabled';
 
+    protected $additional_emails_copy_to = [];
+
+    /**
+     * @param string $email
+     * @return $this
+     */
+    public function addEmailCopyTo($email){
+        if($email){
+            if(!isset($this->additional_emails_copy_to[$email])){
+                $this->additional_emails_copy_to[$email] = $email;
+            }
+        }
+        return $this;
+    }
+
     /**
      * @return bool
      */
@@ -36,9 +51,17 @@ class Container extends \Magento\Sales\Model\Order\Email\Container\Container imp
      */
     public function getEmailCopyTo()
     {
+        $emails = [];
         $data = $this->getConfigValue(self::XML_PATH_EMAIL_COPY_TO, $this->getStore()->getStoreId());
         if (!empty($data)) {
-            return explode(',', $data);
+            $emails = explode(',', $data);
+        }
+        if (!empty($this->additional_emails_copy_to)) {
+            $additionalEmails = array_values($this->additional_emails_copy_to);
+            $emails = array_unique(array_merge($emails, $additionalEmails));
+        }
+        if(!empty($emails)){
+            return $emails;
         }
         return false;
     }

@@ -10,6 +10,7 @@
     <body>
         <referenceContainer name="content">
             <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Info" name="info" template="Magestore_Quotation::quote/edit/info.phtml">
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Form\Account" template="Magestore_Quotation::quote/edit/form/account.phtml" name="form_account"/>
             </block>
         </referenceContainer>
     </body>

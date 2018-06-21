@@ -27,6 +27,11 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
     protected $_general_session;
 
     /**
+     * @var \Magento\Quote\Model\CustomerManagement
+     */
+    protected $customerManagement;
+
+    /**
      * @return \Magestore\Quotation\Model\BackendSession
      */
     public function getSession()
@@ -50,6 +55,18 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
             $this->_general_session = ObjectManager::getInstance()->get(\Magestore\Quotation\Model\GeneralSession::class);
         }
         return $this->_general_session;
+    }
+
+    /**
+     * @return \Magento\Quote\Model\CustomerManagement
+     */
+    public function getCustomerManagement(){
+        if( !$this->customerManagement ||
+            !($this->customerManagement instanceof \Magento\Quote\Model\CustomerManagement)
+        ) {
+            $this->customerManagement = ObjectManager::getInstance()->get(\Magento\Quote\Model\CustomerManagement::class);
+        }
+        return $this->customerManagement;
     }
 
     /**
@@ -156,5 +173,79 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
         $amount = floatval($amount);
         $amount = $amount > 0 ? $amount : 0;
         return $amount;
+    }
+
+    /**
+     * @return $this
+     */
+    public function checkAndCreateCustomerAccount(){
+        $customerManagement = $this->getCustomerManagement();
+        $quote = $this->getQuote();
+        if (!$quote->getCustomerIsGuest()) {
+            if (!$quote->getCustomerId()) {
+                $newCustomerGroupId = $quote->getCustomerGroupId();
+                $newCustomerEmail = $quote->getCustomerEmail();
+                $email = $this->getData('account/email');
+                if(!$email && $newCustomerEmail){
+                    $this->addData([
+                        'account' => [
+                            'email'  => $newCustomerEmail
+                        ]
+                    ]);
+                    $this->setData('account/email', $newCustomerEmail);
+                }
+                $this->_prepareCustomer();
+                $customer = $quote->getCustomer();
+                $customer->setGroupId($newCustomerGroupId);
+                $customerManagement->populateCustomerInfo($quote);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @param $email
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function validateNewCustomerEmail($email){
+        if ($email) {
+            $quote = $this->getQuote();
+            $storeId = $quote->getStoreId();
+            try{
+                $customer = $this->customerRepository->get($email);
+                if($customer && $customer->getId()){
+                    $websiteId = $customer->getWebsiteId();
+                    if ($this->accountManagement->isCustomerInStore($websiteId, $storeId)) {
+                        throw new \Magento\Framework\Exception\LocalizedException(__('A customer with the same email "%1" already exists in an associated website.', $email));
+                    }
+                }
+            }catch (\Magento\Framework\Exception\NoSuchEntityException $e){
+                return true;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param $data
+     * @return $this
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Magento\Framework\Exception\State\InputMismatchException
+     */
+    public function updateCustomerData($data){
+        $quote = $this->getQuote();
+        if(!empty($data) && $quote->getCustomerId()){
+            $customer = $this->customerRepository->getById($quote->getCustomerId());
+            if($customer && $customer->getId()){
+                foreach ($data as $index => $value) {
+                    $customer->setData($index, $value);
+                }
+                $this->customerRepository->save($customer);
+            }
+        }
+        return $this;
     }
 }

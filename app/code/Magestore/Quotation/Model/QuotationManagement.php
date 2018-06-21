@@ -685,4 +685,17 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         return $quote;
     }
 
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param string $recipientEmails
+     * @return \Magento\Quote\Api\Data\CartInterface
+     */
+    public function setRecipientEmails(\Magento\Quote\Api\Data\CartInterface $quote, $recipientEmails = 0){
+        $quote->setData("additional_recipient_emails", $recipientEmails);
+        if($quote->getId()){
+            $this->quoteRepository->save($quote);
+        }
+        return $quote;
+    }
+
 }

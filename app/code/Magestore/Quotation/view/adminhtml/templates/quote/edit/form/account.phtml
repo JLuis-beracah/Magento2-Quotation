@@ -1,0 +1,37 @@
+<?php
+/**
+ * Copyright © Magestore, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<div class="admin__page-section-item quote-account-information <?= /* @escapeNotVerified */ $block->getHeaderCssClass() ?>">
+    <?php /* Account Information */ ?>
+    <div class="admin__page-section-item-title">
+        <span class="title"><?= /* @escapeNotVerified */ $block->getHeaderText() ?></span>
+    </div>
+    <div class="admin__page-section-item-content" id="customer_account_fields">
+        <?= $block->getForm()->getHtml() ?>
+        <fieldset class="fieldset admin__fieldset">
+            <div class="admin__field field">
+                <label class="label admin__field-label" for="quote-request-additional_recipient_emails-data">
+                    <span><?= $block->escapeHtml(__('Additional Recipient Emails')) ?></span>
+                </label>
+                <div class="admin__field-control control">
+                    <input name="quote-request-additional_recipient_emails-data"
+                           type="text"
+                           id="quote-request-additional_recipient_emails-data"
+                           class="expiration-date admin__control-text input-text"
+                           onfocus="this.select()"
+                           value="<?= $block->escapeHtml($block->getQuote()->getAdditionalRecipientEmails()) ?>"
+                    />
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<script>
+    require(["prototype", "Magestore_Quotation/js/model/quote/form"], function(){
+        quote.accountFieldsBind($('customer_account_fields'));
+        quote.additionalRecipientEmailsFieldsBind('quote-request-additional_recipient_emails-data');
+    });
+</script>

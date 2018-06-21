@@ -12,6 +12,11 @@
             <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Data" template="Magestore_Quotation::quote/edit/data.phtml" name="data">
                 <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items" template="Magento_Sales::order/create/items.phtml" name="items">
                     <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items\Grid" template="Magestore_Quotation::quote/edit/items/grid.phtml" name="items_grid">
+                        <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Coupons"
+                               template="Magestore_Quotation::quote/edit/coupons/form.phtml" name="coupons">
+                            <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Coupons\Form"
+                                   template="Magestore_Quotation::quote/edit/coupons/form.phtml" name="quote_edit_coupons_form" as="form"/>
+                        </block>
                     </block>
                 </block>
                 <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Method"

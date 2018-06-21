@@ -11,6 +11,7 @@
 }
 #edit_form #quote-info .admin__page-section .admin__page-section-content .admin__page-section-item{
     flex-grow: 1;
+    flex: 1;
 }
 
 #quotation_product_create_form_container #quotation_product_create_form_html{
@@ -29,4 +30,18 @@
 #quote-search .actions,
 #quote-items .actions{
     float: right;
+}
+
+.quote-discounts{
+    text-align: right;
+}
+.quote-discounts .field-apply-coupon-code{
+    width: 150px;
+}
+.quote-discounts .field-apply-coupon-code .admin__field-control input{
+    margin-bottom: 5px;
+}
+
+.admin__page-section-item.quote-account-information.head-account{
+    padding-left: 20px;
 }

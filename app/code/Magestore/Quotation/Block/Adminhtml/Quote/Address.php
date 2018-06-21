@@ -5,6 +5,8 @@
  */
 namespace Magestore\Quotation\Block\Adminhtml\Quote;
 
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
+
 /**
  * Class Address
  * @package Magestore\Quotation\Block\Adminhtml\Quote
@@ -19,16 +21,25 @@ class Address extends \Magento\Backend\Block\Widget\Form\Container
     protected $_coreRegistry = null;
 
     /**
+     * @var \Magestore\Quotation\Api\QuotationManagementInterface|null
+     */
+    protected $quotationManagement;
+
+    /**
+     * Address constructor.
      * @param \Magento\Backend\Block\Widget\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Widget\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magestore\Quotation\Api\QuotationManagementInterface $quotationManagement,
         array $data = []
     ) {
         $this->_coreRegistry = $registry;
+        $this->quotationManagement = $quotationManagement;
         parent::__construct($context, $data);
     }
 
@@ -72,6 +83,12 @@ class Address extends \Magento\Backend\Block\Widget\Form\Container
     public function getBackUrl()
     {
         $address = $this->_coreRegistry->registry('current_quote_address');
-        return $this->getUrl('quotation/quote/edit', ['id' => $address ? $address->getQuoteId() : null]);
+        $quoteId = $address->getQuoteId();
+        $quote = $this->quotationManagement->getQuoteRequest($quoteId);
+        $url = $this->getUrl('quotation/quote/edit');
+        if($quote && ($quote->getRequestStatus() != QuoteStatus::STATUS_ADMIN_PENDING)){
+            $url = $this->getUrl('quotation/quote/edit', ['id' => $address ? $address->getQuoteId() : null]);
+        }
+        return $url;
     }
 }

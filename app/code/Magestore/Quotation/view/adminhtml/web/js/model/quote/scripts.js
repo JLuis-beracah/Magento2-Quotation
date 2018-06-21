@@ -745,7 +745,58 @@ define([
                 salesrep:salesrep
             });
         },
+        additionalRecipientEmailsFieldsBind : function(elementId){
+            if($(elementId)){
+                var self = this;
+                var element = jQuery("#"+elementId);
+                element.change(function(){
+                    self.additionalRecipientEmailsFieldChange(element.val());
+                });
+            }
+        },
+        additionalRecipientEmailsFieldChange : function(additional_recipient_emails){
+            this.saveData({
+                additional_recipient_emails:additional_recipient_emails
+            });
+        },
 
+        accountFieldsBind : function(container){
+            if($(container)){
+                var self = this;
+                var fields = $(container).select('input', 'select', 'textarea');
+                for(var i=0; i<fields.length; i++){
+                    if(fields[i].id == 'group_id'){
+                        fields[i].observe('change',
+                            function () {
+                                if(self.validateElement(this)){
+                                    self.accountGroupChange();
+                                }
+                            }
+                        )
+                    }
+                    else{
+                        fields[i].observe('change',
+                            function () {
+                                if(self.validateElement(this)){
+                                    self.accountFieldChange();
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        },
+
+        accountGroupChange : function(){
+            this.loadArea(['data'], true, this.serializeData('customer_account_fields').toObject());
+        },
+
+        accountFieldChange : function(){
+            this.loadArea(false, true, this.serializeData('customer_account_fields').toObject());
+        },
+        validateElement: function(el){
+            return jQuery(el).valid();
+        },
         commentFieldsBind : function(container){
             if($(container)){
                 var fields = $(container).select('input', 'textarea');
@@ -777,7 +828,7 @@ define([
                     onSuccess: function(transport) {
                         var response = transport.responseText.evalJSON();
                         this.loadAreaResponseHandler(response);
-                        deferred.resolve();
+                        deferred.resolve(response);
                     }.bind(this)
                 });
             }
@@ -786,7 +837,7 @@ define([
                     parameters:params,
                     loaderArea: indicator,
                     onSuccess: function(transport) {
-                        deferred.resolve();
+                        deferred.resolve(transport);
                     }
                 });
             }
@@ -825,6 +876,9 @@ define([
                         this[$(this.getAreaId(id)).callback]();
                     }
                 }
+            }
+            if(!response.message){
+                $(this.getAreaId("message")).update("");
             }
         },
 
@@ -1024,11 +1078,15 @@ define([
                         if(clearSession){
                             params.clear_session = true;
                         }
-                        self.loadArea(["items", "info", 'totals', 'shipping_method'], true, params).done(function(){
+                        self.loadArea(["items", "info", 'totals', 'shipping_method'], true, params).done(function(response){
                             disableElements('save_as_draft');
                             // disableElements('decline');
                             if(clearSession){
-                                window.location.href = self.quote_listing_url;
+                                if(response){
+                                    if(!response.message){
+                                        window.location.href = self.quote_listing_url;
+                                    }
+                                }
                             }
                         });
                     },
@@ -1087,8 +1145,12 @@ define([
         submitRequest: function(){
             var self = this;
             var params = {quote_request_action:'submit', clear_session: true};
-            self.loadArea([], true, params).done(function(){
-                window.location.href = self.quote_listing_url;
+            self.loadArea([], true, params).done(function(response){
+                if(response){
+                    if(!response.message){
+                        window.location.href = self.quote_listing_url;
+                    }
+                }
             });
         },
 

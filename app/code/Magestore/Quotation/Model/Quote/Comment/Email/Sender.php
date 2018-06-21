@@ -96,6 +96,7 @@ class Sender extends \Magestore\Quotation\Model\Quote\Email\AbstractSender
         $this->identityContainer->setCustomerName($customerName);
         $this->identityContainer->setCustomerEmail($quote->getCustomerEmail());
         $this->templateContainer->setTemplateId($templateId);
+        $this->addAdditionalRecipientEmails($quote);
     }
 
 }

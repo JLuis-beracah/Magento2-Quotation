@@ -161,18 +161,23 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             $quoteId = ($editQuoteId)?$editQuoteId:$quoteId;
             $quote = $this->quotationManagement->getQuoteRequest($quoteId);
             if($quote){
-                if ($quote->getCustomerId()) {
-                    $quoteSession->setCustomerId((int)$quote->getCustomerId());
+                $customerId = ($customerId)?$customerId:$quote->getCustomerId();
+                if ((int)$customerId > 0) {
+                    $quoteSession->setCustomerId((int)$customerId);
                 }else{
                     $quoteSession->setCustomerId(null);
                 }
-                if ($quote->getStoreId()) {
-                    $quoteSession->setStoreId((int)$quote->getStoreId());
+
+                $storeId = ($storeId)?$storeId:$quote->getStoreId();
+                if ((int)$storeId) {
+                    $quoteSession->setStoreId((int)$storeId);
                 }else{
                     $quoteSession->setStoreId(null);
                 }
-                if ($quote->getCurrency()) {
-                    $quoteSession->setCurrencyId($quote->getCurrency()->getId());
+
+                $currencyId = ($currencyId)?$currencyId:$quote->getCurrency()->getId();
+                if ($currencyId) {
+                    $quoteSession->setCurrencyId($currencyId);
                 }else{
                     $quoteSession->setCurrencyId(null);
                 }
@@ -222,6 +227,8 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             }
         }
         $quote = $this->_getQuote();
+        $quote->getBillingAddress();
+        $quote->getShippingAddress();
         $data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
         if (!empty($data)) {
             $quote->setData($data);
@@ -262,14 +269,17 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             if(!$requestAction){
                 $this->_getQuotationManagement()->process($quote);
             }
-            if ($requestAction == 'send') {
-                $this->_getQuotationManagement()->send($quote);
+            if(in_array($requestAction, ['send', 'submit'])){
+                $this->_getQuoteProcessModel()->checkAndCreateCustomerAccount($quote);
+                if ($requestAction == 'send') {
+                    $this->_getQuotationManagement()->send($quote);
+                }
+                if ($requestAction == 'submit') {
+                    $this->_getQuotationManagement()->submit($quote);
+                }
             }
             if ($requestAction == 'decline') {
                 $this->_getQuotationManagement()->decline($quote);
-            }
-            if ($requestAction == 'submit') {
-                $this->_getQuotationManagement()->submit($quote);
             }
             $expirationDate = $this->getRequest()->getPost('expiration_date');
             if(isset($expirationDate)){
@@ -278,6 +288,10 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             $salesrep = $this->getRequest()->getPost('salesrep');
             if(isset($salesrep)){
                 $this->_getQuotationManagement()->setSalesrep($quote, $salesrep);
+            }
+            $recipientEmails = $this->getRequest()->getPost('additional_recipient_emails');
+            if(isset($recipientEmails)){
+                $this->_getQuotationManagement()->setRecipientEmails($quote, $recipientEmails);
             }
             $this->_initQuote();
         }
@@ -288,6 +302,15 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
          */
         if ($data = $this->getRequest()->getPost('quote')) {
             $this->_getQuoteProcessModel()->importPostData($data);
+            if(isset($data['account'])){
+                if($quote->getCustomerId()){
+                    $this->_getQuoteProcessModel()->updateCustomerData($data['account']);
+                }else{
+                    if(isset($data['account']['email'])){
+                        $this->_getQuoteProcessModel()->validateNewCustomerEmail($data['account']['email']);
+                    }
+                }
+            }
         }
 
         /**
@@ -347,9 +370,42 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
         ) {
             $this->_getQuoteProcessModel()->collectShippingRates();
         }
-
         $this->_getQuoteProcessModel()->saveQuote();
 
+        $data = $this->getRequest()->getPost('quote');
+        $couponCode = '';
+        if (isset($data) && isset($data['coupon']['code'])) {
+            $couponCode = trim($data['coupon']['code']);
+        }
+
+        if (!empty($couponCode)) {
+            $isApplyDiscount = false;
+            foreach ($this->_getQuote()->getAllItems() as $item) {
+                if (!$item->getNoDiscount()) {
+                    $isApplyDiscount = true;
+                    break;
+                }
+            }
+            if (!$isApplyDiscount) {
+                $this->messageManager->addError(
+                    __(
+                        '"%1" coupon code was not applied. Do not apply discount is selected for item(s)',
+                        $this->helper->escapeHtml($couponCode)
+                    )
+                );
+            } else {
+                if ($this->_getQuote()->getCouponCode() !== $couponCode) {
+                    $this->messageManager->addError(
+                        __(
+                            '"%1" coupon code is not valid.',
+                            $this->helper->escapeHtml($couponCode)
+                        )
+                    );
+                } else {
+                    $this->messageManager->addSuccess(__('The coupon code "%1" has been accepted.', $couponCode));
+                }
+            }
+        }
         if ($adminSubmit = (boolean)$this->getRequest()->getPost('clear_session')) {
             $this->_getSession()->reset();
             $this->resetNewQuotationSession();

@@ -144,4 +144,20 @@ abstract class AbstractSender
         $urlPaths = explode("?SID", $url);
         return $urlPaths[0];
     }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return $this
+     */
+    public function addAdditionalRecipientEmails(\Magento\Quote\Api\Data\CartInterface $quote){
+        if(!empty($quote->getAdditionalRecipientEmails())){
+            $additionalEmails = $quote->getAdditionalRecipientEmails();
+            if(!empty($additionalEmails)){
+                foreach (explode(',', $additionalEmails) as $email){
+                    $this->identityContainer->addEmailCopyTo($email);
+                }
+            }
+        }
+        return $this;
+    }
 }

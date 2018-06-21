@@ -73,6 +73,7 @@ class BackendSession extends \Magento\Backend\Model\Session\Quote
     {
         if ($this->getQuoteId()) {
             $this->_quote_request = $this->quoteRepository->get($this->getQuoteId());
+            $this->reAssignCustomer();
 //            $this->_quote_request->setIgnoreOldQty(true);
 //            $this->_quote_request->setIsSuperMode(true);
         }
@@ -84,8 +85,10 @@ class BackendSession extends \Magento\Backend\Model\Session\Quote
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function reAssignCustomer(){
-        if ($this->getCustomerId() && $this->getCustomerId() != $this->_quote_request->getCustomerId()) {
-            $customer = $this->customerRepository->getById($this->getCustomerId());
+        $requestCustomerId = $this->getCustomerId();
+        $quoteCustomerId = $this->getCustomerId();
+        if ($requestCustomerId && $quoteCustomerId && ($requestCustomerId != $quoteCustomerId)) {
+            $customer = $this->customerRepository->getById($requestCustomerId);
             $this->_quote_request->assignCustomer($customer);
 //            $this->quoteRepository->save($this->_quote_request);
 //            $this->reloadQuote();

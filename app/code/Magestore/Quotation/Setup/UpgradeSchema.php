@@ -258,6 +258,19 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 )
             );
         }
+
+        if (version_compare($context->getVersion(), '1.1.3', '<')) {
+            $setup->getConnection()->addColumn(
+                $setup->getTable('quote'),
+                'additional_recipient_emails',
+                array(
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'length' => '255',
+                    'comment' => 'Quotation Additional Recipient Emails'
+                )
+            );
+        }
         $setup->endSetup();
     }
 }

@@ -6,6 +6,8 @@
  */
 namespace Magestore\Quotation\Controller\Adminhtml\Quote;
 
+use Magestore\Quotation\Model\Source\Quote\Status as QuoteStatus;
+
 /**
  * Class AddressSave
  * @package Magestore\Quotation\Controller\Adminhtml\Quote
@@ -74,7 +76,14 @@ class AddressSave extends \Magestore\Quotation\Controller\Adminhtml\Quote\QuoteA
                     ]
                 );
                 $this->messageManager->addSuccess(__('You updated the quote address.'));
-                return $resultRedirect->setPath('quotation/*/edit', ['id' => $address->getQuoteId()]);
+                $quoteId = $address->getQuoteId();
+                $quote = $this->quotationManagement->getQuoteRequest($quoteId);
+                if($quote && ($quote->getRequestStatus() != QuoteStatus::STATUS_ADMIN_PENDING)){
+                    $resultRedirect->setPath('quotation/quote/edit', ['id' => $address->getQuoteId()]);
+                }else{
+                    $resultRedirect->setPath('quotation/quote/edit');
+                }
+                return $resultRedirect;
             } catch (LocalizedException $e) {
                 $this->messageManager->addError($e->getMessage());
             } catch (\Exception $e) {

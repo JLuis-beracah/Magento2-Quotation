@@ -224,6 +224,7 @@ $_items = $block->getItems();
     <div class="quote-discounts">
         <?= $block->getButtonHtml(__('Add Custom Product'), 'product.showCreateForm()', 'action-secondary') ?>
         <?= $block->getButtonHtml(__('Update Items and Quantities'), 'quote.itemsUpdate()', 'action-secondary') ?>
+        <div id="quote-coupons" class="quote-coupons order-coupons"><?= $block->getChildHtml() ?></div>
     </div>
     <script>
         require([

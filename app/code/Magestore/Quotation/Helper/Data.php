@@ -15,6 +15,11 @@ namespace Magestore\Quotation\Helper;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
+     * @var \Magento\Framework\Escaper
+     */
+    protected $escaper;
+
+    /**
      * @var \Magento\Directory\Model\CurrencyFactory
      */
     protected $currencyFactory;
@@ -29,16 +34,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Directory\Model\CurrencyFactory $currencyFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Directory\Model\CurrencyFactory $currencyFactory,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
+        \Magento\Framework\Escaper $escaper
     )
     {
         parent::__construct($context);
         $this->currencyFactory = $currencyFactory;
         $this->timezone = $timezone;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -108,5 +116,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             null,
             $timezone
         );
+    }
+
+    /**
+     * @param $string
+     * @return array|string
+     */
+    public function escapeHtml($string){
+        return $this->escaper->escapeHtml($string);
     }
 }

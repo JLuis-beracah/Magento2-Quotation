@@ -205,4 +205,10 @@ interface QuotationManagementInterface
      */
     public function setSalesrep(\Magento\Quote\Api\Data\CartInterface $quote, $salesrep = 0);
 
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @param string $recipientEmails
+     * @return \Magento\Quote\Api\Data\CartInterface
+     */
+    public function setRecipientEmails(\Magento\Quote\Api\Data\CartInterface $quote, $recipientEmails = 0);
 }

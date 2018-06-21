@@ -13,14 +13,17 @@ class LoadBlock extends \Magestore\Quotation\Controller\Adminhtml\Quote\QuoteAbs
     public function execute()
     {
         $request = $this->getRequest();
+        $isError = false;
         try {
             $this->_initSession()->_processData();
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->_reloadQuote();
             $this->messageManager->addError($e->getMessage());
+            $isError = true;
         } catch (\Exception $e) {
             $this->_reloadQuote();
             $this->messageManager->addException($e, $e->getMessage());
+            $isError = true;
         }
 
         $asJson = $request->getParam('json');
@@ -33,7 +36,9 @@ class LoadBlock extends \Magestore\Quotation\Controller\Adminhtml\Quote\QuoteAbs
         } else {
             $resultPage->addHandle('quotation_quote_edit_load_block_plain');
         }
-
+        if(!$block && $isError){
+            $block = 'message';
+        }
         if ($block) {
             $blocks = explode(',', $block);
             if ($asJson && !in_array('message', $blocks)) {
