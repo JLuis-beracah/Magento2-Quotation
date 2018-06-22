@@ -40,6 +40,11 @@ $_items = $block->getItems();
             </table>
         </div>
     </div>
+    <?php if($canEdit):?>
+        <div class="quote-discounts">
+            <?= $block->getButtonHtml(__('Add Custom Product'), 'product.showCreateForm()', 'action-secondary') ?>
+        </div>
+    <?php endif;?>
 <?php else: ?>
     <div class="admin__table-wrapper" id="quote-items_grid">
     <?php if ($canEdit && (count($_items)>10)): ?>

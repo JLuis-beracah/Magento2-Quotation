@@ -6,6 +6,8 @@
  */
 namespace Magestore\Quotation\Controller\Quote;
 
+use Magestore\Quotation\Api\QuotationManagementInterface;
+
 class View extends \Magestore\Quotation\Controller\AbstractAction
 {
     /**
@@ -59,12 +61,6 @@ class View extends \Magestore\Quotation\Controller\AbstractAction
      */
     public function execute()
     {
-        if(!$this->customerSession->isLoggedIn()){
-            $resultRedirect = $this->createRedirectResult();
-            $resultRedirect->setPath('customer/account/login');
-            return $resultRedirect;
-        }
-
         $quoteId = (int)$this->getRequest()->getParam('quote_id');
         if (!$quoteId) {
             $resultForward = $this->createForwardResult();
@@ -83,6 +79,16 @@ class View extends \Magestore\Quotation\Controller\AbstractAction
                     $navigationBlock->setActive('quotation/quote/history');
                 }
                 return $resultPage;
+            }else{
+                if($canView['error_code'] == QuotationManagementInterface::ERROR_NOT_LOGIN){
+                    $resultRedirect = $this->createRedirectResult();
+                    $resultRedirect->setPath('customer/account/login');
+                    return $resultRedirect;
+                }else{
+                    if($canView['error_message']){
+                        $this->messageManager->addErrorMessage($canView['error_message']);
+                    }
+                }
             }
         }
         $resultRedirect = $this->createRedirectResult();

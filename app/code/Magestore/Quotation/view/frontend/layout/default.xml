@@ -9,7 +9,7 @@
     <body>
         <referenceBlock name="header.links">
             <block class="Magento\Framework\View\Element\Html\Link\Current"
-                   name="quotation-cart"
+                   name="quotation-cart-header-links"
                    after="register-link-new"
                    ifconfig="quotation/general/enable"
                    cacheable="false" >
@@ -21,7 +21,7 @@
         </referenceBlock>
         <referenceBlock name="top.links">
             <block class="Magento\Framework\View\Element\Html\Link\Current"
-                   name="quotation-cart"
+                   name="quotation-cart-top-links"
                    after="register-link-new"
                    ifconfig="quotation/general/enable"
                    cacheable="false" >
