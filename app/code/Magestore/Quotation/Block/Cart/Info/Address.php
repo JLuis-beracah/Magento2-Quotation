@@ -77,31 +77,6 @@ class Address extends \Magento\Customer\Block\Address\Edit
      */
     protected function _prepareLayout()
     {
-        if ($this->_address === null || !$this->_address->getId()) {
-            $this->_address = $this->getQuote()->getShippingAddress();
-            $customerId = $this->getCurrentCustomerId();
-            if($customerId){
-                $customer = $this->getCustomer();
-                if(!$this->_address->getPrefix()){
-                    $this->_address->setPrefix($customer->getPrefix());
-                }
-                if(!$this->_address->getFirstname()){
-                    $this->_address->setFirstname($customer->getFirstname());
-                }
-                if(!$this->_address->getMiddlename()){
-                    $this->_address->setMiddlename($customer->getMiddlename());
-                }
-                if(!$this->_address->getLastname()){
-                    $this->_address->setLastname($customer->getLastname());
-                }
-                if(!$this->_address->getSuffix()){
-                    $this->_address->setSuffix($customer->getSuffix());
-                }
-                if(!$this->_address->getEmail()){
-                    $this->_address->setEmail($customer->getEmail());
-                }
-            }
-        }
         return $this;
     }
 
@@ -154,5 +129,115 @@ class Address extends \Magento\Customer\Block\Address\Edit
     public function getRegionId()
     {
         return $this->getAddress()->getRegionId();
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddressPrefix(){
+        return "";
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderTitle(){
+        return "";
+    }
+
+    /**
+     * @param $field
+     * @return string
+     */
+    public function getAddressFieldName($field){
+        return ($this->getAddressPrefix())?$this->getAddressPrefix()."[$field]":$field;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContainerHtmlId(){
+        return $this->getAddressPrefix()."_address_container";
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddressFieldId($field){
+        return $this->getAddressPrefix()."_".$field;
+    }
+
+    /**
+     * Generate name block html.
+     *
+     * @return string
+     */
+    public function getNameBlockHtml()
+    {
+        $nameBlock = $this->getLayout()
+            ->createBlock(\Magento\Customer\Block\Widget\Name::class)
+            ->setObject($this->getAddress());
+        $nameBlock = $this->getWidget($nameBlock);
+        return $nameBlock->toHtml();
+    }
+
+    /**
+     * @param $class
+     * @param string $template
+     * @return \Magento\Framework\View\Element\BlockInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getWidget($class, $template = ""){
+        $prefix = $this->getAddressPrefix();
+        if(is_string($class)){
+            $widget = $this->getLayout()->createBlock($class);
+        }else{
+            $widget = $class;
+        }
+        $widget->setData('field_name_format', $prefix.'[%s]');
+        $widget->setData('field_id_format', $prefix.'_%s');
+        if($template){
+            $widget->setPrefix($prefix);
+            $widget->setTemplate($template);
+        }
+        return $widget;
+    }
+
+    /**
+     * @return \Magento\Framework\View\Element\BlockInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getCompanyWidget(){
+        return $this->getWidget(\Magento\Customer\Block\Widget\Company::class, 'Magestore_Quotation::customer/widget/company.phtml');
+    }
+
+    /**
+     * @return \Magento\Framework\View\Element\BlockInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getFaxWidget(){
+        return $this->getWidget(\Magento\Customer\Block\Widget\Fax::class, 'Magestore_Quotation::customer/widget/fax.phtml');
+    }
+
+    /**
+     * @return \Magento\Framework\View\Element\BlockInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getTelephoneWidget(){
+        return $this->getWidget(\Magento\Customer\Block\Widget\Telephone::class, 'Magestore_Quotation::customer/widget/telephone.phtml');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBillingAddress(){
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVirtual(){
+        return $this->getQuote()->isVirtual();
     }
 }

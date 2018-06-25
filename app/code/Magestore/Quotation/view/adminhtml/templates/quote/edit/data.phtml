@@ -14,6 +14,21 @@
     });
 </script>
     <div class="quote-details">
+        <?php if($block->canEdit()):?>
+        <section id="quote-addresses" class="admin__page-section quote-addresses order-addresses">
+            <div class="admin__page-section-title">
+                <span class="title"><?= /* @escapeNotVerified */ __('Address Information') ?></span>
+            </div>
+            <div class="admin__page-section-content">
+                <div id="quote-billing_address" class="admin__page-section-item quote-billing-address order-billing-address">
+                    <?= $block->getChildHtml('billing_address') ?>
+                </div>
+                <div id="quote-shipping_address" class="admin__page-section-item quote-shipping-address order-shipping-address">
+                    <?= $block->getChildHtml('shipping_address') ?>
+                </div>
+            </div>
+        </section>
+        <?php endif;?>
         <div id="quote-search" style="display: none" class="admin__page-section quote-search-items order-search-items">
             <?= $block->getChildHtml('search') ?>
         </div>

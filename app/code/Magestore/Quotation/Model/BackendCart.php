@@ -32,6 +32,11 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
     protected $customerManagement;
 
     /**
+     * @var \Magento\Quote\Model\CustomerManagement
+     */
+    protected $extendedQuoteManagement;
+
+    /**
      * @return \Magestore\Quotation\Model\BackendSession
      */
     public function getSession()
@@ -67,6 +72,18 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
             $this->customerManagement = ObjectManager::getInstance()->get(\Magento\Quote\Model\CustomerManagement::class);
         }
         return $this->customerManagement;
+    }
+
+    /**
+     * @return \Magestore\Quotation\Model\Quote\QuoteManagement
+     */
+    public function getExtendedQuoteManagement(){
+        if( !$this->extendedQuoteManagement ||
+            !($this->extendedQuoteManagement instanceof \Magestore\Quotation\Model\Quote\QuoteManagement)
+        ) {
+            $this->extendedQuoteManagement = ObjectManager::getInstance()->get(\Magestore\Quotation\Model\Quote\QuoteManagement::class);
+        }
+        return $this->extendedQuoteManagement;
     }
 
     /**
@@ -178,9 +195,8 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
     /**
      * @return $this
      */
-    public function checkAndCreateCustomerAccount(){
-        $customerManagement = $this->getCustomerManagement();
-        $quote = $this->getQuote();
+    public function checkAndCreateCustomerAccount($quote){
+        $quote = ($quote)?$quote:$this->getQuote();
         if (!$quote->getCustomerIsGuest()) {
             if (!$quote->getCustomerId()) {
                 $newCustomerGroupId = $quote->getCustomerGroupId();
@@ -197,8 +213,8 @@ class BackendCart extends \Magento\Sales\Model\AdminOrder\Create
                 $this->_prepareCustomer();
                 $customer = $quote->getCustomer();
                 $customer->setGroupId($newCustomerGroupId);
-                $customerManagement->populateCustomerInfo($quote);
             }
+            $this->getExtendedQuoteManagement()->updateCustomerAddress($quote);
         }
         return $this;
     }

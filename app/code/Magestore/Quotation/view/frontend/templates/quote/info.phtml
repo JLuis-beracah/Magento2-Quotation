@@ -9,11 +9,17 @@
 ?>
 <?php /** @var $block \Magestore\Quotation\Block\Quote\Info */ ?>
 <?php $_quote = $block->getQuote() ?>
-<div class="block block-quote-details-view">
+<div class="block block-quote-details-view block-order-details-view">
     <div class="block-title">
         <strong><?= /* @escapeNotVerified */ __('QUOTE REQUEST') ?></strong>
     </div>
     <div class="block-content">
+        <div class="box box-quote-billing-address box-order-billing-address">
+            <strong class="box-title"><span><?= /* @escapeNotVerified */ __('Billing Address') ?></span></strong>
+            <div class="box-content">
+                <address><?= /* @escapeNotVerified */ $block->getFormattedAddress($_quote->getBillingAddress()) ?></address>
+            </div>
+        </div>
     <?php if (!$_quote->getIsVirtual()): ?>
         <div class="box box-quote-shipping-address box-order-shipping-address">
             <strong class="box-title"><span><?= /* @escapeNotVerified */ __('Shipping Address') ?></span></strong>

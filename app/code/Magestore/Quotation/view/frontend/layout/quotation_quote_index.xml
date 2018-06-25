@@ -26,7 +26,8 @@
                                name="quotation.cart.info"
                                as="cart-info"
                                template="Magestore_Quotation::cart/info.phtml">
-                            <block class="Magestore\Quotation\Block\Cart\Info\Address" name="quotation.cart.info.address" template="Magestore_Quotation::cart/info/address.phtml" cacheable="false"/>
+                            <block class="Magestore\Quotation\Block\Cart\Info\Address\Billing" name="quotation.cart.info.address.billing" template="Magestore_Quotation::cart/info/address.phtml" cacheable="false"/>
+                            <block class="Magestore\Quotation\Block\Cart\Info\Address\Shipping" name="quotation.cart.info.address.shipping" template="Magestore_Quotation::cart/info/address.phtml" cacheable="false"/>
                         </block>
                     </container>
                 </container>

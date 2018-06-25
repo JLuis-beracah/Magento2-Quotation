@@ -10,6 +10,9 @@
     <body>
         <referenceContainer name="content">
             <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Data" template="Magestore_Quotation::quote/edit/data.phtml" name="data">
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Shipping\Address" template="Magestore_Quotation::quote/edit/form/address.phtml" name="shipping_address"/>
+                <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Billing\Address" template="Magestore_Quotation::quote/edit/form/address.phtml" name="billing_address"/>
+
                 <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items" template="Magento_Sales::order/create/items.phtml" name="items">
                     <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Items\Grid" template="Magestore_Quotation::quote/edit/items/grid.phtml" name="items_grid">
                         <block class="Magestore\Quotation\Block\Adminhtml\Quote\Edit\Coupons"

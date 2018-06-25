@@ -297,39 +297,54 @@ class QuotationManagement implements \Magestore\Quotation\Api\QuotationManagemen
         $requestStatus = $quote->getData("request_status");
         $statusList = QuoteStatus::getOptionArray();
         switch ($requestStatus){
+//            case QuoteStatus::STATUS_ADMIN_PENDING:
+//                $statusList = [QuoteStatus::STATUS_ADMIN_PENDING => QuoteStatus::LABEL_ADMIN_PENDING];
+//                break;
+//            case QuoteStatus::STATUS_NEW:
+//                unset($statusList[QuoteStatus::STATUS_PENDING]);
+//                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
+//                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+//                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+//                break;
+//            case QuoteStatus::STATUS_PROCESSING:
+//                unset($statusList[QuoteStatus::STATUS_PENDING]);
+//                unset($statusList[QuoteStatus::STATUS_NEW]);
+//                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
+//                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+//                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+//                break;
+//            case QuoteStatus::STATUS_PROCESSED:
+//                unset($statusList[QuoteStatus::STATUS_PENDING]);
+//                unset($statusList[QuoteStatus::STATUS_NEW]);
+//                unset($statusList[QuoteStatus::STATUS_PROCESSING]);
+//                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
+//                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+//                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+//                break;
+//            case QuoteStatus::STATUS_EXPIRED:
+//                unset($statusList[QuoteStatus::STATUS_PENDING]);
+//                unset($statusList[QuoteStatus::STATUS_NEW]);
+//                unset($statusList[QuoteStatus::STATUS_DECLINED]);
+//                unset($statusList[QuoteStatus::STATUS_ORDERED]);
+//                break;
+//            case QuoteStatus::STATUS_PENDING:
+//            case QuoteStatus::STATUS_DECLINED:
+//            case QuoteStatus::STATUS_ORDERED:
+//                $statusList = [$requestStatus => $statusList[$requestStatus]];
+//                break;
+
             case QuoteStatus::STATUS_ADMIN_PENDING:
-                $statusList = [QuoteStatus::STATUS_ADMIN_PENDING => QuoteStatus::LABEL_ADMIN_PENDING];
+                $statusList[QuoteStatus::STATUS_ADMIN_PENDING] = QuoteStatus::LABEL_ADMIN_PENDING;
                 break;
             case QuoteStatus::STATUS_NEW:
-                unset($statusList[QuoteStatus::STATUS_PENDING]);
-                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
-                unset($statusList[QuoteStatus::STATUS_DECLINED]);
-                unset($statusList[QuoteStatus::STATUS_ORDERED]);
-                break;
             case QuoteStatus::STATUS_PROCESSING:
-                unset($statusList[QuoteStatus::STATUS_PENDING]);
-                unset($statusList[QuoteStatus::STATUS_NEW]);
-                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
-                unset($statusList[QuoteStatus::STATUS_DECLINED]);
-                unset($statusList[QuoteStatus::STATUS_ORDERED]);
-                break;
             case QuoteStatus::STATUS_PROCESSED:
-                unset($statusList[QuoteStatus::STATUS_PENDING]);
-                unset($statusList[QuoteStatus::STATUS_NEW]);
-                unset($statusList[QuoteStatus::STATUS_PROCESSING]);
-                unset($statusList[QuoteStatus::STATUS_EXPIRED]);
-                unset($statusList[QuoteStatus::STATUS_DECLINED]);
-                unset($statusList[QuoteStatus::STATUS_ORDERED]);
-                break;
             case QuoteStatus::STATUS_EXPIRED:
-                unset($statusList[QuoteStatus::STATUS_PENDING]);
-                unset($statusList[QuoteStatus::STATUS_NEW]);
-                unset($statusList[QuoteStatus::STATUS_DECLINED]);
-                unset($statusList[QuoteStatus::STATUS_ORDERED]);
-                break;
-            case QuoteStatus::STATUS_PENDING:
             case QuoteStatus::STATUS_DECLINED:
             case QuoteStatus::STATUS_ORDERED:
+                unset($statusList[QuoteStatus::STATUS_ADMIN_PENDING]);
+                break;
+            case QuoteStatus::STATUS_PENDING:
                 $statusList = [$requestStatus => $statusList[$requestStatus]];
                 break;
         }

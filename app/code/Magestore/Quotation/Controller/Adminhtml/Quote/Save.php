@@ -14,10 +14,14 @@ class Save extends \Magestore\Quotation\Controller\Adminhtml\Quote\QuoteAbstract
     {
         $resultRedirect = $this->createRedirectResult();
         $this->_initSession()->_processActionData('save');
-        $quoteId = $this->_getSession()->getQuoteId();
+        $quoteId = $this->getRequest()->getParam('quote_id');
         $this->_getSession()->clearStorage();
         $this->messageManager->addSuccess(__('The quote was saved successfully.'));
-        $resultRedirect->setPath('quotation/quote/edit', ['id' => $quoteId]);
+        if($quoteId){
+            $resultRedirect->setPath('quotation/quote/edit', ['id' => $quoteId]);
+        }else{
+            $resultRedirect->setPath('quotation/quote');
+        }
         return $resultRedirect;
     }
 }

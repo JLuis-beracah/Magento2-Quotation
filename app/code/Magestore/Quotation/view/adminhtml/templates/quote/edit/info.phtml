@@ -206,6 +206,7 @@ $quoteUpdatedStoreDate = $block->formatDate(
     </div>
 </section>
 
+<?php if(!$block->canEdit()):?>
 <section class="admin__page-section quote-addresses">
     <div class="admin__page-section-title">
         <span class="title"><?= $block->escapeHtml(__('Address Information')) ?></span>
@@ -215,9 +216,6 @@ $quoteUpdatedStoreDate = $block->formatDate(
             <?php /* Billing Address */ ?>
             <div class="admin__page-section-item-title">
                 <span class="title"><?= $block->escapeHtml(__('Billing Address')) ?></span>
-                <?php if($block->canEdit()):?>
-                <div class="actions"><?= /* @noEscape */ $block->getAddressEditLink($quote->getBillingAddress()); ?></div>
-                <?php endif;?>
             </div>
             <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getBillingAddress()); ?></address>
         </div>
@@ -226,19 +224,19 @@ $quoteUpdatedStoreDate = $block->formatDate(
                 <?php /* Shipping Address */ ?>
                 <div class="admin__page-section-item-title">
                     <span class="title"><?= $block->escapeHtml(__('Shipping Address')) ?></span>
-                    <?php if($block->canEdit()):?>
-                    <div class="actions"><?= /* @noEscape */ $block->getAddressEditLink($quote->getShippingAddress()); ?></div>
-                    <?php endif?>
                 </div>
                 <address class="admin__page-section-item-content"><?= /* @noEscape */ $block->getFormattedAddress($quote->getShippingAddress()); ?></address>
             </div>
         <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 
 <script>
     require(["Magestore_Quotation/js/model/quote/form"], function(){
         quote.expirationFieldsBind('quote-request-expiration-data');
         quote.salesrepFieldsBind('quote-request-salesrep-data');
+        var quoteId = parseInt("<?= $quote->getEntityId();?>");
+        quote.quoteId = (quoteId)?quoteId:false;
     });
 </script>

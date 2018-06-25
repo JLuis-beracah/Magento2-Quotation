@@ -269,6 +269,7 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
             if(!$requestAction){
                 $this->_getQuotationManagement()->process($quote);
             }
+
             if(in_array($requestAction, ['send', 'submit'])){
                 $this->_getQuoteProcessModel()->checkAndCreateCustomerAccount($quote);
                 if ($requestAction == 'send') {
@@ -306,10 +307,37 @@ abstract class QuoteAbstract extends \Magestore\Quotation\Controller\Adminhtml\A
                 if($quote->getCustomerId()){
                     $this->_getQuoteProcessModel()->updateCustomerData($data['account']);
                 }else{
-                    if(isset($data['account']['email']) && ($quote->getRequestStatus() == QuoteStatus::STATUS_ADMIN_PENDING)){
-                        $this->_getQuoteProcessModel()->validateNewCustomerEmail($data['account']['email']);
+                    if(isset($requestAction) && in_array($requestAction, ['send', 'submit'])){
+                        if(isset($data['account']['email']) && ($quote->getRequestStatus() == QuoteStatus::STATUS_ADMIN_PENDING)){
+                            $this->_getQuoteProcessModel()->validateNewCustomerEmail($data['account']['email']);
+                        }
                     }
                 }
+            }
+        }
+
+        /**
+         * Initialize catalog rule data
+         */
+        $this->_getQuoteProcessModel()->initRuleData();
+
+        /**
+         * init first billing address, need for virtual products
+         */
+        $this->_getQuoteProcessModel()->getBillingAddress();
+
+        /**
+         * Flag for using billing address for shipping
+         */
+        if (!$this->_getQuoteProcessModel()->getQuote()->isVirtual()) {
+            $syncFlag = $this->getRequest()->getPost('shipping_as_billing');
+            $shippingMethod = $this->_getQuoteProcessModel()->getShippingAddress()->getShippingMethod();
+            if ($syncFlag === null
+                && $this->_getQuoteProcessModel()->getShippingAddress()->getSameAsBilling() && empty($shippingMethod)
+            ) {
+                $this->_getQuoteProcessModel()->setShippingAsBilling(1);
+            } else {
+                $this->_getQuoteProcessModel()->setShippingAsBilling((int)$syncFlag);
             }
         }
 

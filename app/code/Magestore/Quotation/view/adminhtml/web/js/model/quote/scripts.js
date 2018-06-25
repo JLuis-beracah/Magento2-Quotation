@@ -1156,9 +1156,10 @@ define([
         },
 
         resetShippingMethod : function(data){
-            var areasToLoad = ['totals', 'items'];
+            var areasToLoad = ['shipping_address', 'totals', 'items'];
             if(!this.isOnlyVirtualProduct) {
                 areasToLoad.push('shipping_method');
+                areasToLoad.push('shipping_address');
             }
 
             data['reset_shipping'] = 1;

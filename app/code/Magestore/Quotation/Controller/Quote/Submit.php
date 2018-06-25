@@ -83,32 +83,29 @@ class Submit extends \Magestore\Quotation\Controller\AbstractAction
             $resultForward = $this->createForwardResult();
             return $resultForward->forward('noroute');
         }
-        $address = $this->quotationCart->getQuote()->getShippingAddress();
-        $shippingAddressData = $address->toArray();
-        $addressForm = $this->formFactory->create(
-            'customer_address',
-            'customer_address_edit',
-            $shippingAddressData
-        );
-        $addressData = $addressForm->extractData($this->getRequest());
-        $attributeValues = $addressForm->compactData($addressData);
-
-        $addressDataObject = $this->addressDataFactory->create();
-        $this->dataObjectHelper->populateWithArray(
-            $addressDataObject,
-            array_merge($shippingAddressData, $attributeValues),
-            \Magento\Customer\Api\Data\AddressInterface::class
-        );
-
-        $customerSession = $this->quotationCart->getCustomerSession();
-        $customerIsGuest = ($customerSession->isLoggedIn())?false:true;
+        $billing = $this->getRequest()->getParam("billing");
+        $shipping = $this->getRequest()->getParam("shipping");
         $email = $this->getRequest()->getParam('email');
         $remark = $this->getRequest()->getParam('remark');
+        $billingAddressDataObject = $this->getAddressDataObject($billing, "billing");
+        if(!$quote->isVirtual()){
+            if(isset($shipping['same_as_billing']) && ($shipping['same_as_billing'] == "1")){
+                $shippingAddressDataObject = $billingAddressDataObject;
+                $shippingAddressDataObject->setSameAsBilling(1);
+            }else{
+                $shippingAddressDataObject = $this->getAddressDataObject($shipping, "shipping");
+                $shippingAddressDataObject->setSameAsBilling(0);
+            }
+        }
+        $customerSession = $this->quotationCart->getCustomerSession();
+        $customerIsGuest = ($customerSession->isLoggedIn())?false:true;
         $this->quotationCart->getQuote()->setCustomerIsGuest($customerIsGuest);
         $this->quotationCart->getQuote()->setCustomerEmail($email);
         $this->quotationCart->getQuote()->setCustomerNote($remark);
-        $this->quotationCart->getQuote()->setShippingAddress($addressDataObject);
-        $this->quotationCart->getQuote()->setBillingAddress($addressDataObject);
+        $this->quotationCart->getQuote()->setBillingAddress($billingAddressDataObject);
+        if(!$quote->isVirtual()){
+            $this->quotationCart->getQuote()->setShippingAddress($shippingAddressDataObject);
+        }
         $this->quotationCart->save();
         if($remark){
             $this->quotationCart->addComment($remark);
@@ -116,5 +113,36 @@ class Submit extends \Magestore\Quotation\Controller\AbstractAction
         $this->quotationCart->submit();
         $resultRedirect = $this->createRedirectResult();
         return $resultRedirect->setUrl($this->_url->getUrl('*/*/success'));
+    }
+
+    /**
+     * @param $addressSubmitData
+     * @param $type
+     * @return mixed
+     */
+    protected function getAddressDataObject($addressSubmitData, $type){
+        if($type == "shipping"){
+            $address = $this->quotationCart->getQuote()->getShippingAddress();
+        }else{
+            $address = $this->quotationCart->getQuote()->getBillingAddress();
+        }
+        $addressData = $address->toArray();
+        $addressForm = $this->formFactory->create(
+            'customer_address',
+            'customer_address_edit',
+            $addressData
+        );
+        $request = $this->getRequest();
+        $request->setParams($addressSubmitData);
+        $addressData = $addressForm->extractData($request);
+        $attributeValues = $addressForm->compactData($addressData);
+
+        $addressDataObject = $this->addressDataFactory->create();
+        $this->dataObjectHelper->populateWithArray(
+            $addressDataObject,
+            array_merge($addressData, $attributeValues),
+            \Magento\Customer\Api\Data\AddressInterface::class
+        );
+        return $addressDataObject;
     }
 }

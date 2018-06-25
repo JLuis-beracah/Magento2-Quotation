@@ -15,7 +15,42 @@
       enctype="multipart/form-data"
       data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>">
 
-    <?php echo $block->getChildHtml("quotation.cart.info.address");?>
+    <fieldset class="fieldset">
+        <legend class="legend"><span><?= $block->escapeHtml(__('Enter Your Details To Get A Price Proposal')) ?></span>
+        </legend>
+        <br>
+        <?= $block->getBlockHtml('formkey') ?>
+        <div class="field remark">
+            <label class="label"
+                   for="remark"><span><?= $block->escapeHtml(__('Do you have a general remark with this Quote Request?')) ?></span></label>
+            <div class="control">
+            <textarea name="remark"
+                      value="<?php echo $block->escapeHtmlAttr($block->getCustomerNote()); ?>"
+                      title="<?= $block->escapeHtmlAttr(__('Do you have a general remark with this Quote Request?')) ?>"
+                      class="input-text"
+                      id="remark"><?php echo $block->escapeHtmlAttr($block->getCustomerNote()); ?></textarea>
+            </div>
+        </div>
+
+        <div class="field email required">
+            <label class="label" for="quotation_email"><span><?= $block->escapeHtml(__('Email address')) ?></span></label>
+            <div class="control">
+                <input type="text"
+                       name="email"
+                       value="<?= $block->escapeHtmlAttr($block->getEmail()) ?>"
+                       title="<?= $block->escapeHtmlAttr(__('Email address')) ?>"
+                       class="input-text validate-email required-entry"
+                       id="quotation_email">
+            </div>
+        </div>
+    </fieldset>
+    <?php echo $block->getChildHtml("quotation.cart.info.address.billing");?>
+    <?php
+    if(!$block->getIsVirtual()){
+        echo $block->getChildHtml("quotation.cart.info.address.shipping");
+    }
+    ?>
+    <div class="clear"></div>
     <div class="cart main actions">
         <button type="button"
                 title="<?php echo $block->getSubmitButtonTitle();?>"
